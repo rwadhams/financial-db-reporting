@@ -7,8 +7,8 @@ import groovy.transform.ToString
 class FinancialDTO {
 	Date transactionDt
 	BigDecimal amount
-	String description
 	String payee
+	String description
 	
 	String asset
 	String category
