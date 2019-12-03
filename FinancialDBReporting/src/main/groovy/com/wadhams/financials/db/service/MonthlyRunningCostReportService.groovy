@@ -17,49 +17,57 @@ class MonthlyRunningCostReportService {
 		println ''
 
 		List<FinancialDTO> financialList = databaseQueryService.buildList(query)
-		financialList.each {dto ->
-			pw.println dto
-		}
-		ListControlBreak cb = new ListControlBreak(financialList)
-		
-		FinancialDTO current = cb.first()
-		while (cb.hasMore()) {
-			String savedAsset = current.asset
-			println savedAsset
-			while (cb.hasMore() && savedAsset == current.asset) {
-				String savedCategory = current.category
-				println "\t$savedCategory"
-				while (cb.hasMore() && savedAsset == current.asset && savedCategory == current.category) {
-					println "\t\t${current.subCategory}"
-					current = cb.next()
-				}
-			}
-		}
-
-//		report(financialList, pw)
+		report(financialList, pw)
 	}
 	
 	def report(List<FinancialDTO> financialList, PrintWriter pw) {
-		int maxPayeeSize = commonReportingService.maxPayeeSize(financialList)
-		
-		BigDecimal total = new BigDecimal(0.0)
-		
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy")
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
-		
-		pw.println 'LARGE TRANSACTION REPORT'
-		pw.println '------------------------'
 
-		financialList.each {dto ->
-			total = total.add(dto.amount)
-			String col2 = nf.format(dto.amount).padLeft(12, ' ')
-			String col3 = dto.payee.padRight(maxPayeeSize, ' ')
-			String col4 = (dto.description == 'null') ? '' : dto.description
-			pw.println "${sdf.format(dto.transactionDt)}  $col2  $col3  $col4"
-		}
+		Date today = new Date()
+		BigDecimal monthsPerYear = new BigDecimal('12')
+		BigDecimal daysPerYear = new BigDecimal('365')		
 		
-		pw.println ''
-		pw.println "Large Transaction Total: ${nf.format(total)}"
+		pw.println 'MONTHLY RUNNING COST REPORT'
+		pw.println '---------------------------'
+
+		BigDecimal reportTotal = BigDecimal.ZERO
+		
+		ListControlBreak cb = new ListControlBreak(financialList)
+		FinancialDTO current = cb.first()
+		
+		while (cb.hasMore()) {
+			String savedAsset = current.asset
+			pw.println "$savedAsset:"
+			while (cb.hasMore() && savedAsset == current.asset) {
+				println savedAsset
+				String savedCategory = current.category
+				BigDecimal categoryTotal = BigDecimal.ZERO
+				BigDecimal categoryDays = BigDecimal.ZERO
+				Date startDate = today + 3650
+				Date endDate = today - 3650
+				while (cb.hasMore() && savedAsset == current.asset && savedCategory == current.category) {
+					println savedCategory
+					categoryTotal = categoryTotal.add(current.amount)
+					if (current.startDt.before(startDate)) {
+						startDate = current.startDt
+					}
+					if (current.endDt.after(endDate)) {
+						endDate = current.endDt
+					}
+					current = cb.next()
+				}
+				int days = endDate - startDate + 1
+				categoryDays = categoryDays.add(days)
+				println "$categoryTotal\t$categoryDays"
+				BigDecimal categoryAverage = categoryTotal.multiply(daysPerYear).divide(monthsPerYear, 2).divide(categoryDays, 2)
+				pw.println "\t$savedCategory ${nf.format(categoryAverage)}"
+				reportTotal = reportTotal.add(categoryAverage)
+			}
+			pw.println ''
+		}
+		pw.println "Total: ${nf.format(reportTotal)}"
+		
 		pw.println ''
 		pw.println commonReportingService.horizonalRule
 		pw.println ''

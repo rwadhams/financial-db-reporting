@@ -1,6 +1,7 @@
 package com.wadhams.financials.db.controller
 
 import com.wadhams.financials.db.service.LargeTransactionReportService
+import com.wadhams.financials.db.service.MonthlyRunningCostReportService
 import com.wadhams.financials.db.service.RenovationReportService
 
 class FinancialReportingController {
@@ -11,11 +12,14 @@ class FinancialReportingController {
 		pw.println '================'
 		pw.println ''
 		
-		LargeTransactionReportService largeTransactionReportService = new LargeTransactionReportService()
-		largeTransactionReportService.execute(pw)
+//		LargeTransactionReportService largeTransactionReportService = new LargeTransactionReportService()
+//		largeTransactionReportService.execute(pw)
 		
-		RenovationReportService renovationReportService = new RenovationReportService()
-		renovationReportService.execute(pw)
+		MonthlyRunningCostReportService monthlyRunningCostReportService = new MonthlyRunningCostReportService()
+		monthlyRunningCostReportService.execute(pw)
+		
+//		RenovationReportService renovationReportService = new RenovationReportService()
+//		renovationReportService.execute(pw)
 		
 	}
 }
