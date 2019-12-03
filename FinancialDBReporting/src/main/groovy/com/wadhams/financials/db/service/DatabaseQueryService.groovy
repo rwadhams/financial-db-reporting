@@ -22,9 +22,12 @@ class DatabaseQueryService {
 			String c07 = row.SUBCAT
 			Date c08 = row.START
 			Date c09 = row.END
-			println "$c01\t$c02\t$c03\t$c04\t$c05\t$c06\t$c07\t$c08\t$c09"
+			String c10 = row.RG1
+			String c11 = row.RG2
+			String c12 = row.RG3
+			println "$c01\t$c02\t$c03\t$c04\t$c05\t$c06\t$c07\t$c08\t$c09\t$c10\t$c11\t$c12"
 			println ''
-			FinancialDTO dto = new FinancialDTO(transactionDt : c01, amount : c02, payee : c03, description : c04, asset : c05, category : c06, subCategory : c07, startDt: c08, endDt : c09)
+			FinancialDTO dto = new FinancialDTO(transactionDt : c01, amount : c02, payee : c03, description : c04, asset : c05, category : c06, subCategory : c07, startDt: c08, endDt : c09, rg1 : c10, rg2 : c11, rg3 : c12)
 			println dto
 			println ''
 			financialList << dto

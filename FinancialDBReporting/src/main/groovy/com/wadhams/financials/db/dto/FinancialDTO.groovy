@@ -15,4 +15,7 @@ class FinancialDTO {
 	String subCategory
 	Date startDt
 	Date endDt
+	String rg1
+	String rg2
+	String rg3
 }

@@ -28,45 +28,44 @@ class MonthlyRunningCostReportService {
 		BigDecimal monthsPerYear = new BigDecimal('12')
 		BigDecimal daysPerYear = new BigDecimal('365')		
 		
-		pw.println 'MONTHLY RUNNING COST REPORT'
-		pw.println '---------------------------'
-
-		BigDecimal reportTotal = BigDecimal.ZERO
-		
 		ListControlBreak cb = new ListControlBreak(financialList)
 		FinancialDTO current = cb.first()
 		
 		while (cb.hasMore()) {
-			String savedAsset = current.asset
-			pw.println "$savedAsset:"
-			while (cb.hasMore() && savedAsset == current.asset) {
-				println savedAsset
-				String savedCategory = current.category
-				BigDecimal categoryTotal = BigDecimal.ZERO
-				BigDecimal categoryDays = BigDecimal.ZERO
-				Date startDate = today + 3650
-				Date endDate = today - 3650
-				while (cb.hasMore() && savedAsset == current.asset && savedCategory == current.category) {
-					println savedCategory
-					categoryTotal = categoryTotal.add(current.amount)
-					if (current.startDt.before(startDate)) {
-						startDate = current.startDt
+			String savedRG1 = current.rg1
+			//Heading 1
+			pw.println "$savedRG1"
+			int length = savedRG1.size()
+			pw.println "-".padRight(length, '-')
+			
+			//Total
+			BigDecimal reportTotal = BigDecimal.ZERO
+			
+			while (cb.hasMore() && savedRG1 == current.rg1) {
+				String savedAsset = current.asset
+				pw.println "$savedAsset:"
+				while (cb.hasMore() && savedRG1 == current.rg1 && savedAsset == current.asset) {
+					println savedAsset
+					String savedCategory = current.category
+					BigDecimal categoryTotal = BigDecimal.ZERO
+					BigDecimal categoryDays = BigDecimal.ZERO
+					while (cb.hasMore() && savedRG1 == current.rg1 && savedAsset == current.asset && savedCategory == current.category) {
+						println savedCategory
+						categoryTotal = categoryTotal.add(current.amount)
+						int days = current.endDt - current.startDt + 1
+						categoryDays = categoryDays.add(days)
+						current = cb.next()
 					}
-					if (current.endDt.after(endDate)) {
-						endDate = current.endDt
-					}
-					current = cb.next()
+					println "$categoryTotal\t$categoryDays"
+					BigDecimal categoryAverage = categoryTotal.multiply(daysPerYear).divide(monthsPerYear, 2).divide(categoryDays, 2)
+					pw.println "\t$savedCategory ${nf.format(categoryAverage)}"
+					reportTotal = reportTotal.add(categoryAverage)
 				}
-				int days = endDate - startDate + 1
-				categoryDays = categoryDays.add(days)
-				println "$categoryTotal\t$categoryDays"
-				BigDecimal categoryAverage = categoryTotal.multiply(daysPerYear).divide(monthsPerYear, 2).divide(categoryDays, 2)
-				pw.println "\t$savedCategory ${nf.format(categoryAverage)}"
-				reportTotal = reportTotal.add(categoryAverage)
+				pw.println ''
 			}
+			pw.println "Total: ${nf.format(reportTotal)}"
 			pw.println ''
 		}
-		pw.println "Total: ${nf.format(reportTotal)}"
 		
 		pw.println ''
 		pw.println commonReportingService.horizonalRule
@@ -75,10 +74,11 @@ class MonthlyRunningCostReportService {
 	
 	String buildQuery() {
 		StringBuilder sb = new StringBuilder()
-		sb.append("SELECT TRANSACTION_DT as TXN, AMOUNT as AMT, PAYEE, DESCRIPTION as DESC, ASSET, CATEGORY as CAT, SUB_CATEGORY as SUBCAT, START_DT as START, END_DT as END ")
+		sb.append("SELECT TRANSACTION_DT as TXN, AMOUNT as AMT, PAYEE, DESCRIPTION as DESC, ASSET, CATEGORY as CAT, SUB_CATEGORY as SUBCAT, START_DT as START, END_DT as END, RPT_GRP_1 as RG1, RPT_GRP_2 as RG2, RPT_GRP_3 as RG3 ")
 		sb.append("FROM FINANCIAL ")
 		sb.append("WHERE START_DT IS NOT NULL ")
-		sb.append("ORDER BY ASSET, CATEGORY, SUB_CATEGORY, TRANSACTION_DT")
+		sb.append("AND RPT_GRP_1 IS NOT NULL ")
+		sb.append("ORDER BY RPT_GRP_1, ASSET, CATEGORY, SUB_CATEGORY")
 		
 		return sb.toString()
 	}
