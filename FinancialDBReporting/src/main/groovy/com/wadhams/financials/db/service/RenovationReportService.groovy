@@ -61,7 +61,7 @@ class RenovationReportService {
 		
 		BigDecimal total = new BigDecimal(0.0)
 		
-		File f = new File("out/renovation-financial-report.txt")
+		File f = new File("out/camp-hill-renovation-report.txt")
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy")
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
 		
