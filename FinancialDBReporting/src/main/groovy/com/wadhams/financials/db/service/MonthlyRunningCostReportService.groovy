@@ -17,10 +17,15 @@ class MonthlyRunningCostReportService {
 		println ''
 
 		List<FinancialDTO> financialList = databaseQueryService.buildList(query)
+		
 		report(financialList, pw)
 	}
 	
 	def report(List<FinancialDTO> financialList, PrintWriter pw) {
+		pw.println 'MONTHLY RUNNING COST REPORT'
+		pw.println '---------------------------'
+		pw.println ''
+
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy")
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
 
@@ -34,8 +39,9 @@ class MonthlyRunningCostReportService {
 		while (cb.hasMore()) {
 			String savedRG1 = current.rg1
 			//Heading 1
-			pw.println "$savedRG1"
-			int length = savedRG1.size()
+			String h1 = "$savedRG1 (Monthly)"
+			pw.println h1
+			int length = h1.size()
 			pw.println "-".padRight(length, '-')
 			
 			//Total
@@ -63,7 +69,7 @@ class MonthlyRunningCostReportService {
 				}
 				pw.println ''
 			}
-			pw.println "Total: ${nf.format(reportTotal)}"
+			pw.println "Monthly Total: ${nf.format(reportTotal)}"
 			pw.println ''
 		}
 		
