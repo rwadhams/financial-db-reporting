@@ -1,4 +1,4 @@
-package com.wadhams.financials.db.service
+package com.wadhams.financials.db.report
 
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -6,14 +6,16 @@ import groovy.sql.Sql
 
 import com.wadhams.financials.db.dto.FinancialDTO
 import com.wadhams.financials.db.helper.ListControlBreak
+import com.wadhams.financials.db.service.CommonReportingService
+import com.wadhams.financials.db.service.DatabaseQueryService
 
 class MonthlyRunningCostReportService {
 	DatabaseQueryService databaseQueryService = new DatabaseQueryService()
 	CommonReportingService commonReportingService = new CommonReportingService()
 	
 	def execute(PrintWriter pw) {
-		pw.println 'MONTHLY RUNNING COST REPORT'
-		pw.println '---------------------------'
+		pw.println 'MONTHLY RUNNING COST REPORTS'
+		pw.println '----------------------------'
 		pw.println ''
 
 		String query
@@ -59,7 +61,7 @@ class MonthlyRunningCostReportService {
 				int days = current.endDt - current.startDt + 1
 				BigDecimal categoryDays = new BigDecimal(days)
 				BigDecimal categoryAverage = current.amount.multiply(daysPerYear).divide(monthsPerYear, 2).divide(categoryDays, 2)
-				pw.println "\t${current.category} ${nf.format(categoryAverage)} (${nf.format(current.amount)} ${sdf.format(current.startDt)} - ${sdf.format(current.endDt)})"
+				pw.println "\t${current.category} ${nf.format(categoryAverage)}\t\t(${nf.format(current.amount)} ${sdf.format(current.startDt)} - ${sdf.format(current.endDt)})"
 				reportTotal = reportTotal.add(categoryAverage)
 				current = cb.next()
 			}

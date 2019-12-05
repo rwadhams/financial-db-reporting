@@ -1,4 +1,4 @@
-package com.wadhams.financials.db.service
+package com.wadhams.financials.db.report
 
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -6,6 +6,8 @@ import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 
 import com.wadhams.financials.db.dto.FinancialDTO
+import com.wadhams.financials.db.service.CommonReportingService
+import com.wadhams.financials.db.service.DatabaseQueryService
 import com.wadhams.financials.db.type.MonthDateRange
 
 class CategoryByMonthReportService {
@@ -14,8 +16,8 @@ class CategoryByMonthReportService {
 	CommonReportingService commonReportingService = new CommonReportingService()
 	
 	def execute(PrintWriter pw) {
-		pw.println 'CATEGORY BY MONTH REPORT'
-		pw.println '------------------------'
+		pw.println 'CATEGORY EXPENSE TOTALS BY MONTH REPORT'
+		pw.println '---------------------------------------'
 		pw.println ''
 
 		List<String> blackList = ['CAR_INSURANCE', 'CAR_SERVICE', 'DRIVERS_LICENSE', 'ELECTRIC_UTILITIES', 'FURNITURE', 'GAS_UTILITIES', 'HOUSE_INSURANCE', 'INCOME', 'PURCHASE', 'RACQ_MEMBERSHIP', 'RATES', 'RENO', 'TELSTRA', 'WATER_UTILITIES']
