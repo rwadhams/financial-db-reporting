@@ -20,7 +20,7 @@ class CategoryByMonthReportService {
 		pw.println '---------------------------------------'
 		pw.println ''
 
-		List<String> blackList = ['CAR_INSURANCE', 'CAR_SERVICE', 'DRIVERS_LICENSE', 'ELECTRIC_UTILITIES', 'FURNITURE', 'GAS_UTILITIES', 'HOUSE_INSURANCE', 'INCOME', 'PURCHASE', 'RACQ_MEMBERSHIP', 'RATES', 'RENO', 'TELSTRA', 'WATER_UTILITIES']
+		List<String> blackList = ['CAR_INSURANCE', 'CAR_SERVICING', 'DRIVERS_LICENSE', 'ELECTRIC_UTILITIES', 'FURNITURE', 'GAS_UTILITIES', 'HOUSE_INSURANCE', 'INCOME', 'PURCHASE', 'RACQ_MEMBERSHIP', 'RATES', 'RENO', 'TELSTRA', 'WATER_UTILITIES']
 		
 		List<String> categoryList = buildCategoryWhiteList(blackList)
 		//println categoryList
