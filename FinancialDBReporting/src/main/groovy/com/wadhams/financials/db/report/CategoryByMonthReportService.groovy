@@ -34,7 +34,7 @@ class CategoryByMonthReportService {
 		//println "maxCategorySize: $maxCategorySize"
 		maxCategorySize = maxCategorySize + 5	//add margin for report
 
-		List<MonthDateRange> mdrList = [MonthDateRange.Sept2019, MonthDateRange.Oct2019, MonthDateRange.Nov2019]
+		List<MonthDateRange> mdrList = [MonthDateRange.Sept2019, MonthDateRange.Oct2019, MonthDateRange.Nov2019, MonthDateRange.Dec2019]
 		
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
 		int maxAmountSize = 12	//used for padding amount
