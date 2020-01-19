@@ -6,6 +6,7 @@ import com.wadhams.financials.db.report.FurnitureReportService
 import com.wadhams.financials.db.report.LargeTransactionReportService
 import com.wadhams.financials.db.report.MajorEquipmentReportService
 import com.wadhams.financials.db.report.MonthlyRunningCostReportService
+import com.wadhams.financials.db.report.MonthlyTotalsReportService
 import com.wadhams.financials.db.report.RenovationReportService
 
 class FinancialReportingController {
@@ -15,6 +16,9 @@ class FinancialReportingController {
 		pw.println 'Financial Report'
 		pw.println '================'
 		pw.println ''
+		
+		MonthlyTotalsReportService monthlyTotalsReportService = new MonthlyTotalsReportService()
+		monthlyTotalsReportService.execute(pw)
 		
 		LargeTransactionReportService largeTransactionReportService = new LargeTransactionReportService()
 		largeTransactionReportService.execute(pw)
@@ -36,6 +40,5 @@ class FinancialReportingController {
 		
 		FurnitureReportService furnitureReportService = new FurnitureReportService()
 		furnitureReportService.execute(pw)
-		
 	}
 }

@@ -11,7 +11,6 @@ import com.wadhams.financials.db.service.DatabaseQueryService
 import com.wadhams.financials.db.type.MonthDateRange
 
 class CategoryByMonthReportService {
-	
 	DatabaseQueryService databaseQueryService = new DatabaseQueryService()
 	CommonReportingService commonReportingService = new CommonReportingService()
 	
