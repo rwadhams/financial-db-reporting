@@ -33,7 +33,6 @@ class MajorEquipmentReportService {
 		
 		pw.println 'MAJOR EQUIPMENT REPORT'
 		pw.println '----------------------'
-		pw.println ''
 
 		financialList.each {dto ->
 			total = total.add(dto.amount)

@@ -33,7 +33,6 @@ class LargeTransactionReportService {
 		
 		pw.println 'LARGE TRANSACTION REPORT'
 		pw.println '------------------------'
-		pw.println ''
 
 		financialList.each {dto ->
 			if (dto.amount > 0.00) {

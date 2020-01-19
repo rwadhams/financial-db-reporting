@@ -15,7 +15,6 @@ class CategoryDetailReportService {
 	def execute(PrintWriter pw) {
 		pw.println 'CATEGORY DETAIL REPORT'
 		pw.println '----------------------'
-		pw.println ''
 
 		List<String> catList = ['4WD', 'EQUIPMENT']
 		catList.each {cat ->

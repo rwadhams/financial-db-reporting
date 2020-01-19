@@ -33,7 +33,6 @@ class FurnitureReportService {
 		
 		pw.println 'CAMP HILL FURNITURE REPORT'
 		pw.println '--------------------------'
-		pw.println ''
 
 		financialList.each {dto ->
 			total = total.add(dto.amount)

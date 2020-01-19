@@ -14,10 +14,6 @@ class MonthlyRunningCostReportService {
 	CommonReportingService commonReportingService = new CommonReportingService()
 	
 	def execute(PrintWriter pw) {
-		pw.println 'MONTHLY RUNNING COST REPORTS'
-		pw.println '----------------------------'
-		pw.println ''
-
 		String query
 		List<FinancialDTO> financialList
 		
@@ -33,7 +29,6 @@ class MonthlyRunningCostReportService {
 		financialList = databaseQueryService.buildList(query)
 		reportOngoingRunningCosts(financialList, pw)
 		
-		pw.println ''
 		pw.println commonReportingService.horizonalRule
 		pw.println ''
 	}
@@ -67,8 +62,10 @@ class MonthlyRunningCostReportService {
 			}
 			pw.println ''
 		}
-		pw.println "Monthly Total: ${nf.format(reportTotal)}"
-		pw.println ''
+		pw.println "Monthly Average: ${nf.format(reportTotal)}"
+		3.times {
+			pw.println ''
+		}
 	}
 	
 	def reportOngoingRunningCosts(List<FinancialDTO> financialList, PrintWriter pw) {
@@ -109,7 +106,7 @@ class MonthlyRunningCostReportService {
 			}
 			pw.println ''
 		}
-		pw.println "Monthly Total: ${nf.format(reportTotal)}"
+		pw.println "Monthly Average: ${nf.format(reportTotal)}"
 		pw.println ''
 	}
 	

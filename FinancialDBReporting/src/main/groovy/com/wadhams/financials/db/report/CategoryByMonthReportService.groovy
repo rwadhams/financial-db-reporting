@@ -18,7 +18,6 @@ class CategoryByMonthReportService {
 	def execute(PrintWriter pw) {
 		pw.println 'CATEGORY EXPENSE TOTALS BY MONTH REPORT'
 		pw.println '---------------------------------------'
-		pw.println ''
 
 		List<String> blackList = ['4WD', 'CAR_INSURANCE', 'CAR_SERVICING', 'DRIVERS_LICENSE', 'ELECTRIC_UTILITIES', 'FURNITURE', 'GAS_UTILITIES', 'HOUSE_INSURANCE', 'INCOME', 'PURCHASE', 'RACQ_MEMBERSHIP', 'RATES', 'RENO', 'RENTAL_CAR', 'TELSTRA', 'WATER_UTILITIES']
 		
