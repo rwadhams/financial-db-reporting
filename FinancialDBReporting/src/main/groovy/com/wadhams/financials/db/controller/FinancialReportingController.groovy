@@ -1,6 +1,7 @@
 package com.wadhams.financials.db.controller
 
 import com.wadhams.financials.db.report.CategoryByMonthReportService
+import com.wadhams.financials.db.report.CategoryDetailReportService
 import com.wadhams.financials.db.report.FurnitureReportService
 import com.wadhams.financials.db.report.LargeTransactionReportService
 import com.wadhams.financials.db.report.MajorEquipmentReportService
@@ -24,10 +25,11 @@ class FinancialReportingController {
 		CategoryByMonthReportService categoryByMonthReportService = new CategoryByMonthReportService()
 		categoryByMonthReportService.execute(pw)
 		
-		
+		CategoryDetailReportService categoryDetailReportService = new CategoryDetailReportService()
+		categoryDetailReportService.execute(pw)
+
 		MajorEquipmentReportService majorEquipmentReportService = new MajorEquipmentReportService()
 		majorEquipmentReportService.execute(pw)
-		
 
 		RenovationReportService renovationReportService = new RenovationReportService()
 		renovationReportService.execute(pw)

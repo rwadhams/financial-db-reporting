@@ -39,8 +39,8 @@ class MonthlyRunningCostReportService {
 	}
 	
 	def reportSpecificRunningCosts(List<FinancialDTO> financialList, PrintWriter pw) {
-		pw.println 'SPECIFIC RUNNING COSTS (MONTHLY)'
-		pw.println '--------------------------------'
+		pw.println 'SPECIFIC RUNNING COSTS (MONTHLY AVERAGE)'
+		pw.println '----------------------------------------'
 			
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy")
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
@@ -72,8 +72,8 @@ class MonthlyRunningCostReportService {
 	}
 	
 	def reportOngoingRunningCosts(List<FinancialDTO> financialList, PrintWriter pw) {
-		pw.println 'ONGOING RUNNING COSTS (MONTHLY)'
-		pw.println '-------------------------------'
+		pw.println 'ONGOING RUNNING COSTS (MONTHLY AVERAGE)'
+		pw.println '---------------------------------------'
 			
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy")
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
