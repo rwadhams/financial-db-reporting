@@ -47,6 +47,7 @@ class MonthlyTotalsReportService {
 		pw.println ''
 	}
 	
+	//TODO: refactor to common Category enum
 	String buildMonthlyTotalsQuery(String firstDate, String lastDate) {
 		StringBuilder sb = new StringBuilder()
 		sb.append("SELECT SUM(AMOUNT) AS AMT ")

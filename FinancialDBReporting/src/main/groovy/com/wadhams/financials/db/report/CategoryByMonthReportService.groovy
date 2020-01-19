@@ -18,6 +18,7 @@ class CategoryByMonthReportService {
 		pw.println 'CATEGORY EXPENSE TOTALS BY MONTH REPORT'
 		pw.println '---------------------------------------'
 
+		//TODO: refactor to common Category enum
 		List<String> blackList = ['4WD', 'CAR_INSURANCE', 'CAR_SERVICING', 'DRIVERS_LICENSE', 'ELECTRIC_UTILITIES', 'FURNITURE', 'GAS_UTILITIES', 'HOUSE_INSURANCE', 'INCOME', 'PURCHASE', 'RACQ_MEMBERSHIP', 'RATES', 'RENO', 'RENTAL_CAR', 'TELSTRA', 'WATER_UTILITIES']
 		
 		List<String> categoryList = buildCategoryWhiteList(blackList)
@@ -32,6 +33,7 @@ class CategoryByMonthReportService {
 		//println "maxCategorySize: $maxCategorySize"
 		maxCategorySize = maxCategorySize + 5	//add margin for report
 
+		//TODO: dynamic month range
 		List<MonthDateRange> mdrList = [MonthDateRange.Sept2019, MonthDateRange.Oct2019, MonthDateRange.Nov2019, MonthDateRange.Dec2019]
 		
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
@@ -94,7 +96,8 @@ class CategoryByMonthReportService {
 		return categoryList - blackList
 	}
 	
-	String buildCategoryMonthQuery(String category, String firstDate, String lastDate) {
+	//TODO: refactor to common Category enum
+		String buildCategoryMonthQuery(String category, String firstDate, String lastDate) {
 		StringBuilder sb = new StringBuilder()
 		sb.append("SELECT SUM(AMOUNT) AS AMT ")
 		sb.append("FROM FINANCIAL ")

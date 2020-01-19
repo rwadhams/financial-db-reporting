@@ -16,6 +16,7 @@ class CategoryDetailReportService {
 		pw.println 'CATEGORY DETAIL REPORT'
 		pw.println '----------------------'
 
+		//TODO: refactor to common Category enum
 		List<String> catList = ['4WD', 'EQUIPMENT']
 		catList.each {cat ->
 			String query = buildQuery(cat)
