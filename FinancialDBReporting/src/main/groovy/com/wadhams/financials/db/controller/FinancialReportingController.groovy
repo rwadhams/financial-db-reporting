@@ -32,8 +32,9 @@ class FinancialReportingController {
 		CategoryDetailReportService categoryDetailReportService = new CategoryDetailReportService()
 		categoryDetailReportService.execute(pw)
 
-		MajorEquipmentReportService majorEquipmentReportService = new MajorEquipmentReportService()
-		majorEquipmentReportService.execute(pw)
+		//No longer required.
+//		MajorEquipmentReportService majorEquipmentReportService = new MajorEquipmentReportService()
+//		majorEquipmentReportService.execute(pw)
 
 		RenovationReportService renovationReportService = new RenovationReportService()
 		renovationReportService.execute(pw)
