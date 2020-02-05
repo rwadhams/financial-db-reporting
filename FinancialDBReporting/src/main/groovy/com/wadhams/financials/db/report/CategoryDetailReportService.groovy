@@ -12,24 +12,25 @@ class CategoryDetailReportService {
 	DatabaseQueryService databaseQueryService = new DatabaseQueryService()
 	CommonReportingService commonReportingService = new CommonReportingService()
 	
-	def execute(PrintWriter pw) {
-		pw.println 'CATEGORY DETAIL REPORT'
-		pw.println '----------------------'
-
-		//TODO: refactor to common Category enum
-		List<String> catList = databaseQueryService.buildAllCategoryList()
-		catList.each {cat ->
-			String query = buildQuery(cat)
-			println query
-			println ''
-	
-			List<FinancialDTO> financialList = databaseQueryService.buildList(query)
-			
-			report(financialList, cat, pw)
-		}
+	def execute() {
+		File f = new File("out/category-detail-report.txt")
 		
-		pw.println commonReportingService.horizonalRule
-		pw.println ''
+		f.withPrintWriter {pw ->
+			pw.println 'CATEGORY DETAIL REPORT'
+			pw.println '----------------------'
+	
+			//TODO: refactor to common Category enum
+			List<String> catList = databaseQueryService.buildAllCategoryList()
+			catList.each {cat ->
+				String query = buildQuery(cat)
+				println query
+				println ''
+		
+				List<FinancialDTO> financialList = databaseQueryService.buildList(query)
+				
+				report(financialList, cat, pw)
+			}
+		}
 	}
 	
 	def report(List<FinancialDTO> financialList, String category, PrintWriter pw) {
