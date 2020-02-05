@@ -21,7 +21,7 @@ class CategoryByMonthReportService {
 		//TODO: refactor to common Category enum
 		List<String> blackList = ['4WD', 'CAR_INSURANCE', 'CAR_SERVICING', 'DRIVERS_LICENSE', 'ELECTRIC_UTILITIES', 'FURNITURE', 'GAS_UTILITIES', 'HOUSE_INSURANCE', 'INCOME', 'PURCHASE', 'RACQ_MEMBERSHIP', 'RATES', 'RENO', 'RENTAL_CAR', 'TECHNOLOGY', 'TELSTRA', 'WATER_UTILITIES']
 		
-		List<String> categoryList = buildCategoryWhiteList(blackList)
+		List<String> categoryList = databaseQueryService.buildAllCategoryList() - blackList
 		//println categoryList
 		
 		int maxCategorySize = 0
@@ -46,15 +46,13 @@ class CategoryByMonthReportService {
 		}
 		pw.println ''
 
-		Sql sql = Sql.newInstance('jdbc:h2:~/financial', 'sa', '', 'org.h2.Driver')
-		
 		categoryList.each {cat ->
 			//println cat
 			pw.print cat.padRight(maxCategorySize)
 			mdrList.each {mdr ->
 				String query = buildCategoryMonthQuery(cat, mdr.firstDate, mdr.lastDate)
 				//println query
-				GroovyRowResult grr = sql.firstRow(query)
+				GroovyRowResult grr = databaseQueryService.firstRow(query)
 				def amount = grr.getProperty('AMT')
 				//println "Amount: $amount"
 				if (amount) {
@@ -79,23 +77,6 @@ class CategoryByMonthReportService {
 		pw.println ''
 	}
 	
-	List<String> buildCategoryWhiteList(List<String> blackList) {
-		List<String> categoryList = []
-		
-		String query = buildDistinctCategoryQuery()
-		//println query
-		//println ''
-		
-		Sql sql = Sql.newInstance('jdbc:h2:~/financial', 'sa', '', 'org.h2.Driver')
-		
-		sql.eachRow(query) {row ->
-			String category = row.CAT
-			categoryList << category
-		}
-		
-		return categoryList - blackList
-	}
-	
 	//TODO: refactor to common Category enum
 		String buildCategoryMonthQuery(String category, String firstDate, String lastDate) {
 		StringBuilder sb = new StringBuilder()
@@ -114,13 +95,4 @@ class CategoryByMonthReportService {
 		return sb.toString()
 	}
 	
-	String buildDistinctCategoryQuery() {
-		StringBuilder sb = new StringBuilder()
-		sb.append("SELECT DISTINCT CATEGORY as CAT ")
-		sb.append("FROM FINANCIAL ")
-		sb.append("ORDER BY CATEGORY")
-		
-		return sb.toString()
-	}
-
 }

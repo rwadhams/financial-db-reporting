@@ -25,12 +25,10 @@ class MonthlyTotalsReportService {
 		
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
 		
-		Sql sql = Sql.newInstance('jdbc:h2:~/financial', 'sa', '', 'org.h2.Driver')
-		
 		mdrList.each {mdr ->
 			String query = buildMonthlyTotalsQuery(mdr.firstDate, mdr.lastDate)
 			//println query
-			GroovyRowResult grr = sql.firstRow(query)
+			GroovyRowResult grr = databaseQueryService.firstRow(query)
 			def amount = grr.getProperty('AMT')
 			//println "Amount: $amount"
 			if (amount) {

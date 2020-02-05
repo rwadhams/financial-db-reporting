@@ -2,16 +2,17 @@ package com.wadhams.financials.db.service
 
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 
 import com.wadhams.financials.db.dto.FinancialDTO
 
 class DatabaseQueryService {
+	Sql sql = Sql.newInstance('jdbc:h2:~/financial', 'sa', '', 'org.h2.Driver')
+		
 	List<FinancialDTO> buildList(String query) {
 		List<FinancialDTO> financialList = []
 
-		Sql sql = Sql.newInstance('jdbc:h2:~/financial', 'sa', '', 'org.h2.Driver')
-		
 		sql.eachRow(query) {row ->
 			Date c01 = row.TXN
 			BigDecimal c02 = row.AMT
@@ -34,6 +35,23 @@ class DatabaseQueryService {
 		}
 		
 		return financialList
+	}
+
+	List<String> buildAllCategoryList() {
+		List<String> categoryList = []
+		
+		String query = 'SELECT DISTINCT CATEGORY as CAT FROM FINANCIAL ORDER BY CATEGORY'
+		
+		sql.eachRow(query) {row ->
+			String category = row.CAT
+			categoryList << category
+		}
+		
+		return categoryList
+	}
+
+	GroovyRowResult firstRow(String query) {
+		return sql.firstRow(query)
 	}
 	
 }
