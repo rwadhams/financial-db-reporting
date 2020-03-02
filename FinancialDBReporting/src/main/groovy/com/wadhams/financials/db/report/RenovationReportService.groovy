@@ -55,6 +55,8 @@ class RenovationReportService {
 		pw.println ''
 		pw.println "Grand Total...: ${nf.format(grandTotal)}"
 		pw.println ''
+		pw.println '\t(See \'camp-hill-renovation-report.txt\' for specific details)'
+		pw.println ''
 		pw.println commonReportingService.horizonalRule
 		pw.println ''
 	}

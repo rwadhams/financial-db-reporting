@@ -15,11 +15,11 @@ class MonthlyTotalsReportService {
 	CommonReportingService commonReportingService = new CommonReportingService()
 	
 	def execute(PrintWriter pw) {
-		pw.println 'MONTHLY TOTALS REPORT (excluding: Car Purchase)'
-		pw.println '-----------------------------------------------'
+		pw.println 'MONTHLY TOTALS REPORT (excluding: Large purchases)'
+		pw.println '--------------------------------------------------'
 
 		//TODO: dynamic month range
-		List<MonthDateRange> mdrList = [MonthDateRange.Sept2019, MonthDateRange.Oct2019, MonthDateRange.Nov2019, MonthDateRange.Dec2019, MonthDateRange.Jan2020]
+		List<MonthDateRange> mdrList = [MonthDateRange.Sept2019, MonthDateRange.Oct2019, MonthDateRange.Nov2019, MonthDateRange.Dec2019, MonthDateRange.Jan2020, MonthDateRange.Feb2020]
 		
 		BigDecimal total = new BigDecimal(0.0)
 		

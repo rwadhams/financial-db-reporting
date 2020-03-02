@@ -40,6 +40,8 @@ class FurnitureReportService {
 		
 		pw.println "Total...: ${nf.format(total)}"
 		pw.println ''
+		pw.println '\t(See \'camp-hill-furniture-report.txt\' for specific details)'
+		pw.println ''
 		pw.println commonReportingService.horizonalRule
 		pw.println ''
 	}
