@@ -6,6 +6,7 @@ import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 
 import com.wadhams.financials.db.dto.FinancialDTO
+import com.wadhams.financials.db.dto.TotalDTO
 
 class DatabaseQueryService {
 	Sql sql = Sql.newInstance('jdbc:h2:~/financial', 'sa', '', 'org.h2.Driver')
@@ -48,6 +49,21 @@ class DatabaseQueryService {
 		}
 		
 		return categoryList
+	}
+
+	List<TotalDTO> buildTotalsList(String query) {
+		List<TotalDTO> totalList = []
+		
+		sql.eachRow(query) {row ->
+			String totalName = row.TOTAL_NAME
+			BigDecimal amount = row.AMT
+			TotalDTO dto = new TotalDTO()
+			dto.totalName = totalName
+			dto.amount = amount
+			totalList << dto
+		}
+		
+		return totalList
 	}
 
 	GroovyRowResult firstRow(String query) {
