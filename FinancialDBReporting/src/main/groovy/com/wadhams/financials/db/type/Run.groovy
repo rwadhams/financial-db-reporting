@@ -1,8 +1,8 @@
 package com.wadhams.financials.db.type
 
 enum Run {
-	TimestampOutput('TSO'),
-	OverWriteOutput('OWO'),
+	TimestampReport('TSR'),
+	OverWriteReport('OWR'),
 	Unknown('Unknown');
 	
 	private static EnumSet<Run> allEnums = EnumSet.allOf(Run.class)

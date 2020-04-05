@@ -8,11 +8,11 @@ class FinancialReportingApp {
 		println 'FinancialReportingApp started...'
 		println ''
 
-		if (args.size() == 1) {
+		if (args.size() > 0) {
 			Run run = Run.findByName(args[0])
 			println "Run parameter: $run"
 			println ''
-			if (run == Run.TimestampOutput) {
+			if (run == Run.TimestampReport) {
 				String datetime = (new Date()).format('yyyy-MM-dd-HH-mm-ss')
 				PrintWriter pw = (new File("out/financial-report-${datetime}.txt")).newPrintWriter()
 				
@@ -21,7 +21,7 @@ class FinancialReportingApp {
 				
 				pw.close()
 			}
-			else if (run == Run.OverWriteOutput) {
+			else if (run == Run.OverWriteReport) {
 				PrintWriter pw = (new File('out/financial-report.txt')).newPrintWriter()
 				
 				FinancialReportingController controller = new FinancialReportingController()
