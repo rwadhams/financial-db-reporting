@@ -45,10 +45,33 @@ class CategoryDetailReportService {
 		
 		financialList.each {dto ->
 			total = total.add(dto.amount)
-			String col2 = nf.format(dto.amount).padLeft(12, ' ')
-			String col3 = dto.payee.padRight(maxPayeeSize, ' ')
-			String col4 = (dto.description == 'null') ? '' : dto.description
-			pw.println "\t${sdf.format(dto.transactionDt)}  $col2  $col3  $col4"
+			String s1 = nf.format(dto.amount).padLeft(12, ' ')
+			String s2 = dto.payee.padRight(maxPayeeSize, ' ')
+			String s3 = (dto.description == 'null') ? '' : dto.description
+			
+			String s4
+			boolean assetFound = false
+			if (dto.asset) {
+				assetFound = true
+				s4 = dto.asset
+			}
+			
+			String s5, s6
+			boolean startDtFound = false
+			if(dto.startDt) {
+				startDtFound = true
+				s5 = sdf.format(dto.startDt)
+				s6 = sdf.format(dto.endDt)
+			}
+			
+			String s7
+			boolean rg1Found = false
+			if (dto.rg1) {
+				rg1Found = true
+				s7 = dto.rg1
+			}
+			
+			pw.println "\t${sdf.format(dto.transactionDt)}  $s1  $s2  ${(rg1Found)?s7:''}  ${(startDtFound)?("[$s5 - $s6]"):''}  ${(assetFound)?("Asset: $s4"):''}  $s3"
 		}
 		
 		pw.println "\tTotal: ${nf.format(total)}"
