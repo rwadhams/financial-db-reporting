@@ -19,7 +19,7 @@ class CategoryByMonthReportService {
 		pw.println '---------------------------------------'
 
 		//TODO: refactor to common Category enum
-		List<String> blackList = ['4WD', 'BATH', 'CAMPING_EQUIPMENT', 'CARAVAN_EQUIPMENT', 'CARAVAN_INSURANCE', 'CARAVAN_MAINTENANCE', 'CARAVAN_REGISTRATION', 'CAR_EQUIPMENT', 'CAR_MAINTENANCE', 'CAR_INSURANCE', 'CAR_REGISTRATION', 'CAR_SERVICING', 'CAR_SUPPLIES', 'DRIVERS_LICENSE', 'ELECTRIC_UTILITIES', 'EQUIPMENT', 'FURNITURE', 'GAS_UTILITIES', 'HOUSE_INSURANCE', 'HOUSE_MAINTENANCE', 'HOUSE_SUPPLIES', 'INCOME', 'PURCHASE', 'RACQ_MEMBERSHIP', 'RATES', 'RENO', 'RENTAL_CAR', 'TECHNOLOGY', 'TELSTRA', 'TOOLS', 'WATER_UTILITIES']
+		List<String> blackList = ['4WD', 'BATH', 'CAMPING_EQUIPMENT', /*'CARAVAN_EQUIPMENT',*/ 'CARAVAN_INSURANCE', 'CARAVAN_MAINTENANCE', 'CARAVAN_REGISTRATION', 'CAR_EQUIPMENT', 'CAR_MAINTENANCE', 'CAR_INSURANCE', 'CAR_REGISTRATION', 'CAR_SERVICING', 'CAR_SUPPLIES', 'DRIVERS_LICENSE', 'ELECTRIC_UTILITIES', 'EQUIPMENT', 'FLIGHTS', 'FURNITURE', 'GAS_UTILITIES', 'HOUSE_INSURANCE', 'HOUSE_MAINTENANCE', 'HOUSE_SUPPLIES', 'INCOME', 'PURCHASE', 'RACQ_MEMBERSHIP', 'RATES', 'RENO', 'RENTAL_CAR', 'TAX', 'TECHNOLOGY', 'TELSTRA', 'TOOLS', 'WATER_UTILITIES']
 		
 		List<String> categoryList = databaseQueryService.buildAllCategoryList() - blackList
 		//println categoryList
@@ -34,7 +34,7 @@ class CategoryByMonthReportService {
 		maxCategorySize = maxCategorySize + 5	//add margin for report
 
 		//TODO: dynamic month range
-		List<MonthDateRange> mdrList = [MonthDateRange.Sept2019, MonthDateRange.Oct2019, MonthDateRange.Nov2019, MonthDateRange.Dec2019, MonthDateRange.Jan2020, MonthDateRange.Feb2020, MonthDateRange.Mar2020, MonthDateRange.Apr2020]
+		List<MonthDateRange> mdrList = [MonthDateRange.Sept2019, MonthDateRange.Oct2019, MonthDateRange.Nov2019, MonthDateRange.Dec2019, MonthDateRange.Jan2020, MonthDateRange.Feb2020, MonthDateRange.Mar2020, MonthDateRange.Apr2020, MonthDateRange.May2020]
 		
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
 		int maxAmountSize = 12	//used for padding amount
