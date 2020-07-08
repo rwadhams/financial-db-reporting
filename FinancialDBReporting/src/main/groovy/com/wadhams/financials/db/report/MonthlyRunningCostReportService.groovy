@@ -52,14 +52,33 @@ class MonthlyRunningCostReportService {
 		while (cb.hasMore()) {
 			String savedAsset = current.asset
 			pw.println "$savedAsset:"
+//			while (cb.hasMore() && savedAsset == current.asset) {
+//				int days = current.endDt - current.startDt + 1
+//				BigDecimal categoryDays = new BigDecimal(days)
+//				BigDecimal categoryAverage = current.amount.multiply(daysPerYear).divide(monthsPerYear, 2).divide(categoryDays, 2)
+//				pw.println "\t${current.category} ${nf.format(categoryAverage)}\t\t(${nf.format(current.amount)} ${sdf.format(current.startDt)} - ${sdf.format(current.endDt)})"
+//				reportTotal = reportTotal.add(categoryAverage)
+//				current = cb.next()
+//			}
+			
 			while (cb.hasMore() && savedAsset == current.asset) {
-				int days = current.endDt - current.startDt + 1
-				BigDecimal categoryDays = new BigDecimal(days)
-				BigDecimal categoryAverage = current.amount.multiply(daysPerYear).divide(monthsPerYear, 2).divide(categoryDays, 2)
-				pw.println "\t${current.category} ${nf.format(categoryAverage)}\t\t(${nf.format(current.amount)} ${sdf.format(current.startDt)} - ${sdf.format(current.endDt)})"
+				//println savedAsset
+				String savedCategory = current.category
+				BigDecimal categoryTotal = BigDecimal.ZERO
+				BigDecimal categoryDays = BigDecimal.ZERO
+				while (cb.hasMore() && savedAsset == current.asset && savedCategory == current.category) {
+					//println savedCategory
+					categoryTotal = categoryTotal.add(current.amount)
+					int days = current.endDt - current.startDt + 1
+					categoryDays = categoryDays.add(days)
+					current = cb.next()
+				}
+				//println "$categoryTotal\t$categoryDays"
+				BigDecimal categoryAverage = categoryTotal.multiply(daysPerYear).divide(monthsPerYear, 2).divide(categoryDays, 2)
+				pw.println "\t$savedCategory ${nf.format(categoryAverage)}"
 				reportTotal = reportTotal.add(categoryAverage)
-				current = cb.next()
 			}
+
 			pw.println ''
 		}
 		pw.println "Monthly Average: ${nf.format(reportTotal)}"
