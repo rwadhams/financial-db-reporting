@@ -26,7 +26,6 @@ class LargeTransactionReportService {
 		int maxPayeeSize = commonReportingService.maxPayeeSize(financialList)
 		
 		BigDecimal expenseTotal = new BigDecimal(0.0)
-		BigDecimal incomeTotal = new BigDecimal(0.0)
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy")
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
@@ -35,12 +34,7 @@ class LargeTransactionReportService {
 		pw.println '------------------------'
 
 		financialList.each {dto ->
-			if (dto.amount > 0.00) {
-				expenseTotal = expenseTotal.add(dto.amount)
-			}
-			else {
-				incomeTotal = incomeTotal.subtract(dto.amount)
-			}
+			expenseTotal = expenseTotal.add(dto.amount)
 			String col2 = nf.format(dto.amount).padLeft(12, ' ')
 			String col3 = dto.payee.padRight(maxPayeeSize, ' ')
 			String col4 = (dto.description == 'null') ? '' : dto.description
@@ -49,7 +43,6 @@ class LargeTransactionReportService {
 		
 		pw.println ''
 		pw.println "Large Expense Transaction Total: ${nf.format(expenseTotal)}"
-		pw.println "Large Income  Transaction Total: ${nf.format(incomeTotal)}"
 		pw.println ''
 		pw.println commonReportingService.horizonalRule
 		pw.println ''
