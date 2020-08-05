@@ -19,7 +19,7 @@ class MonthlyTotalsReportService {
 		pw.println '--------------------------------------------------'
 
 		//TODO: dynamic month range
-		List<MonthDateRange> mdrList = [MonthDateRange.Sept2019, MonthDateRange.Oct2019, MonthDateRange.Nov2019, MonthDateRange.Dec2019, MonthDateRange.Jan2020, MonthDateRange.Feb2020, MonthDateRange.Mar2020, MonthDateRange.Apr2020, MonthDateRange.May2020, MonthDateRange.Jun2020]
+		List<MonthDateRange> mdrList = [MonthDateRange.Sept2019, MonthDateRange.Oct2019, MonthDateRange.Nov2019, MonthDateRange.Dec2019, MonthDateRange.Jan2020, MonthDateRange.Feb2020, MonthDateRange.Mar2020, MonthDateRange.Apr2020, MonthDateRange.May2020, MonthDateRange.Jun2020, MonthDateRange.Jul2020]
 		
 		BigDecimal total = new BigDecimal(0.0)
 		
