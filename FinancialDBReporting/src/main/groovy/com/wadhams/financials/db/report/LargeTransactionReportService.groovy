@@ -13,16 +13,17 @@ class LargeTransactionReportService {
 	CommonReportingService commonReportingService = new CommonReportingService()
 	
 	def execute(PrintWriter pw) {
-		String query = buildQuery('400')
+		String largeAmount = '400'
+		String query = buildQuery(largeAmount)
 		println query
 		println ''
 
 		List<FinancialDTO> financialList = databaseQueryService.buildList(query)
 		
-		report(financialList, pw)
+		report(financialList, largeAmount, pw)
 	}
 	
-	def report(List<FinancialDTO> financialList, PrintWriter pw) {
+	def report(List<FinancialDTO> financialList, String largeAmount, PrintWriter pw) {
 		int maxPayeeSize = commonReportingService.maxPayeeSize(financialList)
 		
 		BigDecimal expenseTotal = new BigDecimal(0.0)
@@ -30,8 +31,9 @@ class LargeTransactionReportService {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy")
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
 		
-		pw.println 'LARGE TRANSACTION REPORT'
-		pw.println '------------------------'
+		String heading = "LARGE TRANSACTION REPORT (> \$$largeAmount)"
+		pw.println heading
+		pw.println ''.padLeft(heading.size(), '-')
 
 		financialList.each {dto ->
 			expenseTotal = expenseTotal.add(dto.amount)

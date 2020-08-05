@@ -15,8 +15,10 @@ class MonthlyTotalsReportService {
 	CommonReportingService commonReportingService = new CommonReportingService()
 	
 	def execute(PrintWriter pw) {
-		pw.println 'MONTHLY TOTALS REPORT (excluding: Large purchases)'
-		pw.println '--------------------------------------------------'
+		String largeAmount = '400'
+		String heading = "MONTHLY SMALL TOTALS REPORT (Transactions not exceeeding \$$largeAmount)" 
+		pw.println heading
+		pw.println ''.padLeft(heading.size(), '-')
 
 		//TODO: dynamic month range
 		List<MonthDateRange> mdrList = [MonthDateRange.Sept2019, MonthDateRange.Oct2019, MonthDateRange.Nov2019, MonthDateRange.Dec2019, MonthDateRange.Jan2020, MonthDateRange.Feb2020, MonthDateRange.Mar2020, MonthDateRange.Apr2020, MonthDateRange.May2020, MonthDateRange.Jun2020, MonthDateRange.Jul2020]
@@ -26,7 +28,7 @@ class MonthlyTotalsReportService {
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
 		
 		mdrList.each {mdr ->
-			String query = buildMonthlyTotalsQuery(mdr.firstDate, mdr.lastDate)
+			String query = buildMonthlyTotalsQuery(largeAmount, mdr.firstDate, mdr.lastDate)
 			//println query
 			GroovyRowResult grr = databaseQueryService.firstRow(query)
 			def amount = grr.getProperty('AMT')
@@ -47,11 +49,12 @@ class MonthlyTotalsReportService {
 	}
 	
 	//TODO: refactor to common Category enum
-	String buildMonthlyTotalsQuery(String firstDate, String lastDate) {
+	String buildMonthlyTotalsQuery(String largeAmount, String firstDate, String lastDate) {
 		StringBuilder sb = new StringBuilder()
 		sb.append("SELECT SUM(AMOUNT) AS AMT ")
 		sb.append("FROM FINANCIAL ")
-		sb.append("WHERE CATEGORY NOT IN ('PURCHASE') ")
+//		sb.append("WHERE CATEGORY NOT IN ('PURCHASE') ")
+		sb.append("WHERE AMOUNT <= $largeAmount ")
 		sb.append("AND TRANSACTION_DT >= '")
 		sb.append(firstDate)
 		sb.append("' ")
