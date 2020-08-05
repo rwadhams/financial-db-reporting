@@ -44,7 +44,7 @@ class CategoryByMonthReportService {
 		mdrList.each {mdr ->
 			pw.print mdr.name().padLeft(maxAmountSize)
 		}
-		pw.println ''
+		pw.println '  Categories'
 
 		categoryList.each {cat ->
 			//println cat
@@ -63,7 +63,7 @@ class CategoryByMonthReportService {
 					pw.print '$0.00'.padLeft(maxAmountSize)
 				}
 			}
-			pw.println ''
+			pw.println "  $cat"
 		}
 
 		pw.println ''
