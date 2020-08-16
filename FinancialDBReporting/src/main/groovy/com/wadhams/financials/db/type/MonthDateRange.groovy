@@ -2,7 +2,7 @@ package com.wadhams.financials.db.type
 
 import java.time.YearMonth
 
-enum MonthDateRange {
+enum MonthDateRange implements Comparator<MonthDateRange> {
 	Jun2019(2019, 6),
 	Jul2019(2019, 7),
 	Aug2019(2019, 8),
@@ -21,12 +21,65 @@ enum MonthDateRange {
 	Sept2020(2020, 9),
 	Oct2020(2020, 10),
 	Nov2020(2020, 11),
-	Dec2020(2020, 12);
+	Dec2020(2020, 12),
+	Jan2021(2021, 1),
+	Feb2021(2021, 2),
+	Mar2021(2021, 3),
+	Apr2021(2021, 4),
+	May2021(2021, 5),
+	Jun2021(2021, 6),
+	Jul2021(2021, 7),
+	Aug2021(2021, 8),
+	Sept2021(2021, 9),
+	Oct2021(2021, 10),
+	Nov2021(2021, 11),
+	Dec2021(2021, 12);
+
+	private static EnumSet<MonthDateRange> allEnums = EnumSet.allOf(MonthDateRange.class)
 
 	private final YearMonth yearMonth
 	
 	MonthDateRange(int year, int month) {
 		yearMonth = YearMonth.of(year, month)
+	}
+	
+	static List<MonthDateRange> previousTwelve(MonthDateRange mdr) {
+		List<MonthDateRange> list = []
+		
+		for (MonthDateRange e : allEnums) {
+			if (e.yearMonth.isBefore(mdr.yearMonth)) {
+				list << e
+			}
+		}
+		
+		Collections.sort(list)
+		
+		if (list.size() > 12) {
+			//create a subList using the last 12 items in the list
+			return list.subList(list.size()-12, list.size())
+		}
+		
+		return list
+	}
+	
+	static MonthDateRange now() {
+		for (MonthDateRange e : allEnums) {
+			if (e.yearMonth.equals(YearMonth.now())) {
+				return e
+			}
+		}
+		
+		return null
+	}
+	
+	static MonthDateRange findByFirstDate(String firstDate) {
+		for (MonthDateRange e : allEnums) {
+			if (e.getFirstDate() == firstDate) {
+				return e
+			}
+		}
+		
+		return null
 	}
 	
 	String getFirstDate() {
@@ -36,4 +89,10 @@ enum MonthDateRange {
 	String getLastDate() {
 		return yearMonth.atEndOfMonth()
 	}
+
+	@Override
+	public int compare(MonthDateRange mdr1, MonthDateRange mdr2) {
+		return mdr1.compareTo(mdr2)
+	}
+
 }

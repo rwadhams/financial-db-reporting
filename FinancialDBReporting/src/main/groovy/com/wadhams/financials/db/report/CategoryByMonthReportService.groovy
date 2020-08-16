@@ -33,8 +33,8 @@ class CategoryByMonthReportService {
 		//println "maxCategorySize: $maxCategorySize"
 		maxCategorySize = maxCategorySize + 5	//add margin for report
 
-		//TODO: dynamic month range
-		List<MonthDateRange> mdrList = [MonthDateRange.Sept2019, MonthDateRange.Oct2019, MonthDateRange.Nov2019, MonthDateRange.Dec2019, MonthDateRange.Jan2020, MonthDateRange.Feb2020, MonthDateRange.Mar2020, MonthDateRange.Apr2020, MonthDateRange.May2020, MonthDateRange.Jun2020, MonthDateRange.Jul2020]
+		//previous 12 month range
+		List<MonthDateRange> mdrList = MonthDateRange.previousTwelve(MonthDateRange.now())
 		
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
 		int maxAmountSize = 12	//used for padding amount
