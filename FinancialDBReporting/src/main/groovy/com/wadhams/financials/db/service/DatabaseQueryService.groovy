@@ -2,6 +2,8 @@ package com.wadhams.financials.db.service
 
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.time.YearMonth
+
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 
@@ -44,6 +46,29 @@ class DatabaseQueryService {
 		String query = 'SELECT DISTINCT CATEGORY as CAT FROM FINANCIAL ORDER BY CATEGORY'
 		
 		sql.eachRow(query) {row ->
+			String category = row.CAT
+			categoryList << category
+		}
+		
+		return categoryList
+	}
+
+	List<String> buildPreviousThreeMonthCategoryList() {
+		List<String> categoryList = []
+		
+		YearMonth now = YearMonth.now()
+		YearMonth res = now.minusMonths(3L)		//3 months
+		String dte = res.atEndOfMonth().toString()
+		
+		StringBuilder sb = new StringBuilder()
+		sb.append("SELECT DISTINCT CATEGORY as CAT ")
+		sb.append("FROM FINANCIAL ")
+		sb.append("WHERE TRANSACTION_DT > '")
+		sb.append(dte)
+		sb.append("' ")
+		sb.append("ORDER BY CATEGORY")
+		
+		sql.eachRow(sb.toString()) {row ->
 			String category = row.CAT
 			categoryList << category
 		}
