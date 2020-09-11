@@ -19,7 +19,7 @@ class CategoryByMonthReportService {
 		pw.println '---------------------------------------'
 
 		//TODO: refactor to common Category enum
-		List<String> blackList = ['4WD', 'BATH', 'CAMPING_EQUIPMENT', /*'CARAVAN_EQUIPMENT',*/ 'CARAVAN_INSURANCE', 'CARAVAN_MAINTENANCE', 'CARAVAN_REGISTRATION', 'CAR_EQUIPMENT', 'CAR_MAINTENANCE', 'CAR_INSURANCE', 'CAR_REGISTRATION', 'CAR_SERVICING', 'CAR_SUPPLIES', 'DRIVERS_LICENSE_ROB', 'DRIVERS_LICENSE_MOLLY', 'ELECTRIC_UTILITIES', 'EQUIPMENT', 'FLIGHTS', 'FURNITURE', 'GAS_UTILITIES', 'GIFTS', 'HOUSE_SALE', 'HOUSE_INSURANCE', 'HOUSE_MAINTENANCE', 'HOUSE_SUPPLIES', 'PURCHASE', 'RACQ_MEMBERSHIP', 'RATES', 'RENO', 'RENTAL_CAR', 'TAX', 'TECHNOLOGY', 'TELECOMMUNICATIONS', 'TOOLS', 'WATER_UTILITIES']
+		//List<String> blackList = ['4WD', 'BATH', 'CAMPING_EQUIPMENT', /*'CARAVAN_EQUIPMENT',*/ 'CARAVAN_INSURANCE', 'CARAVAN_MAINTENANCE', 'CARAVAN_REGISTRATION', 'CAR_EQUIPMENT', 'CAR_MAINTENANCE', 'CAR_INSURANCE', 'CAR_REGISTRATION', 'CAR_SERVICING', 'CAR_SUPPLIES', 'DRIVERS_LICENSE_ROB', 'DRIVERS_LICENSE_MOLLY', 'ELECTRIC_UTILITIES', 'EQUIPMENT', 'FLIGHTS', 'FURNITURE', 'GAS_UTILITIES', 'GIFTS', 'HOUSE_SALE', 'HOUSE_INSURANCE', 'HOUSE_MAINTENANCE', 'HOUSE_SUPPLIES', 'PURCHASE', 'RACQ_MEMBERSHIP', 'RATES', 'RENO', 'RENTAL_CAR', 'TAX', 'TECHNOLOGY', 'TELECOMMUNICATIONS', 'TOOLS', 'WATER_UTILITIES']
 		
 		//List<String> categoryList = databaseQueryService.buildAllCategoryList() - blackList
 		List<String> categoryList = databaseQueryService.buildPreviousThreeMonthCategoryList()
@@ -67,11 +67,11 @@ class CategoryByMonthReportService {
 			pw.println "  $cat"
 		}
 
-		pw.println ''
-		pw.println 'Excluded categories:'
-		blackList.each {cat ->
-			pw.println "\t$cat"
-		}
+//		pw.println ''
+//		pw.println 'Excluded categories:'
+//		blackList.each {cat ->
+//			pw.println "\t$cat"
+//		}
 		
 		pw.println ''
 		pw.println commonReportingService.horizonalRule
