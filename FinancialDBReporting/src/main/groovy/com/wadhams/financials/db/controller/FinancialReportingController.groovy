@@ -40,10 +40,10 @@ class FinancialReportingController {
 //		MajorEquipmentReportService majorEquipmentReportService = new MajorEquipmentReportService()
 //		majorEquipmentReportService.execute(pw)
 
-		RenovationReportService renovationReportService = new RenovationReportService()
-		renovationReportService.execute(pw)
+//		RenovationReportService renovationReportService = new RenovationReportService()
+//		renovationReportService.execute(pw)
 		
-		FurnitureReportService furnitureReportService = new FurnitureReportService()
-		furnitureReportService.execute(pw)
+//		FurnitureReportService furnitureReportService = new FurnitureReportService()
+//		furnitureReportService.execute(pw)
 	}
 }
