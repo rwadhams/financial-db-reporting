@@ -23,4 +23,17 @@ class CommonReportingService {
 		}
 		return maxPayeeSize
 	}
+	
+	String buildFixedWidthLabel(String label, int width) {
+		int padLength = width - label.size()
+		
+		StringBuilder sb = new StringBuilder()
+		sb.append(label)
+		padLength.times {
+			sb.append('.')
+		}
+		sb.append(': ')
+		
+		return sb.toString()
+	}
 }

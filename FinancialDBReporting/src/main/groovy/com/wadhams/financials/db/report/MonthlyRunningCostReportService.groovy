@@ -50,37 +50,23 @@ class MonthlyRunningCostReportService {
 		FinancialDTO current = cb.first()
 
 		while (cb.hasMore()) {
-			String savedAsset = current.asset
-			pw.println "$savedAsset:"
-//			while (cb.hasMore() && savedAsset == current.asset) {
-//				int days = current.endDt - current.startDt + 1
-//				BigDecimal categoryDays = new BigDecimal(days)
-//				BigDecimal categoryAverage = current.amount.multiply(daysPerYear).divide(monthsPerYear, 2).divide(categoryDays, 2)
-//				pw.println "\t${current.category} ${nf.format(categoryAverage)}\t\t(${nf.format(current.amount)} ${sdf.format(current.startDt)} - ${sdf.format(current.endDt)})"
-//				reportTotal = reportTotal.add(categoryAverage)
-//				current = cb.next()
-//			}
-			
-			while (cb.hasMore() && savedAsset == current.asset) {
-				//println savedAsset
-				String savedCategory = current.category
-				BigDecimal categoryTotal = BigDecimal.ZERO
-				BigDecimal categoryDays = BigDecimal.ZERO
-				while (cb.hasMore() && savedAsset == current.asset && savedCategory == current.category) {
-					//println savedCategory
-					categoryTotal = categoryTotal.add(current.amount)
-					int days = current.endDt - current.startDt + 1
-					categoryDays = categoryDays.add(days)
-					current = cb.next()
-				}
-				//println "$categoryTotal\t$categoryDays"
-				BigDecimal categoryAverage = categoryTotal.multiply(daysPerYear).divide(monthsPerYear, 2).divide(categoryDays, 2)
-				pw.println "\t$savedCategory ${nf.format(categoryAverage)}"
-				reportTotal = reportTotal.add(categoryAverage)
+			String savedCategory = current.category
+			BigDecimal categoryTotal = BigDecimal.ZERO
+			BigDecimal categoryDays = BigDecimal.ZERO
+			while (cb.hasMore() && savedCategory == current.category) {
+				//println savedCategory
+				categoryTotal = categoryTotal.add(current.amount)
+				int days = current.endDt - current.startDt + 1
+				categoryDays = categoryDays.add(days)
+				current = cb.next()
 			}
-
-			pw.println ''
+			//println "$categoryTotal\t$categoryDays"
+			BigDecimal categoryAverage = categoryTotal.multiply(daysPerYear).divide(monthsPerYear, 2).divide(categoryDays, 2)
+			pw.println "${commonReportingService.buildFixedWidthLabel(savedCategory, 25)} ${nf.format(categoryAverage)}"
+			reportTotal = reportTotal.add(categoryAverage)
 		}
+		pw.println ''
+		
 		pw.println "Monthly Average: ${nf.format(reportTotal)}"
 		3.times {
 			pw.println ''
@@ -104,27 +90,22 @@ class MonthlyRunningCostReportService {
 		FinancialDTO current = cb.first()
 		
 		while (cb.hasMore()) {
-			String savedAsset = current.asset
-			pw.println "$savedAsset:"
-			while (cb.hasMore() && savedAsset == current.asset) {
-				//println savedAsset
-				String savedCategory = current.category
-				BigDecimal categoryTotal = BigDecimal.ZERO
-				BigDecimal categoryDays = BigDecimal.ZERO
-				while (cb.hasMore() && savedAsset == current.asset && savedCategory == current.category) {
-					//println savedCategory
-					categoryTotal = categoryTotal.add(current.amount)
-					int days = current.endDt - current.startDt + 1
-					categoryDays = categoryDays.add(days)
-					current = cb.next()
-				}
-				//println "$categoryTotal\t$categoryDays"
-				BigDecimal categoryAverage = categoryTotal.multiply(daysPerYear).divide(monthsPerYear, 2).divide(categoryDays, 2)
-				pw.println "\t$savedCategory ${nf.format(categoryAverage)}"
-				reportTotal = reportTotal.add(categoryAverage)
+			String savedCategory = current.category
+			BigDecimal categoryTotal = BigDecimal.ZERO
+			BigDecimal categoryDays = BigDecimal.ZERO
+			while (cb.hasMore() && savedCategory == current.category) {
+				//println savedCategory
+				categoryTotal = categoryTotal.add(current.amount)
+				int days = current.endDt - current.startDt + 1
+				categoryDays = categoryDays.add(days)
+				current = cb.next()
 			}
-			pw.println ''
+			//println "$categoryTotal\t$categoryDays"
+			BigDecimal categoryAverage = categoryTotal.multiply(daysPerYear).divide(monthsPerYear, 2).divide(categoryDays, 2)
+			pw.println "${commonReportingService.buildFixedWidthLabel(savedCategory, 25)} ${nf.format(categoryAverage)}"
+			reportTotal = reportTotal.add(categoryAverage)
 		}
+		pw.println ''
 		pw.println "Monthly Average: ${nf.format(reportTotal)}"
 		pw.println ''
 	}
@@ -137,7 +118,7 @@ class MonthlyRunningCostReportService {
 		sb.append("AND RPT_GRP_1 = '")
 		sb.append(rg1)
 		sb.append("' ")
-		sb.append("ORDER BY ASSET, CATEGORY")
+		sb.append("ORDER BY CATEGORY")
 		
 		return sb.toString()
 	}
