@@ -17,13 +17,15 @@ class MonthlyRunningCostReportService {
 		String query
 		List<FinancialDTO> financialList
 		
-		query = buildQuery('SPECIFIC_RUNNING_COST')
+		//query = buildQuery('SPECIFIC_RUNNING_COST')
+		query = buildSpecificRunningCostsQuery()
 		println query
 		println ''
 		financialList = databaseQueryService.buildList(query)
 		reportSpecificRunningCosts(financialList, pw)
 		
-		query = buildQuery('ONGOING_RUNNING_COST')
+		//query = buildQuery('ONGOING_RUNNING_COST')
+		query = buildOngoingRunningCostsQuery()
 		println query
 		println ''
 		financialList = databaseQueryService.buildList(query)
@@ -110,14 +112,38 @@ class MonthlyRunningCostReportService {
 		pw.println ''
 	}
 	
-	String buildQuery(String rg1) {
+//	String buildQuery(String rg1) {
+//		StringBuilder sb = new StringBuilder()
+//		sb.append("SELECT TRANSACTION_DT as TXN, AMOUNT as AMT, PAYEE, DESCRIPTION as DESC, ASSET, CATEGORY as CAT, SUB_CATEGORY as SUBCAT, START_DT as START, END_DT as END, RPT_GRP_1 as RG1, RPT_GRP_2 as RG2, RPT_GRP_3 as RG3 ")
+//		sb.append("FROM FINANCIAL ")
+//		sb.append("WHERE START_DT IS NOT NULL ")
+//		sb.append("AND RPT_GRP_1 = '")
+//		sb.append(rg1)
+//		sb.append("' ")
+//		sb.append("ORDER BY CATEGORY")
+//		
+//		return sb.toString()
+//	}
+	
+	String buildSpecificRunningCostsQuery() {
 		StringBuilder sb = new StringBuilder()
 		sb.append("SELECT TRANSACTION_DT as TXN, AMOUNT as AMT, PAYEE, DESCRIPTION as DESC, ASSET, CATEGORY as CAT, SUB_CATEGORY as SUBCAT, START_DT as START, END_DT as END, RPT_GRP_1 as RG1, RPT_GRP_2 as RG2, RPT_GRP_3 as RG3 ")
 		sb.append("FROM FINANCIAL ")
 		sb.append("WHERE START_DT IS NOT NULL ")
-		sb.append("AND RPT_GRP_1 = '")
-		sb.append(rg1)
-		sb.append("' ")
+		sb.append("AND RPT_GRP_1 = 'SPECIFIC_RUNNING_COST' ")
+		sb.append("AND CATEGORY <> 'HOUSE_INSURANCE' ")
+		sb.append("ORDER BY CATEGORY")
+		
+		return sb.toString()
+	}
+	
+	String buildOngoingRunningCostsQuery() {
+		StringBuilder sb = new StringBuilder()
+		sb.append("SELECT TRANSACTION_DT as TXN, AMOUNT as AMT, PAYEE, DESCRIPTION as DESC, ASSET, CATEGORY as CAT, SUB_CATEGORY as SUBCAT, START_DT as START, END_DT as END, RPT_GRP_1 as RG1, RPT_GRP_2 as RG2, RPT_GRP_3 as RG3 ")
+		sb.append("FROM FINANCIAL ")
+		sb.append("WHERE START_DT IS NOT NULL ")
+		sb.append("AND RPT_GRP_1 = 'ONGOING_RUNNING_COST' ")
+		sb.append("AND CATEGORY in ('DATA_PLAN', 'FUEL', 'PHONE_PLAN') ")
 		sb.append("ORDER BY CATEGORY")
 		
 		return sb.toString()
