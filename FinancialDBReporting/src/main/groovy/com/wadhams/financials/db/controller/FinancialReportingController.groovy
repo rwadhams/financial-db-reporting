@@ -6,6 +6,7 @@ import com.wadhams.financials.db.report.CategoryTotalReportService
 import com.wadhams.financials.db.report.FurnitureReportService
 import com.wadhams.financials.db.report.LargeTransactionReportService
 import com.wadhams.financials.db.report.MajorEquipmentReportService
+import com.wadhams.financials.db.report.MonthlyAverageCampingCostReportService
 import com.wadhams.financials.db.report.MonthlyRunningCostReportService
 import com.wadhams.financials.db.report.MonthlyTotalsReportService
 import com.wadhams.financials.db.report.RenovationReportService
@@ -27,12 +28,16 @@ class FinancialReportingController {
 		MonthlyRunningCostReportService monthlyRunningCostReportService = new MonthlyRunningCostReportService()
 		monthlyRunningCostReportService.execute(pw)
 		
+		MonthlyAverageCampingCostReportService monthlyAverageCampingCostReportService = new MonthlyAverageCampingCostReportService()
+		monthlyAverageCampingCostReportService.execute(pw)
+
 		CategoryByMonthReportService categoryByMonthReportService = new CategoryByMonthReportService()
 		categoryByMonthReportService.execute(pw)
 		
 		CategoryTotalReportService categoryTotalReportService = new CategoryTotalReportService()
 		categoryTotalReportService.execute(pw)
 
+		//Extra reports
 		CategoryDetailReportService categoryDetailReportService = new CategoryDetailReportService()
 		categoryDetailReportService.execute()
 
