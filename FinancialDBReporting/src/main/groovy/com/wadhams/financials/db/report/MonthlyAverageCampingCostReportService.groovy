@@ -84,6 +84,7 @@ class MonthlyAverageCampingCostReportService {
 		
 		pw.println ''
 		pw.println "Monthly Average: ${nf.format(reportTotal)}"
+		pw.println ''
 	}
 	
 	List<StartEndDate> buildStartEndDateList() {
@@ -182,7 +183,7 @@ class MonthlyAverageCampingCostReportService {
 		StringBuilder sb = new StringBuilder()
 		sb.append("SELECT CATEGORY as TOTAL_NAME, SUM(AMOUNT) as AMT ")
 		sb.append("FROM FINANCIAL ")
-		sb.append("WHERE CATEGORY IN ('ALCOHOL', 'FOOD', 'FUEL', 'CAMPING_FEES', 'ENTERTAINMENT', 'PREPARED_FOOD', 'LAUNDRY', 'CAMPING_SUPPLIES') ")
+		sb.append("WHERE CATEGORY IN ('ALCOHOL', 'FOOD', 'FUEL', 'CAMPING_FEES', 'ENTERTAINMENT', 'PREPARED_FOOD', 'LAUNDRY', 'CAMPING_SUPPLIES', 'DRINKS') ")
 		sb.append("AND (")
 		sb.append("TRANSACTION_DT BETWEEN '")
 		sb.append(sedList[0].getDB2StartDate())
