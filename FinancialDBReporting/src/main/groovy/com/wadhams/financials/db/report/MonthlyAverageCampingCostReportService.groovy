@@ -98,7 +98,7 @@ class MonthlyAverageCampingCostReportService {
 //		println ''
 		sedList << sed
 		
-		sed = new StartEndDate(startDay : 9, startMonth : Calendar.OCTOBER, startYear : 2020, endDay : 30, endMonth : Calendar.NOVEMBER, endYear : 2020)
+		sed = new StartEndDate(startDay : 9, startMonth : Calendar.OCTOBER, startYear : 2020, endDay : 15, endMonth : Calendar.DECEMBER, endYear : 2020)
 //		println sed.getDB2StartDate()
 //		println sed.getDB2EndDate()
 //		println sed.getDays()
@@ -112,9 +112,12 @@ class MonthlyAverageCampingCostReportService {
 		SimpleDateFormat sdf = new SimpleDateFormat('EEE, MMM d, yyyy')
 		
 		pw.println 'Reporting dates:'
+		int days = 0
 		sedList.each {sed ->
+			days += sed.getDays()
 			pw.println "\tFrom: ${sdf.format(sed.getStartDate())}\tTo: ${sdf.format(sed.getEndDate())}"
 		}
+		pw.println "\tNumber of days used to determine monthly averages: $days"
 		pw.println ''
 	}
 	
