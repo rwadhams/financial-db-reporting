@@ -105,6 +105,13 @@ class MonthlyAverageCampingCostReportService {
 //		println ''
 		sedList << sed
 		
+		sed = new StartEndDate(startDay : 30, startMonth : Calendar.DECEMBER, startYear : 2020, endDay : 17, endMonth : Calendar.APRIL, endYear : 2021)
+//		println sed.getDB2StartDate()
+//		println sed.getDB2EndDate()
+//		println sed.getDays()
+//		println ''
+		sedList << sed
+		
 		return sedList
 	}
 
@@ -186,7 +193,7 @@ class MonthlyAverageCampingCostReportService {
 		StringBuilder sb = new StringBuilder()
 		sb.append("SELECT CATEGORY as TOTAL_NAME, SUM(AMOUNT) as AMT ")
 		sb.append("FROM FINANCIAL ")
-		sb.append("WHERE CATEGORY IN ('ALCOHOL', 'FOOD', 'FUEL', 'CAMPING_FEES', 'ENTERTAINMENT', 'PREPARED_FOOD', 'LAUNDRY', 'CAMPING_SUPPLIES', 'DRINKS') ")
+		sb.append("WHERE CATEGORY IN ('ALCOHOL', 'FOOD', 'FUEL', 'CAMPING_FEES', 'ENTERTAINMENT', 'PREPARED_FOOD', 'LAUNDRY', 'CAMPING_SUPPLIES', 'DRINKS', 'TRAVEL_FEES') ")
 		sb.append("AND (")
 		sb.append("TRANSACTION_DT BETWEEN '")
 		sb.append(sedList[0].getDB2StartDate())
