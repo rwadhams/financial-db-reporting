@@ -24,6 +24,16 @@ class CommonReportingService {
 		return maxPayeeSize
 	}
 	
+	int maxCategorySize(List<FinancialDTO> financialList) {
+		int maxCategorySize = 0
+		financialList.each {dto ->
+			if (dto.category.size() > maxCategorySize) {
+				maxCategorySize = dto.category.size()
+			}
+		}
+		return maxCategorySize
+	}
+	
 	String buildFixedWidthLabel(String label, int width) {
 		int padLength = width - label.size()
 		

@@ -1,5 +1,6 @@
 package com.wadhams.financials.db.controller
 
+import com.wadhams.financials.db.report.AssetDetailReportService
 import com.wadhams.financials.db.report.CategoryByMonthReportService
 import com.wadhams.financials.db.report.CategoryDetailReportService
 import com.wadhams.financials.db.report.CategoryTotalReportService
@@ -40,6 +41,9 @@ class FinancialReportingController {
 		//Extra reports
 		CategoryDetailReportService categoryDetailReportService = new CategoryDetailReportService()
 		categoryDetailReportService.execute()
+
+		AssetDetailReportService assetDetailReportService = new AssetDetailReportService()
+		assetDetailReportService.execute()
 
 		//No longer required.
 //		MajorEquipmentReportService majorEquipmentReportService = new MajorEquipmentReportService()

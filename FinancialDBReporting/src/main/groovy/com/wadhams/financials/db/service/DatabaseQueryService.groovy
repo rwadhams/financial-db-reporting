@@ -53,6 +53,19 @@ class DatabaseQueryService {
 		return categoryList
 	}
 
+	List<String> buildAllAssetList() {
+		List<String> assetList = []
+		
+		String query = 'SELECT DISTINCT ASSET as ASSET FROM FINANCIAL WHERE ASSET IS NOT NULL ORDER BY ASSET'
+		
+		sql.eachRow(query) {row ->
+			String asset = row.ASSET
+			assetList << asset
+		}
+		
+		return assetList
+	}
+
 	List<String> buildPreviousThreeMonthCategoryList() {
 		List<String> categoryList = []
 		
