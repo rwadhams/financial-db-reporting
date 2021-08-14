@@ -11,6 +11,7 @@ import com.wadhams.financials.db.report.MonthlyAverageCampingCostReportService
 import com.wadhams.financials.db.report.MonthlyRunningCostReportService
 import com.wadhams.financials.db.report.MonthlyTotalsReportService
 import com.wadhams.financials.db.report.RenovationReportService
+import com.wadhams.financials.db.report.Last365DaysReportService
 
 class FinancialReportingController {
 	
@@ -19,6 +20,9 @@ class FinancialReportingController {
 		pw.println 'Financial Report'
 		pw.println '================'
 		pw.println ''
+		
+		Last365DaysReportService last365DaysReportService = new Last365DaysReportService()
+		last365DaysReportService.execute(pw)
 		
 		MonthlyTotalsReportService monthlyTotalsReportService = new MonthlyTotalsReportService()
 		monthlyTotalsReportService.execute(pw)
