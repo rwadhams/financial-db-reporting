@@ -112,6 +112,13 @@ class MonthlyAverageCampingCostReportService {
 //		println ''
 		sedList << sed
 		
+		sed = new StartEndDate(startDay : 10, startMonth : Calendar.JUNE, startYear : 2021, endDay : 30, endMonth : Calendar.SEPTEMBER, endYear : 2021)
+//		println sed.getDB2StartDate()
+//		println sed.getDB2EndDate()
+//		println sed.getDays()
+//		println ''
+		sedList << sed
+		
 		return sedList
 	}
 
@@ -193,7 +200,7 @@ class MonthlyAverageCampingCostReportService {
 		StringBuilder sb = new StringBuilder()
 		sb.append("SELECT CATEGORY as TOTAL_NAME, SUM(AMOUNT) as AMT ")
 		sb.append("FROM FINANCIAL ")
-		sb.append("WHERE CATEGORY IN ('ALCOHOL', 'FOOD', 'FUEL', 'CAMPING_FEES', 'ENTERTAINMENT', 'PREPARED_FOOD', 'LAUNDRY', 'CAMPING_SUPPLIES', 'DRINKS', 'TRAVEL_FEES') ")
+		sb.append("WHERE CATEGORY IN ('ALCOHOL', 'FOOD', 'FUEL', 'CAMPING_FEES', 'ENTERTAINMENT', 'PHARMACY', 'PREPARED_FOOD', 'LAUNDRY', 'CAMPING_SUPPLIES', 'DRINKS', 'TRAVEL', 'TRAVEL_FEES', 'CARAVAN_EQUIPMENT') ")
 		sb.append("AND (")
 		sb.append("TRANSACTION_DT BETWEEN '")
 		sb.append(sedList[0].getDB2StartDate())
@@ -231,7 +238,7 @@ class MonthlyAverageCampingCostReportService {
 		sb.append("FROM FINANCIAL ")
 		sb.append("WHERE START_DT IS NOT NULL ")
 		sb.append("AND RPT_GRP_1 = 'ONGOING_RUNNING_COST' ")
-		sb.append("AND CATEGORY in ('DATA_PLAN', 'PHONE_PLAN') ")
+		sb.append("AND CATEGORY in ('DATA_PLAN', 'PHONE_PLAN_MOLLY', 'PHONE_PLAN_ROB') ")
 		sb.append("ORDER BY CATEGORY")
 		
 		return sb.toString()

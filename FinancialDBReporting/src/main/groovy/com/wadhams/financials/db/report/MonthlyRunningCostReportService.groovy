@@ -143,7 +143,7 @@ class MonthlyRunningCostReportService {
 		sb.append("FROM FINANCIAL ")
 		sb.append("WHERE START_DT IS NOT NULL ")
 		sb.append("AND RPT_GRP_1 = 'ONGOING_RUNNING_COST' ")
-		sb.append("AND CATEGORY in ('DATA_PLAN', 'FUEL', 'PHONE_PLAN') ")
+		sb.append("AND CATEGORY in ('DATA_PLAN', 'FUEL', 'PHONE_PLAN_MOLLY', 'PHONE_PLAN_ROB') ")
 		sb.append("ORDER BY CATEGORY")
 		
 		return sb.toString()

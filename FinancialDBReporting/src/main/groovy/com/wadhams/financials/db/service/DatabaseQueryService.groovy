@@ -89,6 +89,32 @@ class DatabaseQueryService {
 		return categoryList
 	}
 
+	List<String> buildPreviousYearPopularCategoryList() {
+		List<String> categoryList = []
+		
+		YearMonth now = YearMonth.now()
+		YearMonth res1 = now.minusYears(1L)	//1 year
+		YearMonth res2 = res1.minusMonths(1L)	//1 month
+		String dte = res2.atEndOfMonth().toString()
+		
+		StringBuilder sb = new StringBuilder()
+		sb.append("SELECT DISTINCT CATEGORY as CAT ")
+		sb.append("FROM FINANCIAL ")
+		sb.append("WHERE TRANSACTION_DT > '")
+		sb.append(dte)
+		sb.append("' ")
+		sb.append("GROUP BY CATEGORY ")
+		sb.append("HAVING COUNT(*) > 2 ")
+		sb.append("ORDER BY CATEGORY")
+		
+		sql.eachRow(sb.toString()) {row ->
+			String category = row.CAT
+			categoryList << category
+		}
+		
+		return categoryList
+	}
+
 	List<TotalDTO> buildTotalsList(String query) {
 		List<TotalDTO> totalList = []
 		
