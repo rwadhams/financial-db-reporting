@@ -80,7 +80,7 @@ class CategoryByMonthReportService {
 	}
 	
 	//TODO: refactor to common Category enum
-		String buildCategoryMonthQuery(String category, String firstDate, String lastDate) {
+	String buildCategoryMonthQuery(String category, String firstDate, String lastDate) {
 		StringBuilder sb = new StringBuilder()
 		sb.append("SELECT SUM(AMOUNT) AS AMT ")
 		sb.append("FROM FINANCIAL ")
