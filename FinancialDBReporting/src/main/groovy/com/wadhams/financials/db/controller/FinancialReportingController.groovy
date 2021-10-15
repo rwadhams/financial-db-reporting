@@ -11,6 +11,7 @@ import com.wadhams.financials.db.report.MonthlyAverageCampingCostReportService
 import com.wadhams.financials.db.report.MonthlyRunningCostReportService
 import com.wadhams.financials.db.report.MonthlyTotalsReportService
 import com.wadhams.financials.db.report.RenovationReportService
+import com.wadhams.financials.db.report.SmallMediumLargeReportService
 import com.wadhams.financials.db.report.Last365DaysReportService
 
 class FinancialReportingController {
@@ -24,9 +25,9 @@ class FinancialReportingController {
 		Last365DaysReportService last365DaysReportService = new Last365DaysReportService()
 		last365DaysReportService.execute(pw)
 		
-		MonthlyTotalsReportService monthlyTotalsReportService = new MonthlyTotalsReportService()
-		monthlyTotalsReportService.execute(pw)
-		
+		SmallMediumLargeReportService smallMediumLargeReportService = new SmallMediumLargeReportService()
+		smallMediumLargeReportService.execute(pw)
+
 		LargeTransactionReportService largeTransactionReportService = new LargeTransactionReportService()
 		largeTransactionReportService.execute(pw)
 		
@@ -50,6 +51,9 @@ class FinancialReportingController {
 		assetDetailReportService.execute()
 
 		//No longer required.
+//		MonthlyTotalsReportService monthlyTotalsReportService = new MonthlyTotalsReportService()
+//		monthlyTotalsReportService.execute(pw)
+		
 //		MajorEquipmentReportService majorEquipmentReportService = new MajorEquipmentReportService()
 //		majorEquipmentReportService.execute(pw)
 
