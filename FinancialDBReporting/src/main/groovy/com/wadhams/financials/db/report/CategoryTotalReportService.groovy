@@ -15,8 +15,8 @@ class CategoryTotalReportService {
 	
 	def execute(PrintWriter pw) {
 		//Report by Category
-		pw.println 'CATEGORY TOTALS REPORT'
-		pw.println '----------------------'
+		pw.println 'CATEGORY TOTALS REPORT (Alphabetic)'
+		pw.println '-----------------------------------'
 		
 		String query = 'SELECT CATEGORY as TOTAL_NAME, SUM(AMOUNT) as AMT FROM FINANCIAL GROUP BY CATEGORY ORDER BY CATEGORY'
 		println query
