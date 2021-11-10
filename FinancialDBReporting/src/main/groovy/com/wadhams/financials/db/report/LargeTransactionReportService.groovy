@@ -2,6 +2,8 @@ package com.wadhams.financials.db.report
 
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.YearMonth
 import groovy.sql.Sql
 
 import com.wadhams.financials.db.dto.FinancialDTO
@@ -26,7 +28,14 @@ class LargeTransactionReportService {
 	def report(List<FinancialDTO> financialList, String largeAmount, PrintWriter pw) {
 		int maxPayeeSize = commonReportingService.maxPayeeSize(financialList)
 		
-		BigDecimal expenseTotal = new BigDecimal(0.0)
+		BigDecimal grandTotal = new BigDecimal(0.0)
+		BigDecimal oneYearTotal = new BigDecimal(0.0)
+		
+		YearMonth now = YearMonth.now()
+		YearMonth nowMinusOneYear1 = now.minusYears(1L)	//minus 1 year
+		YearMonth nowMinusOneYear2 = nowMinusOneYear1.minusMonths(1L)	//minus 1 month
+		LocalDate oneYearAgo = nowMinusOneYear2.atEndOfMonth()	//end of month
+		//println "zzz one year ago date...: $oneYearAgo"
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy")
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
@@ -36,7 +45,11 @@ class LargeTransactionReportService {
 		pw.println ''.padLeft(heading.size(), '-')
 
 		financialList.each {dto ->
-			expenseTotal = expenseTotal.add(dto.amount)
+			grandTotal = grandTotal.add(dto.amount)
+			LocalDate txnDate = LocalDate.parse(dto.transactionDt.toString())
+			if (txnDate.isAfter(oneYearAgo)) {
+				oneYearTotal = oneYearTotal.add(dto.amount)
+			}
 			String col2 = nf.format(dto.amount).padLeft(12, ' ')
 			String col3 = dto.payee.padRight(maxPayeeSize, ' ')
 			String col4 = (dto.description == 'null') ? '' : dto.description
@@ -44,7 +57,8 @@ class LargeTransactionReportService {
 		}
 		
 		pw.println ''
-		pw.println "Large Expense Transaction Total: ${nf.format(expenseTotal)}"
+		pw.println "Large Expense Transaction Grand Total......: ${nf.format(grandTotal).padLeft(13, ' ')}"
+		pw.println "Large Expense Transaction Last Yearly Total: ${nf.format(oneYearTotal).padLeft(13, ' ')}"
 		pw.println ''
 		pw.println commonReportingService.horizonalRule
 		pw.println ''
