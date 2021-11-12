@@ -1,10 +1,6 @@
 package com.wadhams.financials.db.app
 
-import com.wadhams.financials.db.controller.FinancialReportingController
-import com.wadhams.financials.db.report.MonthlyAverageCampingCostReportService
-import com.wadhams.financials.db.report.SmallMediumLargeReportService
-import com.wadhams.financials.db.report.Last365DaysReportService
-import com.wadhams.financials.db.type.Run
+import com.wadhams.financials.db.report.BudgetReportService
 
 class FinancialReportingTestApp {
 	static main(args) {
@@ -13,8 +9,8 @@ class FinancialReportingTestApp {
 
 		PrintWriter pw = new PrintWriter(System.out, true)
 		
-		SmallMediumLargeReportService smallMediumLargeReportService = new SmallMediumLargeReportService()
-		smallMediumLargeReportService.execute(pw)
+		BudgetReportService budgetReportService = new BudgetReportService()
+		budgetReportService.execute(pw)
 
 		println ''
 		println 'FinancialReportingTestApp ended.'

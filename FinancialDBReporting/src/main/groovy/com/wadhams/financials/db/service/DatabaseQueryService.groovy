@@ -2,8 +2,9 @@ package com.wadhams.financials.db.service
 
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.time.YearMonth
-
+import java.time.format.DateTimeFormatter
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 
@@ -12,12 +13,15 @@ import com.wadhams.financials.db.dto.TotalDTO
 
 class DatabaseQueryService {
 	Sql sql = Sql.newInstance('jdbc:h2:~/financial', 'sa', '', 'org.h2.Driver')
-		
+	
+	DateTimeFormatter h2dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+	
 	List<FinancialDTO> buildList(String query) {
 		List<FinancialDTO> financialList = []
 
 		sql.eachRow(query) {row ->
 			Date c01 = row.TXN
+			LocalDate d01 = LocalDate.parse(c01.toString(), h2dtf)
 			BigDecimal c02 = row.AMT
 			String c03 = row.PAYEE
 			String c04 = row.DESC
@@ -25,15 +29,17 @@ class DatabaseQueryService {
 			String c06 = row.CAT
 			String c07 = row.SUBCAT
 			Date c08 = row.START
+			LocalDate d08 = (c08) ? LocalDate.parse(c08.toString(), h2dtf) : null     
 			Date c09 = row.END
+			LocalDate d09 = (c09) ? LocalDate.parse(c09.toString(), h2dtf) : null
 			String c10 = row.RG1
 			String c11 = row.RG2
 			String c12 = row.RG3
-			println "$c01\t$c02\t$c03\t$c04\t$c05\t$c06\t$c07\t$c08\t$c09\t$c10\t$c11\t$c12"
-			println ''
-			FinancialDTO dto = new FinancialDTO(transactionDt : c01, amount : c02, payee : c03, description : c04, asset : c05, category : c06, subCategory : c07, startDt: c08, endDt : c09, rg1 : c10, rg2 : c11, rg3 : c12)
-			println dto
-			println ''
+			//println "$d01\t$c02\t$c03\t$c04\t$c05\t$c06\t$c07\t$d08\t$d09\t$c10\t$c11\t$c12"
+			//println ''
+			FinancialDTO dto = new FinancialDTO(transactionDt : d01, amount : c02, payee : c03, description : c04, asset : c05, category : c06, subCategory : c07, startDt: d08, endDt : d09, rg1 : c10, rg2 : c11, rg3 : c12)
+			//println dto
+			//println ''
 			financialList << dto
 		}
 		
@@ -134,4 +140,15 @@ class DatabaseQueryService {
 		return sql.firstRow(query)
 	}
 	
+	String buildFormattedList(List<String> list) {
+		StringBuilder sb = new StringBuilder()
+		
+		sb.append("'${list[0]}'")
+		list[1..-1].each {s ->
+			sb.append(", '$s'")
+		}
+		
+		return sb.toString()
+	}
+
 }
