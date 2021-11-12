@@ -1,10 +1,9 @@
 package com.wadhams.financials.db.report
 
 import java.text.NumberFormat
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.YearMonth
-import groovy.sql.Sql
+import java.time.format.DateTimeFormatter
 
 import com.wadhams.financials.db.dto.FinancialDTO
 import com.wadhams.financials.db.service.CommonReportingService
@@ -37,7 +36,7 @@ class LargeTransactionReportService {
 		LocalDate oneYearAgo = nowMinusOneYear2.atEndOfMonth()	//end of month
 		//println "zzz one year ago date...: $oneYearAgo"
 		
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy")
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
 		
 		String heading = "LARGE TRANSACTION REPORT (> \$$largeAmount)"
@@ -53,7 +52,7 @@ class LargeTransactionReportService {
 			String col2 = nf.format(dto.amount).padLeft(12, ' ')
 			String col3 = dto.payee.padRight(maxPayeeSize, ' ')
 			String col4 = (dto.description == 'null') ? '' : dto.description
-			pw.println "${sdf.format(dto.transactionDt)}  $col2  $col3  $col4"
+			pw.println "${dto.transactionDt.format(dtf)}  $col2  $col3  $col4"
 		}
 		
 		pw.println ''

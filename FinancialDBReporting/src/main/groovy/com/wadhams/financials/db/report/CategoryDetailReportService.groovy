@@ -1,8 +1,7 @@
 package com.wadhams.financials.db.report
 
 import java.text.NumberFormat
-import java.text.SimpleDateFormat
-import groovy.sql.Sql
+import java.time.format.DateTimeFormatter
 
 import com.wadhams.financials.db.dto.FinancialDTO
 import com.wadhams.financials.db.service.CommonReportingService
@@ -40,7 +39,7 @@ class CategoryDetailReportService {
 		
 		BigDecimal total = new BigDecimal(0.0)
 		
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy")
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
 		
 		financialList.each {dto ->
@@ -60,8 +59,8 @@ class CategoryDetailReportService {
 			boolean startDtFound = false
 			if(dto.startDt) {
 				startDtFound = true
-				s5 = sdf.format(dto.startDt)
-				s6 = sdf.format(dto.endDt)
+				s5 = dto.startDt.format(dtf)
+				s6 = dto.endDt.format(dtf)
 			}
 			
 			String s7
@@ -71,7 +70,7 @@ class CategoryDetailReportService {
 				s7 = dto.rg1
 			}
 			
-			pw.println "\t${sdf.format(dto.transactionDt)}  $s1  $s2  ${(rg1Found)?s7:''}  ${(startDtFound)?("[$s5 - $s6]"):''}  ${(assetFound)?("Asset: $s4"):''}  $s3"
+			pw.println "\t${dto.transactionDt.format(dtf)}  $s1  $s2  ${(rg1Found)?s7:''}  ${(startDtFound)?("[$s5 - $s6]"):''}  ${(assetFound)?("Asset: $s4"):''}  $s3"
 		}
 		
 		pw.println "\tTotal: ${nf.format(total)}"

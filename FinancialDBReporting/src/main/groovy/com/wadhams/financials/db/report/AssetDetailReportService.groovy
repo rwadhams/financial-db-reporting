@@ -1,8 +1,7 @@
 package com.wadhams.financials.db.report
 
 import java.text.NumberFormat
-import java.text.SimpleDateFormat
-import groovy.sql.Sql
+import java.time.format.DateTimeFormatter
 
 import com.wadhams.financials.db.dto.FinancialDTO
 import com.wadhams.financials.db.service.CommonReportingService
@@ -42,7 +41,7 @@ class AssetDetailReportService {
 		
 		BigDecimal total = new BigDecimal(0.0)
 		
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy")
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
 		
 		financialList.each {dto ->
@@ -52,7 +51,7 @@ class AssetDetailReportService {
 			String s3 = dto.category.padRight(maxCategorySize, ' ')
 			String s4 = (dto.description == 'null') ? '' : dto.description
 			
-			pw.println "\t${sdf.format(dto.transactionDt)}  $s1  $s2  $s3  $s4"
+			pw.println "\t${dto.transactionDt.format(dtf)}  $s1  $s2  $s3  $s4"
 		}
 		
 		pw.println "\tTotal: ${nf.format(total)}"

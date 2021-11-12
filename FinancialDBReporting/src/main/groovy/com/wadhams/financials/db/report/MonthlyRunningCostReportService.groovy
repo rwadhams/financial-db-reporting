@@ -1,8 +1,7 @@
 package com.wadhams.financials.db.report
 
 import java.text.NumberFormat
-import java.text.SimpleDateFormat
-import groovy.sql.Sql
+import java.time.format.DateTimeFormatter
 
 import com.wadhams.financials.db.dto.FinancialDTO
 import com.wadhams.financials.db.helper.ListControlBreak
@@ -39,7 +38,7 @@ class MonthlyRunningCostReportService {
 		pw.println 'SPECIFIC RUNNING COSTS (MONTHLY AVERAGE)'
 		pw.println '----------------------------------------'
 			
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy")
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
 
 		BigDecimal monthsPerYear = new BigDecimal('12')
@@ -79,7 +78,7 @@ class MonthlyRunningCostReportService {
 		pw.println 'ONGOING RUNNING COSTS (MONTHLY AVERAGE)'
 		pw.println '---------------------------------------'
 			
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy")
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
 
 		BigDecimal monthsPerYear = new BigDecimal('12')

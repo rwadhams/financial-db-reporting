@@ -1,11 +1,11 @@
 package com.wadhams.financials.db.report
 
+import java.text.NumberFormat
+import java.time.format.DateTimeFormatter
+
 import com.wadhams.financials.db.dto.FinancialDTO
 import com.wadhams.financials.db.service.CommonReportingService
 import com.wadhams.financials.db.service.DatabaseQueryService
-
-import java.text.NumberFormat
-import java.text.SimpleDateFormat
 
 class RenovationReportService {
 	DatabaseQueryService databaseQueryService = new DatabaseQueryService()
@@ -29,7 +29,7 @@ class RenovationReportService {
 		BigDecimal grandTotal = new BigDecimal(0.0)
 		BigDecimal servicesTotal = new BigDecimal(0.0)
 		
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy")
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
 		
 		pw.println 'CAMP HILL RENOVATION REPORT'
@@ -46,7 +46,7 @@ class RenovationReportService {
 				String col2 = nf.format(dto.amount).padLeft(12, ' ')
 				String col3 = dto.payee.padRight(maxPayeeSize, ' ')
 				String col4 = (dto.description == 'null') ? '' : dto.description
-				pw.println "${sdf.format(dto.transactionDt)}  $col2  $col3  $col4"
+				pw.println "${dto.transactionDt.format(dtf)}  $col2  $col3  $col4"
 			}
 		}
 		
@@ -67,7 +67,7 @@ class RenovationReportService {
 		BigDecimal total = new BigDecimal(0.0)
 		
 		File f = new File("out/camp-hill-renovation-report.txt")
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy")
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
 		
 		f.withPrintWriter {pw ->
@@ -79,7 +79,7 @@ class RenovationReportService {
 				String col2 = nf.format(dto.amount).padLeft(12, ' ')
 				String col3 = dto.payee.padRight(maxPayeeSize, ' ')
 				String col4 = (dto.description == 'null') ? '' : dto.description
-				pw.println "${sdf.format(dto.transactionDt)}  $col2  $col3  $col4"
+				pw.println "${dto.transactionDt.format(dtf)}  $col2  $col3  $col4"
 			}
 	
 			pw.println ''
