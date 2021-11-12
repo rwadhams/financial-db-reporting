@@ -1,5 +1,6 @@
 package com.wadhams.financials.db.app
 
+import com.wadhams.financials.db.controller.BudgetReportingController
 import com.wadhams.financials.db.controller.FinancialReportingController
 import com.wadhams.financials.db.type.Run
 
@@ -22,12 +23,15 @@ class FinancialReportingApp {
 				pw.close()
 			}
 			else if (run == Run.OverWriteReport) {
-				PrintWriter pw = (new File('out/financial-report.txt')).newPrintWriter()
+				PrintWriter pw1 = (new File('out/financial-report.txt')).newPrintWriter()
+				FinancialReportingController controller1 = new FinancialReportingController()
+				controller1.execute(pw1)
+				pw1.close()
 				
-				FinancialReportingController controller = new FinancialReportingController()
-				controller.execute(pw)
-				
-				pw.close()
+				PrintWriter pw2 = (new File('out/budget-report.txt')).newPrintWriter()
+				BudgetReportingController controller2 = new BudgetReportingController()
+				controller2.execute(pw2)
+				pw2.close()
 			}
 			else {
 				println 'Unknown parameter. Application did not run.'

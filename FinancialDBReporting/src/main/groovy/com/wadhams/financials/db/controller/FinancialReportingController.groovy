@@ -31,12 +31,6 @@ class FinancialReportingController {
 		LargeTransactionReportService largeTransactionReportService = new LargeTransactionReportService()
 		largeTransactionReportService.execute(pw)
 		
-		MonthlyRunningCostReportService monthlyRunningCostReportService = new MonthlyRunningCostReportService()
-		monthlyRunningCostReportService.execute(pw)
-		
-		MonthlyAverageCampingCostReportService monthlyAverageCampingCostReportService = new MonthlyAverageCampingCostReportService()
-		monthlyAverageCampingCostReportService.execute(pw)
-
 		CategoryByMonthReportService categoryByMonthReportService = new CategoryByMonthReportService()
 		categoryByMonthReportService.execute(pw)
 		
@@ -49,8 +43,14 @@ class FinancialReportingController {
 
 		AssetDetailReportService assetDetailReportService = new AssetDetailReportService()
 		assetDetailReportService.execute()
-
-		//No longer required.
+		
+//		No longer required.
+//		MonthlyRunningCostReportService monthlyRunningCostReportService = new MonthlyRunningCostReportService()
+//		monthlyRunningCostReportService.execute(pw)
+				
+//		MonthlyAverageCampingCostReportService monthlyAverageCampingCostReportService = new MonthlyAverageCampingCostReportService()
+//		monthlyAverageCampingCostReportService.execute(pw)
+		
 //		MonthlyTotalsReportService monthlyTotalsReportService = new MonthlyTotalsReportService()
 //		monthlyTotalsReportService.execute(pw)
 		
