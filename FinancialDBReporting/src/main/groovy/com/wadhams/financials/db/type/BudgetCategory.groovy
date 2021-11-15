@@ -1,9 +1,10 @@
 package com.wadhams.financials.db.type
 
 enum BudgetCategory {
+	Equipment,
 	Fixed,
-	Regular,
 	Occassional,
 	Other,
+	Regular,
 	Unknown;
 }

@@ -125,12 +125,27 @@ class BudgetReportService {
 		pw.println commonReportingService.horizonalRule
 		pw.println ''
 		
-		//OTHER
-		String query3 = buildQuery3(budgetCategoryMap[BudgetCategory.Other])
+		//EQUIPMENT
+		long previousDays = 365L
+		String query3 = buildQuery3(budgetCategoryMap[BudgetCategory.Equipment], previousDays)
 		//println query3
 		//println ''
 		
-		List<TotalDTO> totalList = databaseQueryService.buildTotalsList(query3)
+		totalListBeforeAveraging = databaseQueryService.buildTotalsList(query3)
+		totalListAveraged = averageTotalsList(totalListBeforeAveraging, previousDays)
+		
+		reportEquipment(totalListAveraged, previousDays, pw)
+		
+		pw.println ''
+		pw.println commonReportingService.horizonalRule
+		pw.println ''
+		
+		//OTHER
+		String query4 = buildQuery4(budgetCategoryMap[BudgetCategory.Other])
+		//println query4
+		//println ''
+		
+		List<TotalDTO> totalList = databaseQueryService.buildTotalsList(query4)
 		
 		reportOther(totalList, pw)
 	}
@@ -198,7 +213,7 @@ class BudgetReportService {
 			reportTotal = reportTotal.add(categoryAverage)
 		}
 		pw.println ''
-		pw.println "Monthly Average: ${nf.format(reportTotal)}"
+		pw.println "Monthly Average..........: ${nf.format(reportTotal)}"
 	}
 	
 	def reportRegularOccassional(String heading, Collection<CampingNonCampingContinuousDTO> list, PrintWriter pw) {
@@ -239,6 +254,27 @@ class BudgetReportService {
 
 		pw.println ''
 		pw.println "$t1$t2$t3$t4"
+
+	}
+	
+	def reportEquipment(List<TotalDTO> totalList, long previousDays, PrintWriter pw) {
+		String h1 = "EQUIPMENT ITEMS FROM LAST $previousDays DAYS (MONTHLY AVERAGE)"
+		String u1 = ''.padRight(h1.size(), '-')
+		println h1
+		println u1
+		
+		NumberFormat nf = NumberFormat.getCurrencyInstance()
+		
+		BigDecimal reportTotal = new BigDecimal(0.0)
+		
+		totalList.each {dto ->
+			reportTotal = reportTotal.add(dto.amount)
+			String col1 = dto.totalName
+			String col2 = nf.format(dto.amount).padLeft(6, ' ')
+			pw.println "${commonReportingService.buildFixedWidthLabel(col1, 25)} $col2"
+		}
+		pw.println ''
+		pw.println "Monthly Average..........: ${nf.format(reportTotal)}"
 
 	}
 	
@@ -315,7 +351,28 @@ class BudgetReportService {
 		return sb.toString()
 	}
 
-	String buildQuery3(List<String> categoryList) {
+	String buildQuery3(List<String> categoryList, long previousDays) {
+		DateTimeFormatter h2dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+		LocalDate now = LocalDate.now()
+		LocalDate previousDate = now.minusDays(previousDays)
+		
+		StringBuilder sb = new StringBuilder()
+		
+		sb.append("SELECT CATEGORY as TOTAL_NAME, SUM(AMOUNT) as AMT ")
+		sb.append("FROM FINANCIAL ")
+		sb.append("WHERE CATEGORY IN (")
+		sb.append(databaseQueryService.buildFormattedList(categoryList))
+		sb.append(") ")
+		sb.append("AND TRANSACTION_DT > '")
+		sb.append(previousDate.format(h2dtf))
+		sb.append("' ")
+		sb.append("GROUP BY CATEGORY ")
+		sb.append("ORDER BY CATEGORY")
+		
+		return sb.toString()
+	}
+
+	String buildQuery4(List<String> categoryList) {
 		StringBuilder sb = new StringBuilder()
 		
 		sb.append("SELECT CATEGORY as TOTAL_NAME, SUM(AMOUNT) as AMT ")
@@ -385,10 +442,7 @@ class BudgetReportService {
 			]
 			
 		List<String> occassional = [
-			'CAMPING_EQUIPMENT',
-			'CARAVAN_EQUIPMENT',
 			'CARAVAN_REPAIR',
-			'CAR_EQUIPMENT',
 			'CAR_REPAIR',
 			'FERRY',
 			'FISHING',
@@ -400,11 +454,17 @@ class BudgetReportService {
 			'PERSONAL_GROOMING',
 			'PHARMACY',
 			'SAFETY',
-			'TECHNOLOGY',
 			'TOLLS',
-			'TOOLS',
 			'TRANSIT',
 			'TRAVEL_PUBLICATION'
+			]
+			
+		List<String> equipment = [
+			'CAMPING_EQUIPMENT',
+			'CARAVAN_EQUIPMENT',
+			'CAR_EQUIPMENT',
+			'TECHNOLOGY',
+			'TOOLS'
 			]
 			
 		List<String> other = [
@@ -441,6 +501,7 @@ class BudgetReportService {
 			budgetList.addAll(fixed)
 			budgetList.addAll(regular)
 			budgetList.addAll(occassional)
+			budgetList.addAll(equipment)
 			budgetList.addAll(other)
 			Collections.sort(budgetList)
 			assert budgetList == categoryList
@@ -448,8 +509,9 @@ class BudgetReportService {
 			budgetCategoryMap[BudgetCategory.Fixed] = fixed
 			budgetCategoryMap[BudgetCategory.Regular] = regular
 			budgetCategoryMap[BudgetCategory.Occassional] = occassional
+			budgetCategoryMap[BudgetCategory.Equipment] = equipment
 			budgetCategoryMap[BudgetCategory.Other] = other
-			 
+			
 		return budgetCategoryMap
 	}
 	
