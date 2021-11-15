@@ -358,6 +358,7 @@ class BudgetReportService {
 			'CAR_INSURANCE',
 			'CAR_REGISTRATION',
 			'CAR_SERVICING',
+			'CAR_TYRES',
 			'DATA_PLAN',
 			'DRIVERS_LICENSE_MOLLY',
 			'DRIVERS_LICENSE_ROB',
