@@ -24,7 +24,7 @@ class CategoryByMonthReportService {
 		//List<String> categoryList = databaseQueryService.buildAllCategoryList() - blackList
 		//List<String> categoryList = databaseQueryService.buildPreviousThreeMonthCategoryList()
 		List<String> categoryList = databaseQueryService.buildPreviousYearPopularCategoryList()
-		println categoryList
+		//println categoryList
 		
 		int maxCategorySize = 0
 		categoryList.each {cat ->

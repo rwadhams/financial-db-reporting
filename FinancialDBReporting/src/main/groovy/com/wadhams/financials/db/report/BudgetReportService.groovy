@@ -260,8 +260,8 @@ class BudgetReportService {
 	def reportEquipment(List<TotalDTO> totalList, long previousDays, PrintWriter pw) {
 		String h1 = "EQUIPMENT ITEMS FROM LAST $previousDays DAYS (MONTHLY AVERAGE)"
 		String u1 = ''.padRight(h1.size(), '-')
-		println h1
-		println u1
+		pw.println h1
+		pw.println u1
 		
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
 		

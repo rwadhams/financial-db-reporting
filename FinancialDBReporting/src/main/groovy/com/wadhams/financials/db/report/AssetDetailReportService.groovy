@@ -19,12 +19,12 @@ class AssetDetailReportService {
 			pw.println '----------------------'
 	
 			List<String> assetList = databaseQueryService.buildAllAssetList()
-			println assetList
+			//println assetList
 			
 			assetList.each {asset ->
 				String query = buildQuery(asset)
-				println query
-				println ''
+				//println query
+				//println ''
 		
 				List<FinancialDTO> financialList = databaseQueryService.buildList(query)
 				

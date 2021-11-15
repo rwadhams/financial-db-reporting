@@ -18,15 +18,15 @@ class MonthlyRunningCostReportService {
 		
 		//query = buildQuery('SPECIFIC_RUNNING_COST')
 		query = buildSpecificRunningCostsQuery()
-		println query
-		println ''
+		//println query
+		//println ''
 		financialList = databaseQueryService.buildList(query)
 		reportSpecificRunningCosts(financialList, pw)
 		
 		//query = buildQuery('ONGOING_RUNNING_COST')
 		query = buildOngoingRunningCostsQuery()
-		println query
-		println ''
+		//println query
+		//println ''
 		financialList = databaseQueryService.buildList(query)
 		reportOngoingRunningCosts(financialList, pw)
 		

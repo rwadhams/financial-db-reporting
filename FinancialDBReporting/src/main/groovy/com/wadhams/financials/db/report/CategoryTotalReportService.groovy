@@ -19,8 +19,8 @@ class CategoryTotalReportService {
 		pw.println '-----------------------------------'
 		
 		String query = 'SELECT CATEGORY as TOTAL_NAME, SUM(AMOUNT) as AMT FROM FINANCIAL GROUP BY CATEGORY ORDER BY CATEGORY'
-		println query
-		println ''
+		//println query
+		//println ''
 		
 		List<TotalDTO> totalList = databaseQueryService.buildTotalsList(query)
 		
@@ -35,8 +35,8 @@ class CategoryTotalReportService {
 		pw.println '---------------------------------------------------'
 		
 		String query2 = 'SELECT CATEGORY as TOTAL_NAME, SUM(AMOUNT) as AMT FROM FINANCIAL GROUP BY CATEGORY ORDER BY 2 DESC'
-		println query2
-		println ''
+		//println query2
+		//println ''
 		
 		List<TotalDTO> totalList2 = databaseQueryService.buildTotalsList(query2)
 		

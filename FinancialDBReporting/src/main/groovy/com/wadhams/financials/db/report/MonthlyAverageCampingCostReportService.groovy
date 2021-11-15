@@ -27,22 +27,22 @@ class MonthlyAverageCampingCostReportService {
 		printReportingDates(sedList, pw)
 
 		String query1 = buildStartEndDateQuery(sedList)
-		println query1
-		println ''
+		//println query1
+		//println ''
 
 		List<TotalDTO> sedTotalListBeforeAveraging = databaseQueryService.buildTotalsList(query1)
 		
 		int sedListDays = calculateDays(sedList)
-//		println "sedListDays: $sedListDays"
-//		println ''
+		//println "sedListDays: $sedListDays"
+		//println ''
 		
 		List<TotalDTO> sedTotalList = averageTotalsList(sedTotalListBeforeAveraging, sedListDays)
 		totalList.addAll(sedTotalList)
 
 		//SpecificRunningCosts
 		String query2 = buildSpecificRunningCostsQuery()
-		println query2
-		println ''
+		//println query2
+		//println ''
 		List<FinancialDTO> specificRunningCostsFinancialList = databaseQueryService.buildList(query2)
 		
 		List<TotalDTO> specificRunningCostsTotalList = transformToTotalsList(specificRunningCostsFinancialList)
@@ -50,8 +50,8 @@ class MonthlyAverageCampingCostReportService {
 
 		//OngoingRunningCosts
 		String query3 = buildOngoingRunningCostsQuery()
-		println query3
-		println ''
+		//println query3
+		//println ''
 		List<FinancialDTO> ongoingRunningCostsFinancialList = databaseQueryService.buildList(query3)
 		
 		List<TotalDTO> ongoingRunningCostsTotalList = transformToTotalsList(ongoingRunningCostsFinancialList)
@@ -61,7 +61,7 @@ class MonthlyAverageCampingCostReportService {
 		
 		//Reporting
 		report(totalList, pw)
-		println ''
+		//println ''
 
 		pw.println commonReportingService.horizonalRule
 		pw.println ''

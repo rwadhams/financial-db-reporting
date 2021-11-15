@@ -13,8 +13,8 @@ class MajorEquipmentReportService {
 	
 	def execute(PrintWriter pw) {
 		String query = buildQuery('100')
-		println query
-		println ''
+		//println query
+		//println ''
 
 		List<FinancialDTO> financialList = databaseQueryService.buildList(query)
 		

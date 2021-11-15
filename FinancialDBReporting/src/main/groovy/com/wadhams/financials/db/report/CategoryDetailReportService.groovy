@@ -22,8 +22,8 @@ class CategoryDetailReportService {
 			List<String> catList = databaseQueryService.buildAllCategoryList()
 			catList.each {cat ->
 				String query = buildQuery(cat)
-				println query
-				println ''
+				//println query
+				//println ''
 		
 				List<FinancialDTO> financialList = databaseQueryService.buildList(query)
 				

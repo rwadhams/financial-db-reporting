@@ -13,8 +13,8 @@ class RenovationReportService {
 	
 	def execute(PrintWriter pw) {
 		String query = buildQuery()
-		println query
-		println ''
+		//println query
+		//println ''
 
 		List<FinancialDTO> financialList = databaseQueryService.buildList(query)
 		

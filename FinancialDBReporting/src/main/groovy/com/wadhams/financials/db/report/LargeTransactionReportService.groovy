@@ -16,8 +16,8 @@ class LargeTransactionReportService {
 	def execute(PrintWriter pw) {
 		String largeAmount = '400'
 		String query = buildQuery(largeAmount)
-		println query
-		println ''
+		//println query
+		//println ''
 
 		List<FinancialDTO> financialList = databaseQueryService.buildList(query)
 		
