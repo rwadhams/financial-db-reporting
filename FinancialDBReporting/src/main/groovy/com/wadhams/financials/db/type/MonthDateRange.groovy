@@ -33,7 +33,19 @@ enum MonthDateRange implements Comparator<MonthDateRange> {
 	Sept2021(2021, 9),
 	Oct2021(2021, 10),
 	Nov2021(2021, 11),
-	Dec2021(2021, 12);
+	Dec2021(2021, 12),
+	Jan2022(2022, 1),
+	Feb2022(2022, 2),
+	Mar2022(2022, 3),
+	Apr2022(2022, 4),
+	May2022(2022, 5),
+	Jun2022(2022, 6),
+	Jul2022(2022, 7),
+	Aug2022(2022, 8),
+	Sept2022(2022, 9),
+	Oct2022(2022, 10),
+	Nov2022(2022, 11),
+	Dec2022(2022, 12);
 
 	private static EnumSet<MonthDateRange> allEnums = EnumSet.allOf(MonthDateRange.class)
 
