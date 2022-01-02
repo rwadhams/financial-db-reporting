@@ -474,7 +474,6 @@ class BudgetReportService {
 			'CARAVAN_STORAGE',
 			'CASH',
 			'ELECTRIC_UTILITIES',
-			'FLIGHTS',
 			'FURNITURE',
 			'GAS_UTILITIES',
 			'HOME_BREW',
@@ -492,6 +491,7 @@ class BudgetReportService {
 			'RENO',
 			'RENO_SERVICES',
 			'RENTAL_CAR',
+			'TRAVEL',
 			'WATER_UTILITIES'
 			]
 
