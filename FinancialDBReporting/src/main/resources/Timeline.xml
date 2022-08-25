@@ -39,12 +39,18 @@
 	<data>
 		<name>South Australia Summer Trip</name>
 		<start>13/09/2021</start>
+		<end>27/03/2022</end>
+	</data>
+	<data>
+		<name>Central - South - Tassie Trip</name>
+		<start>25/06/2022</start>
 		<end></end>
 	</data>
 	<!-- 
 	<data>
 		<name></name>
 		<start>dd/MM/yyyy</start>
+		<end></end>
 		<end>dd/MM/yyyy</end>
 	</data>
 	-->
