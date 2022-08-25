@@ -421,7 +421,7 @@ class BudgetReportService {
 			'DRIVERS_LICENSE_ROB',
 			'PHONE_PLAN_MOLLY',
 			'PHONE_PLAN_ROB',
-			'RACQ_MEMBERSHIP',
+			'MEMBERSHIP',
 			'TRANSMISSION_SERVICING'
 			]
 		
@@ -483,6 +483,7 @@ class BudgetReportService {
 			'HOUSE_SALE',
 			'HOUSE_SUPPLIES',
 			'MISC',
+			'OVERSEAS_TRAVEL',
 			'PHONE_AND_DATA_PLAN',
 			'PURCHASE_DEPOSIT',
 			'PURCHASE_PAYMENT',
@@ -491,7 +492,6 @@ class BudgetReportService {
 			'RENO',
 			'RENO_SERVICES',
 			'RENTAL_CAR',
-			'TRAVEL',
 			'WATER_UTILITIES'
 			]
 
