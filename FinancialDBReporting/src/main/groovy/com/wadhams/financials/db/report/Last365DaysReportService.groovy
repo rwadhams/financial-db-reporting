@@ -1,6 +1,7 @@
 package com.wadhams.financials.db.report
 
 import java.text.NumberFormat
+import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
@@ -12,25 +13,35 @@ class Last365DaysReportService {
 	DatabaseQueryService databaseQueryService = new DatabaseQueryService()
 	CommonReportingService commonReportingService = new CommonReportingService()
 	
+	DateTimeFormatter dtf = DateTimeFormatter.ofPattern('dd/MM/yyyy')
+	
 	def execute(PrintWriter pw) {
-		String query = buildQuery()
-		//println query
-		//println ''
+		YearMonth now = YearMonth.now()
+		YearMonth start = now.minusYears(1L)	//1 year
+		LocalDate startDate = start.atDay(1)
+		YearMonth end = now.minusMonths(1L)		//1 month
+		LocalDate endDate = end.atEndOfMonth()
+		
+		String query = buildQuery(startDate, endDate)
+//		println query
+//		println ''
 
 		List<FinancialDTO> financialList = databaseQueryService.buildList(query)
 		
-		reportSummary(financialList, pw)
+		String reportingDateRangeText = buildReportingDateRangeText(startDate, endDate)
 		
-		reportDetail(financialList)
+		reportSummary(financialList, reportingDateRangeText, pw)
+		
+		reportDetail(financialList, reportingDateRangeText)
 	}
 	
-	def reportSummary(List<FinancialDTO> financialList, PrintWriter pw) {
+	def reportSummary(List<FinancialDTO> financialList, String reportingDateRangeText, PrintWriter pw) {
 		BigDecimal total = new BigDecimal(0.0)
 		
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
 		
-		pw.println 'LAST 365 DAYS REPORT'
-		pw.println '--------------------'
+		pw.println "LAST 365 DAYS REPORT ($reportingDateRangeText)"
+		pw.println '-----------------------------------------------'
 
 		financialList.each {dto ->
 			total = total.add(dto.amount)
@@ -44,7 +55,7 @@ class Last365DaysReportService {
 		pw.println ''
 	}
 	
-	def reportDetail(List<FinancialDTO> financialList) {
+	def reportDetail(List<FinancialDTO> financialList, String reportingDateRangeText) {
 		int maxPayeeSize = commonReportingService.maxPayeeSize(financialList)
 		
 		BigDecimal total = new BigDecimal(0.0)
@@ -54,7 +65,7 @@ class Last365DaysReportService {
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
 		
 		f.withPrintWriter {pw ->
-			pw.println "Last 365 Days Details:"
+			pw.println "Last 365 Days Details ($reportingDateRangeText):"
 			pw.println ''
 			
 			financialList.each {dto ->
@@ -70,16 +81,17 @@ class Last365DaysReportService {
 		}
 	}
 	
-	String buildQuery() {
+	String buildReportingDateRangeText(LocalDate startDate, LocalDate endDate) {
+		return "${startDate.format(dtf)} to ${endDate.format(dtf)}"
+	}
+	
+	String buildQuery(LocalDate startDate, LocalDate endDate) {
 		StringBuilder sb = new StringBuilder()
-		YearMonth now = YearMonth.now()
-		
-		YearMonth start1 = now.minusYears(1L)	//1 year
-		String start = start1.atDay(1).toString()
+
+		String start = startDate.toString()
 		//println "start date...: $start"
 		
-		YearMonth end1 = now.minusMonths(1L)	//1 month
-		String end = end1.atEndOfMonth().toString()
+		String end = endDate.toString()
 		//println "end date.....: $end"
 		
 		sb.append("SELECT TRANSACTION_DT as TXN, AMOUNT as AMT, PAYEE, DESCRIPTION as DESC, ASSET, CATEGORY as CAT, SUB_CATEGORY as SUBCAT, START_DT as START, END_DT as END, RPT_GRP_1 as RG1, RPT_GRP_2 as RG2, RPT_GRP_3 as RG3 ")
