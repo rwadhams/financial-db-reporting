@@ -1,14 +1,14 @@
 package com.wadhams.financials.db.report
 
-import com.wadhams.financials.db.dto.FinancialDTO
+import java.text.NumberFormat
+import java.time.YearMonth
+import java.time.format.DateTimeFormatter
+
 import com.wadhams.financials.db.dto.SmallMediumLargeDTO
 import com.wadhams.financials.db.service.CommonReportingService
 import com.wadhams.financials.db.service.DatabaseQueryService
+
 import groovy.sql.GroovyRowResult
-import java.text.NumberFormat
-import java.text.SimpleDateFormat
-import java.time.YearMonth
-import java.time.format.DateTimeFormatter
 
 class SmallMediumLargeReportService {
 	DatabaseQueryService databaseQueryService = new DatabaseQueryService()

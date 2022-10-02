@@ -1,13 +1,12 @@
 package com.wadhams.financials.db.report
 
+import java.text.NumberFormat
+import java.time.YearMonth
+import java.time.format.DateTimeFormatter
+
 import com.wadhams.financials.db.dto.FinancialDTO
 import com.wadhams.financials.db.service.CommonReportingService
 import com.wadhams.financials.db.service.DatabaseQueryService
-
-import java.text.NumberFormat
-import java.text.SimpleDateFormat
-import java.time.YearMonth
-import java.time.format.DateTimeFormatter
 
 class Last365DaysReportService {
 	DatabaseQueryService databaseQueryService = new DatabaseQueryService()

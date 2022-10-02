@@ -1,13 +1,13 @@
 package com.wadhams.financials.db.type
 
-import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
-import com.wadhams.financials.db.type.MonthDateRange
 import spock.lang.Title
 
 @Title("Unit tests for MonthDateRange")
 class MonthDateRangeSpec extends spock.lang.Specification {
-	SimpleDateFormat sdf = new SimpleDateFormat('yyyy-MM')
+	DateTimeFormatter dtf = DateTimeFormatter.ofPattern('yyyy-MM-dd')
 	
 	def "test getters"() {
 		given:
@@ -31,8 +31,8 @@ class MonthDateRangeSpec extends spock.lang.Specification {
 			MonthDateRange resultMonthDateRange = MonthDateRange.now()
 		
 		expect:
-			GregorianCalendar cal = GregorianCalendar.getInstance()
-			String firstDate = sdf.format(cal.getTime()) + '-01'
+			LocalDate now = LocalDate.now()
+			String firstDate = now.format(dtf).substring(0, 7) + '-01'
 			MonthDateRange expectedMonthDateRange = MonthDateRange.findByFirstDate(firstDate)
 			
 			resultMonthDateRange == expectedMonthDateRange
@@ -52,7 +52,7 @@ class MonthDateRangeSpec extends spock.lang.Specification {
 			list[2] == MonthDateRange.Nov2019
 	}
 	
-	def "test previousTwelve with 16 results"() {
+	def "test previousTwelve with 16 possible results"() {
 		given:
 			List<MonthDateRange> result = MonthDateRange.previousTwelve(MonthDateRange.Oct2020)
 		
@@ -62,7 +62,7 @@ class MonthDateRangeSpec extends spock.lang.Specification {
 			result[-1] == MonthDateRange.Sept2020	//last
 	}
 	
-	def "test previousTwelve with 12 results"() {
+	def "test previousTwelve with 12 exact results"() {
 		given:
 			List<MonthDateRange> result = MonthDateRange.previousTwelve(MonthDateRange.Jun2020)
 		
@@ -72,7 +72,7 @@ class MonthDateRangeSpec extends spock.lang.Specification {
 			result[-1] == MonthDateRange.May2020	//last
 	}
 	
-	def "test previousTwelve with 11 results"() {
+	def "test previousTwelve with 11 exact results"() {
 		given:
 			List<MonthDateRange> result = MonthDateRange.previousTwelve(MonthDateRange.May2020)
 		

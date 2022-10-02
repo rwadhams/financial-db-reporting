@@ -1,51 +1,32 @@
 package com.wadhams.financials.db.helper
 
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+
 class StartEndDate {
-	int startDay
-	int startMonth
-	int startYear
+	DateTimeFormatter dtf = DateTimeFormatter.ofPattern('dd/MM/yyyy')
+	DateTimeFormatter dtfDay = DateTimeFormatter.ofPattern('dd')
+	DateTimeFormatter dtfMonth = DateTimeFormatter.ofPattern('MM')
 	
-	int endDay
-	int endMonth
-	int endYear
+	LocalDate startDate
+	LocalDate endDate
 
-	GregorianCalendar startCal
-	GregorianCalendar endCal
-
-	def StartEndDate(Map m) {
-		this.startYear = m.startYear
-		this.startMonth = m.startMonth
-		this.startDay = m.startDay
-		
-		this.endYear = m.endYear
-		this.endMonth = m.endMonth
-		this.endDay = m.endDay
-		
-		startCal = new GregorianCalendar(m.startYear, m.startMonth, m.startDay)
-		endCal = new GregorianCalendar(m.endYear, m.endMonth, m.endDay)
+	def StartEndDate(LocalDate start, LocalDate end) {
+		startDate = start
+		endDate = end
 	}
 	
 	String getDB2StartDate() {
-		String month = startMonth + 1
-		String day = startDay
-		return "$startYear${month.padLeft(2, '0')}${day.padLeft(2, '0')}"
+		return "${startDate.getYear()}${startDate.format(dtfMonth)}${startDate.format(dtfDay)}"
 	}
 	
 	String getDB2EndDate() {
-		String month = endMonth + 1
-		String day = endDay
-		return "$endYear${month.padLeft(2, '0')}${day.padLeft(2, '0')}"
+		return "${endDate.getYear()}${endDate.format(dtfMonth)}${endDate.format(dtfDay)}"
 	}
 	
 	int getDays() {
-		return endCal - startCal + 1
+		return ChronoUnit.DAYS.between(startDate, endDate) + 1
 	}
 	
-	Date getStartDate() {
-		return startCal.getTime()
-	}
-
-	Date getEndDate() {
-		return endCal.getTime()
-	}
 }

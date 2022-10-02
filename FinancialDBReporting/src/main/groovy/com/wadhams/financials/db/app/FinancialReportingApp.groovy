@@ -34,10 +34,12 @@ class FinancialReportingApp {
 				pw2.close()
 			}
 			else if (run == Run.OverWriteReport) {
-				PrintWriter pw1 = (new File('out/financial-report.txt')).newPrintWriter()
+				PrintWriter pw1a = (new File('out/financial-report.txt')).newPrintWriter()
+				PrintWriter pw1b = (new File('out/no-longer-required-report.txt')).newPrintWriter()
 				FinancialReportingController controller1 = new FinancialReportingController()
-				controller1.execute(pw1)
-				pw1.close()
+				controller1.execute(pw1a, pw1b)
+				pw1a.close()
+				pw1b.close()
 				
 				PrintWriter pw2 = (new File('out/budget-report.txt')).newPrintWriter()
 				BudgetReportingController controller2 = new BudgetReportingController()

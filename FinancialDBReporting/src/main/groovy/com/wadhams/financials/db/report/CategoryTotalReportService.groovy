@@ -1,7 +1,6 @@
 package com.wadhams.financials.db.report
 
 import java.text.NumberFormat
-import java.text.SimpleDateFormat
 import groovy.sql.Sql
 
 import com.wadhams.financials.db.dto.FinancialDTO

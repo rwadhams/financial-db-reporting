@@ -1,15 +1,14 @@
 package com.wadhams.financials.db.service
 
-import java.text.NumberFormat
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
-import groovy.sql.GroovyRowResult
-import groovy.sql.Sql
 
 import com.wadhams.financials.db.dto.FinancialDTO
 import com.wadhams.financials.db.dto.TotalDTO
+
+import groovy.sql.GroovyRowResult
+import groovy.sql.Sql
 
 class DatabaseQueryService {
 	Sql sql = Sql.newInstance('jdbc:h2:~/financial', 'sa', '', 'org.h2.Driver')

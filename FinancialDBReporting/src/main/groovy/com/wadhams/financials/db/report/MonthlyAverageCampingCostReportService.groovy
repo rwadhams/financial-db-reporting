@@ -1,8 +1,10 @@
 package com.wadhams.financials.db.report
 
 import java.text.NumberFormat
-import java.text.SimpleDateFormat
-import groovy.sql.Sql
+import java.time.LocalDate
+import java.time.Month
+import java.time.format.DateTimeFormatter
+
 import com.wadhams.financials.db.comparator.TotalDTOAmtComparator
 import com.wadhams.financials.db.dto.FinancialDTO
 import com.wadhams.financials.db.dto.TotalDTO
@@ -90,29 +92,40 @@ class MonthlyAverageCampingCostReportService {
 	List<StartEndDate> buildStartEndDateList() {
 		List<StartEndDate> sedList = []
 		
+		LocalDate start
+		LocalDate end
 		StartEndDate sed
-		sed = new StartEndDate(startDay : 10, startMonth : Calendar.JULY, startYear : 2020, endDay : 3, endMonth : Calendar.SEPTEMBER, endYear : 2020)
+		
+		start = LocalDate.of(2020, Month.JULY, 10)
+		end   = LocalDate.of(2020, Month.SEPTEMBER, 3)
+		sed = new StartEndDate(start, end)
 //		println sed.getDB2StartDate()
 //		println sed.getDB2EndDate()
 //		println sed.getDays()
 //		println ''
 		sedList << sed
 		
-		sed = new StartEndDate(startDay : 9, startMonth : Calendar.OCTOBER, startYear : 2020, endDay : 15, endMonth : Calendar.DECEMBER, endYear : 2020)
+		start = LocalDate.of(2020, Month.OCTOBER, 9)
+		end   = LocalDate.of(2020, Month.DECEMBER, 15)
+		sed = new StartEndDate(start, end)
 //		println sed.getDB2StartDate()
 //		println sed.getDB2EndDate()
 //		println sed.getDays()
 //		println ''
 		sedList << sed
 		
-		sed = new StartEndDate(startDay : 30, startMonth : Calendar.DECEMBER, startYear : 2020, endDay : 17, endMonth : Calendar.APRIL, endYear : 2021)
+		start = LocalDate.of(2020, Month.DECEMBER, 30)
+		end   = LocalDate.of(2021, Month.APRIL, 17)
+		sed = new StartEndDate(start, end)
 //		println sed.getDB2StartDate()
 //		println sed.getDB2EndDate()
 //		println sed.getDays()
 //		println ''
 		sedList << sed
 		
-		sed = new StartEndDate(startDay : 10, startMonth : Calendar.JUNE, startYear : 2021, endDay : 31, endMonth : Calendar.OCTOBER, endYear : 2021)
+		start = LocalDate.of(2021, Month.JUNE, 10)
+		end   = LocalDate.of(2021, Month.OCTOBER, 31)
+		sed = new StartEndDate(start, end)
 //		println sed.getDB2StartDate()
 //		println sed.getDB2EndDate()
 //		println sed.getDays()
@@ -123,13 +136,13 @@ class MonthlyAverageCampingCostReportService {
 	}
 
 	def printReportingDates(List<StartEndDate> sedList, PrintWriter pw) {
-		SimpleDateFormat sdf = new SimpleDateFormat('EEE, MMM d, yyyy')
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern('EEE, MMM d, yyyy')
 		
 		pw.println 'Reporting dates:'
 		int days = 0
 		sedList.each {sed ->
 			days += sed.getDays()
-			pw.println "\tFrom: ${sdf.format(sed.getStartDate())}\tTo: ${sdf.format(sed.getEndDate())}"
+			pw.println "\tFrom: ${sed.getStartDate().format(dtf)}\tTo: ${sed.getEndDate().format(dtf)}"
 		}
 		pw.println "\tNumber of days used to determine monthly averages: $days"
 		pw.println ''

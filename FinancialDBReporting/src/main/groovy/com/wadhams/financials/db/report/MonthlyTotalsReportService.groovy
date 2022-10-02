@@ -1,14 +1,12 @@
 package com.wadhams.financials.db.report
 
 import java.text.NumberFormat
-import java.text.SimpleDateFormat
-import groovy.sql.GroovyRowResult
-import groovy.sql.Sql
 
-import com.wadhams.financials.db.dto.FinancialDTO
 import com.wadhams.financials.db.service.CommonReportingService
 import com.wadhams.financials.db.service.DatabaseQueryService
 import com.wadhams.financials.db.type.MonthDateRange
+
+import groovy.sql.GroovyRowResult
 
 class MonthlyTotalsReportService {
 	DatabaseQueryService databaseQueryService = new DatabaseQueryService()

@@ -3,14 +3,13 @@ package com.wadhams.financials.db.report
 import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
+
 import com.wadhams.financials.db.dto.CampingNonCampingContinuousDTO
 import com.wadhams.financials.db.dto.FinancialDTO
 import com.wadhams.financials.db.dto.TimelineDTO
 import com.wadhams.financials.db.dto.TotalDTO
 import com.wadhams.financials.db.dto.TripDTO
 import com.wadhams.financials.db.helper.ListControlBreak
-import com.wadhams.financials.db.helper.StartEndDate
 import com.wadhams.financials.db.service.CommonReportingService
 import com.wadhams.financials.db.service.DatabaseQueryService
 import com.wadhams.financials.db.service.TimelineXMLService
