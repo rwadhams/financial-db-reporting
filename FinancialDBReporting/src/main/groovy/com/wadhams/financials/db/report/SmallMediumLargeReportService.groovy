@@ -31,6 +31,7 @@ class SmallMediumLargeReportService {
 		List<SmallMediumLargeDTO> smlList = []
 		
 		YearMonth now = YearMonth.now()
+		//TODO hardcoded ???
 		YearMonth ym = YearMonth.of(2019, 7)
 		
 		while (ym.isBefore(now)) {
