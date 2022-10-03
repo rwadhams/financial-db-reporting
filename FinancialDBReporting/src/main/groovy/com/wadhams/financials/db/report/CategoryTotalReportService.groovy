@@ -56,9 +56,9 @@ class CategoryTotalReportService {
 		BigDecimal grandTotal = new BigDecimal(0.0)
 		
 		totalList.each {dto ->
-			grandTotal = grandTotal.add(dto.amount)
+			grandTotal = grandTotal.add(dto.totalAmount)
 			String col1 = dto.totalName.padRight(21, ' ')
-			String col2 = nf.format(dto.amount).padLeft(12, ' ')
+			String col2 = nf.format(dto.totalAmount).padLeft(12, ' ')
 			pw.println "$col1$col2"
 		}
 		pw.println ''

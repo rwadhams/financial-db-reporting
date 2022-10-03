@@ -14,4 +14,6 @@ class TimelineDTO {
 	
 	List<TripDTO> nonCampingTripList = []
 	long nonCampingDays
+
+	Set<LocalDate> nonCampingDateSet = []
 }

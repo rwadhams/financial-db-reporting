@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter
 
 import com.wadhams.financials.db.dto.CampingNonCampingContinuousDTO
 import com.wadhams.financials.db.dto.FinancialDTO
+import com.wadhams.financials.db.dto.CategoryTotalAverageDTO
 import com.wadhams.financials.db.dto.TimelineDTO
 import com.wadhams.financials.db.dto.TotalDTO
 import com.wadhams.financials.db.dto.TripDTO
@@ -47,93 +48,47 @@ class BudgetReportService {
 		pw.println commonReportingService.horizonalRule
 		pw.println ''
 		
-		//REGULAR and OCCASSIONAL
-		String query2
-		List<TotalDTO> totalListBeforeAveraging
-		List<TotalDTO> totalListAveraged
-		
-		//REGULAR
-		Map<String, CampingNonCampingContinuousDTO> regularMap = [:]
-		budgetCategoryMap[BudgetCategory.Regular].each {category ->
-			regularMap[category] = new CampingNonCampingContinuousDTO(categoryName : category)
+		//CAMPING TIMELINE CATEGORIES
+		List<CategoryTotalAverageDTO> campingTimelineList = []
+		//TODO Investigate overlapping buildQuery methods
+		String query5 = buildQuery5WithTransactionDates(budgetCategoryMap[BudgetCategory.CampingTimeline], timelineDTO.campingTripList)
+		List<TotalDTO> totalList5 = databaseQueryService.buildTotalsList(query5)
+		totalList5.each {t ->
+			BigDecimal average = averageBigDecimal(t.totalAmount, timelineDTO.campingDays)
+			campingTimelineList << new CategoryTotalAverageDTO(categoryName : t.totalName, total : t.totalAmount, average : average)
 		}
 		
-		//REGULAR + CAMPING
-		query2 = buildQuery2WithTransactionDates(budgetCategoryMap[BudgetCategory.Regular], timelineDTO.campingTripList)
-		totalListBeforeAveraging = databaseQueryService.buildTotalsList(query2)
-		totalListAveraged = averageTotalsList(totalListBeforeAveraging, timelineDTO.campingDays)
-		totalListAveraged.each {t ->
-			regularMap[t.totalName].campingAmount = t.amount 
-		}
-
-		//REGULAR + NON-CAMPING
-		query2 = buildQuery2WithTransactionDates(budgetCategoryMap[BudgetCategory.Regular], timelineDTO.nonCampingTripList)
-		totalListBeforeAveraging = databaseQueryService.buildTotalsList(query2)
-		totalListAveraged = averageTotalsList(totalListBeforeAveraging, timelineDTO.nonCampingDays)
-		totalListAveraged.each {t ->
-			regularMap[t.totalName].nonCampingAmount = t.amount
-		}
-
-		//REGULAR + CONTINUOUS
-		query2 = buildQuery2WithoutTransactionDates(budgetCategoryMap[BudgetCategory.Regular])
-		totalListBeforeAveraging = databaseQueryService.buildTotalsList(query2)
-		totalListAveraged = averageTotalsList(totalListBeforeAveraging, timelineDTO.totalDays)
-		totalListAveraged.each {t ->
-			regularMap[t.totalName].continuousAmount = t.amount
-		}
-
-		reportRegularOccassional('REGULAR ITEMS', regularMap.values(), pw)
+		reportCategoryTotalAverageList('CAMPING TIMELINE CATEGORIES', campingTimelineList, pw)
 		
 		pw.println ''
 		pw.println commonReportingService.horizonalRule
 		pw.println ''
 		
-		//OCCASSIONAL
-		Map<String, CampingNonCampingContinuousDTO> occassionalMap = [:]
-		budgetCategoryMap[BudgetCategory.Occassional].each {category ->
-			occassionalMap[category] = new CampingNonCampingContinuousDTO(categoryName : category)
+		//CONTINUOUS HISTORY CATEGORIES
+		List<CategoryTotalAverageDTO> continuousHistoryList = []
+		String query6 = buildQuery6WithoutTransactionDates(budgetCategoryMap[BudgetCategory.ContinuousHistory])
+		List<TotalDTO> totalList6 = databaseQueryService.buildTotalsList(query6)
+		totalList6.each {t ->
+			BigDecimal average = averageBigDecimal(t.totalAmount, timelineDTO.totalDays)
+			continuousHistoryList << new CategoryTotalAverageDTO(categoryName : t.totalName, total : t.totalAmount, average : average)
 		}
 		
-		//OCCASSIONAL + CAMPING
-		query2 = buildQuery2WithTransactionDates(budgetCategoryMap[BudgetCategory.Occassional], timelineDTO.campingTripList)
-		totalListBeforeAveraging = databaseQueryService.buildTotalsList(query2)
-		totalListAveraged = averageTotalsList(totalListBeforeAveraging, timelineDTO.campingDays)
-		totalListAveraged.each {t ->
-			occassionalMap[t.totalName].campingAmount = t.amount 
-		}
-
-		//OCCASSIONAL + NON-CAMPING
-		query2 = buildQuery2WithTransactionDates(budgetCategoryMap[BudgetCategory.Occassional], timelineDTO.nonCampingTripList)
-		totalListBeforeAveraging = databaseQueryService.buildTotalsList(query2)
-		totalListAveraged = averageTotalsList(totalListBeforeAveraging, timelineDTO.nonCampingDays)
-		totalListAveraged.each {t ->
-			occassionalMap[t.totalName].nonCampingAmount = t.amount
-		}
-
-		//OCCASSIONAL + CONTINUOUS
-		query2 = buildQuery2WithoutTransactionDates(budgetCategoryMap[BudgetCategory.Occassional])
-		totalListBeforeAveraging = databaseQueryService.buildTotalsList(query2)
-		totalListAveraged = averageTotalsList(totalListBeforeAveraging, timelineDTO.totalDays)
-		totalListAveraged.each {t ->
-			occassionalMap[t.totalName].continuousAmount = t.amount
-		}
-
-		reportRegularOccassional('OCCASSIONAL ITEMS', occassionalMap.values(), pw)
+		reportCategoryTotalAverageList('CONTINUOUS HISTORY CATEGORIES', continuousHistoryList, pw)
 		
 		pw.println ''
 		pw.println commonReportingService.horizonalRule
 		pw.println ''
 		
-		//EQUIPMENT
-		long previousDays = 365L
-		String query3 = buildQuery3(budgetCategoryMap[BudgetCategory.Equipment], previousDays)
+		//RECENT HISTORY
+		long previousDays = 2 * 365L	//2 years
+		String query3 = buildQuery3(budgetCategoryMap[BudgetCategory.RecentHistory], previousDays)
 		//println query3
 		//println ''
 		
-		totalListBeforeAveraging = databaseQueryService.buildTotalsList(query3)
-		totalListAveraged = averageTotalsList(totalListBeforeAveraging, previousDays)
+		List<TotalDTO> totalListBeforeAveraging = databaseQueryService.buildTotalsList(query3)
+		List<TotalDTO> totalListAveraged = averageTotalsList(totalListBeforeAveraging, previousDays)
 		
-		reportEquipment(totalListAveraged, previousDays, pw)
+		reportRecentHistory(totalListAveraged, previousDays, pw)
 		
 		pw.println ''
 		pw.println commonReportingService.horizonalRule
@@ -176,12 +131,11 @@ class BudgetReportService {
 		pw.println ''
 
 		pw.println "CONTINUOUS DAYS: ${timelineDTO.totalDays} days"
-		pw.println ''
 	}
 	
 	
 	def reportFixed(List<FinancialDTO> financialList, PrintWriter pw) {
-		pw.println 'FIXED DURATION ITEMS (MONTHLY AVERAGE)'
+		pw.println 'FIXED DURATION CATEGORIES (MONTHLY AVERAGE)'
 		pw.println '--------------------------------------'
 			
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
@@ -215,49 +169,73 @@ class BudgetReportService {
 		pw.println "Monthly Average..........: ${nf.format(reportTotal)}"
 	}
 	
-	def reportRegularOccassional(String heading, Collection<CampingNonCampingContinuousDTO> list, PrintWriter pw) {
-		int w1 = 18
-		int w2 = 12
-		int w3 = 13
-		int w4 = 12
+//	def reportRegular(String heading, Collection<CampingNonCampingContinuousDTO> list, PrintWriter pw) {
+//		int w1 = 18
+//		int w2 = 12
+//		int w3 = 13
+//		int w4 = 12
+//		
+//		String h1 = heading.padRight(w1, ' ')
+//		String h2 = 'CAMPING'.padLeft(w2, ' ')
+//		String h3 = 'NON-CAMPING'.padLeft(w3, ' ')
+//		String h4 = 'CONTINUOUS'.padLeft(w4, ' ')
+//		String u1 = ''.padRight(w1+w2+w3+w4, '-')
+//		
+//		pw.println "$h1$h2$h3$h4"
+//		pw.println "$u1"
+//		
+//		NumberFormat nf = NumberFormat.getCurrencyInstance()
+//		
+//		BigDecimal campingTotal = new BigDecimal(0.0)
+//		BigDecimal nonCampingTotal = new BigDecimal(0.0)
+//		BigDecimal continuousTotal = new BigDecimal(0.0)
+//		
+//		list.each {dto ->
+//			campingTotal = campingTotal.add(dto.campingAmount)
+//			nonCampingTotal = nonCampingTotal.add(dto.nonCampingAmount)
+//			continuousTotal = continuousTotal.add(dto.continuousAmount)
+//			String col1 = dto.categoryName.padRight(w1, ' ')
+//			String col2 = nf.format(dto.campingAmount).padLeft(w2, ' ')
+//			String col3 = nf.format(dto.nonCampingAmount).padLeft(w3, ' ')
+//			String col4 = nf.format(dto.continuousAmount).padLeft(w4, ' ')
+//			pw.println "$col1$col2$col3$col4"
+//		}
+//		String t1 = 'Monthly Averages:'.padRight(w1, ' ')
+//		String t2 = nf.format(campingTotal).padLeft(w2, ' ')
+//		String t3 = nf.format(nonCampingTotal).padLeft(w3, ' ')
+//		String t4 = nf.format(continuousTotal).padLeft(w4, ' ')
+//
+//		pw.println ''
+//		pw.println "$t1$t2$t3$t4"
+//
+//	}
+	
+	def reportCategoryTotalAverageList(String heading1, Collection<CategoryTotalAverageDTO> list, PrintWriter pw) {
+		pw.println "$heading1"
 		
-		String h1 = heading.padRight(w1, ' ')
-		String h2 = 'CAMPING'.padLeft(w2, ' ')
-		String h3 = 'NON-CAMPING'.padLeft(w3, ' ')
-		String h4 = 'CONTINUOUS'.padLeft(w4, ' ')
-		String u1 = ''.padRight(w1+w2+w3+w4, '-')
-		
-		pw.println "$h1$h2$h3$h4"
+		String u1 = ''.padRight(heading1.size(), '-')
 		pw.println "$u1"
 		
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
 		
-		BigDecimal campingTotal = new BigDecimal(0.0)
-		BigDecimal nonCampingTotal = new BigDecimal(0.0)
-		BigDecimal continuousTotal = new BigDecimal(0.0)
+		BigDecimal total = new BigDecimal(0.0)
 		
 		list.each {dto ->
-			campingTotal = campingTotal.add(dto.campingAmount)
-			nonCampingTotal = nonCampingTotal.add(dto.nonCampingAmount)
-			continuousTotal = continuousTotal.add(dto.continuousAmount)
-			String col1 = dto.categoryName.padRight(w1, ' ')
-			String col2 = nf.format(dto.campingAmount).padLeft(w2, ' ')
-			String col3 = nf.format(dto.nonCampingAmount).padLeft(w3, ' ')
-			String col4 = nf.format(dto.continuousAmount).padLeft(w4, ' ')
-			pw.println "$col1$col2$col3$col4"
+			total = total.add(dto.average)
+			String col1 = dto.categoryName.padRight(18, ' ')
+			String col2 = nf.format(dto.average)
+			pw.println "$col1$col2"
 		}
-		String t1 = 'Monthly Averages:'.padRight(w1, ' ')
-		String t2 = nf.format(campingTotal).padLeft(w2, ' ')
-		String t3 = nf.format(nonCampingTotal).padLeft(w3, ' ')
-		String t4 = nf.format(continuousTotal).padLeft(w4, ' ')
+		
+		String t1 = 'Monthly Averages:'.padRight(18, ' ')
+		String t2 = nf.format(total)
 
 		pw.println ''
-		pw.println "$t1$t2$t3$t4"
-
+		pw.println "$t1$t2"
 	}
 	
-	def reportEquipment(List<TotalDTO> totalList, long previousDays, PrintWriter pw) {
-		String h1 = "EQUIPMENT ITEMS FROM LAST $previousDays DAYS (MONTHLY AVERAGE)"
+	def reportRecentHistory(List<TotalDTO> totalList, long previousDays, PrintWriter pw) {
+		String h1 = "CATEGORIES FROM LAST $previousDays DAYS (MONTHLY AVERAGE)"
 		String u1 = ''.padRight(h1.size(), '-')
 		pw.println h1
 		pw.println u1
@@ -267,9 +245,9 @@ class BudgetReportService {
 		BigDecimal reportTotal = new BigDecimal(0.0)
 		
 		totalList.each {dto ->
-			reportTotal = reportTotal.add(dto.amount)
+			reportTotal = reportTotal.add(dto.totalAmount)
 			String col1 = dto.totalName
-			String col2 = nf.format(dto.amount).padLeft(6, ' ')
+			String col2 = nf.format(dto.totalAmount).padLeft(6, ' ')
 			pw.println "${commonReportingService.buildFixedWidthLabel(col1, 25)} $col2"
 		}
 		pw.println ''
@@ -278,7 +256,7 @@ class BudgetReportService {
 	}
 	
 	def reportOther(List<TotalDTO> totalList, PrintWriter pw) {
-		pw.println 'OTHER ITEMS                 TOTAL'
+		pw.println 'OTHER CATEGORIES            TOTAL'
 		pw.println '---------------------------------'
 		
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
@@ -286,9 +264,9 @@ class BudgetReportService {
 		BigDecimal grandTotal = new BigDecimal(0.0)
 		
 		totalList.each {dto ->
-			grandTotal = grandTotal.add(dto.amount)
+			grandTotal = grandTotal.add(dto.totalAmount)
 			String col1 = dto.totalName.padRight(21, ' ')
-			String col2 = nf.format(dto.amount).padLeft(12, ' ')
+			String col2 = nf.format(dto.totalAmount).padLeft(12, ' ')
 			pw.println "$col1$col2"
 		}
 		pw.println ''
@@ -311,44 +289,44 @@ class BudgetReportService {
 		return sb.toString()
 	}
 
-	String buildQuery2WithTransactionDates(List<String> categoryList, List<TripDTO> tripList) {
-		StringBuilder sb = new StringBuilder()
-		sb.append("SELECT CATEGORY as TOTAL_NAME, SUM(AMOUNT) as AMT ")
-		sb.append("FROM FINANCIAL ")
-		sb.append("WHERE CATEGORY IN (")
-		sb.append(databaseQueryService.buildFormattedList(categoryList))
-		sb.append(") ")
-		sb.append("AND (")
-		sb.append("TRANSACTION_DT BETWEEN '")
-		sb.append(tripList[0].startDate)
-		sb.append("' AND '")
-		sb.append(tripList[0].endDate)
-		sb.append("' ")
-		tripList[1..-1].each {trip ->
-			sb.append("OR TRANSACTION_DT BETWEEN '")
-			sb.append(trip.startDate)
-			sb.append("' AND '")
-			sb.append(trip.endDate)
-			sb.append("' ")
-		}
-		sb.append(") GROUP BY CATEGORY ")
-		sb.append("ORDER BY CATEGORY")
-		
-		return sb.toString()
-	}
+//	String buildQuery2WithTransactionDates(List<String> categoryList, List<TripDTO> tripList) {
+//		StringBuilder sb = new StringBuilder()
+//		sb.append("SELECT CATEGORY as TOTAL_NAME, SUM(AMOUNT) as AMT ")
+//		sb.append("FROM FINANCIAL ")
+//		sb.append("WHERE CATEGORY IN (")
+//		sb.append(databaseQueryService.buildFormattedList(categoryList))
+//		sb.append(") ")
+//		sb.append("AND (")
+//		sb.append("TRANSACTION_DT BETWEEN '")
+//		sb.append(tripList[0].startDate)
+//		sb.append("' AND '")
+//		sb.append(tripList[0].endDate)
+//		sb.append("' ")
+//		tripList[1..-1].each {trip ->
+//			sb.append("OR TRANSACTION_DT BETWEEN '")
+//			sb.append(trip.startDate)
+//			sb.append("' AND '")
+//			sb.append(trip.endDate)
+//			sb.append("' ")
+//		}
+//		sb.append(") GROUP BY CATEGORY ")
+//		sb.append("ORDER BY CATEGORY")
+//		
+//		return sb.toString()
+//	}
 
-	String buildQuery2WithoutTransactionDates(List<String> categoryList) {
-		StringBuilder sb = new StringBuilder()
-		sb.append("SELECT CATEGORY as TOTAL_NAME, SUM(AMOUNT) as AMT ")
-		sb.append("FROM FINANCIAL ")
-		sb.append("WHERE CATEGORY IN (")
-		sb.append(databaseQueryService.buildFormattedList(categoryList))
-		sb.append(") ")
-		sb.append("GROUP BY CATEGORY ")
-		sb.append("ORDER BY CATEGORY")
-		
-		return sb.toString()
-	}
+//	String buildQuery2WithoutTransactionDates(List<String> categoryList) {
+//		StringBuilder sb = new StringBuilder()
+//		sb.append("SELECT CATEGORY as TOTAL_NAME, SUM(AMOUNT) as AMT ")
+//		sb.append("FROM FINANCIAL ")
+//		sb.append("WHERE CATEGORY IN (")
+//		sb.append(databaseQueryService.buildFormattedList(categoryList))
+//		sb.append(") ")
+//		sb.append("GROUP BY CATEGORY ")
+//		sb.append("ORDER BY CATEGORY")
+//		
+//		return sb.toString()
+//	}
 
 	String buildQuery3(List<String> categoryList, long previousDays) {
 		DateTimeFormatter h2dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -385,6 +363,46 @@ class BudgetReportService {
 		return sb.toString()
 	}
 
+	String buildQuery5WithTransactionDates(List<String> categoryList, List<TripDTO> tripList) {
+		StringBuilder sb = new StringBuilder()
+		
+		sb.append("SELECT CATEGORY as TOTAL_NAME, SUM(AMOUNT) as AMT ")
+		sb.append("FROM FINANCIAL ")
+		sb.append("WHERE CATEGORY IN (")
+		sb.append(databaseQueryService.buildFormattedList(categoryList))
+		sb.append(") ")
+		sb.append("AND (")
+		sb.append("TRANSACTION_DT BETWEEN '")
+		sb.append(tripList[0].startDate)
+		sb.append("' AND '")
+		sb.append(tripList[0].endDate)
+		sb.append("' ")
+		tripList[1..-1].each {trip ->
+			sb.append("OR TRANSACTION_DT BETWEEN '")
+			sb.append(trip.startDate)
+			sb.append("' AND '")
+			sb.append(trip.endDate)
+			sb.append("' ")
+		}
+		sb.append(") GROUP BY CATEGORY ")
+		sb.append("ORDER BY CATEGORY")
+		
+		return sb.toString()
+	}
+
+	String buildQuery6WithoutTransactionDates(List<String> categoryList) {
+		StringBuilder sb = new StringBuilder()
+		sb.append("SELECT CATEGORY as TOTAL_NAME, SUM(AMOUNT) as AMT ")
+		sb.append("FROM FINANCIAL ")
+		sb.append("WHERE CATEGORY IN (")
+		sb.append(databaseQueryService.buildFormattedList(categoryList))
+		sb.append(") ")
+		sb.append("GROUP BY CATEGORY ")
+		sb.append("ORDER BY CATEGORY")
+		
+		return sb.toString()
+	}
+
 	List<TotalDTO> averageTotalsList(List<TotalDTO> tl, long days) {
 		List<TotalDTO> totalList = []
 		
@@ -393,15 +411,24 @@ class BudgetReportService {
 		BigDecimal numberOfDays = new BigDecimal(days)
 		
 		tl.each {t ->
-			BigDecimal categoryAverage = t.amount.multiply(daysPerYear).divide(monthsPerYear, 2).divide(numberOfDays, 2)
+			BigDecimal categoryAverage = t.totalAmount.multiply(daysPerYear).divide(monthsPerYear, 2).divide(numberOfDays, 2)
 			
 			TotalDTO dto = new TotalDTO()
 			dto.totalName = t.totalName
-			dto.amount = categoryAverage
+			dto.totalAmount = categoryAverage
 			totalList << dto
 		}
 		
 		return totalList
+	}
+	
+	BigDecimal averageBigDecimal(BigDecimal bd, long days) {
+		//TODO
+		BigDecimal monthsPerYear = new BigDecimal('12')
+		BigDecimal daysPerYear = new BigDecimal('365')
+		BigDecimal numberOfDays = new BigDecimal(days)
+		
+		return bd.multiply(daysPerYear).divide(monthsPerYear, 2).divide(numberOfDays, 2)
 	}
 	
 	Map<BudgetCategory, List<String>> buildBudgetCategoryMap() {
@@ -415,6 +442,7 @@ class BudgetReportService {
 			'CAR_REGISTRATION',
 			'CAR_SERVICING',
 			'CAR_TYRES',
+			'CARAVAN_TYRES',
 			'DATA_PLAN',
 			'DRIVERS_LICENSE_MOLLY',
 			'DRIVERS_LICENSE_ROB',
@@ -424,24 +452,24 @@ class BudgetReportService {
 			'TRANSMISSION_SERVICING'
 			]
 		
-		List<String> regular = [
-			'ALCOHOL',
+		List<String> campingTimeline = [
 			'CAMPING_FEES',
-			'CAMPING_SUPPLIES',
-			'CARAVAN_SUPPLIES',
-			'CAR_SUPPLIES',
-			'CLOTHING',
-			'CLOUD_STORAGE',
 			'DRINKS',
-			'ENTERTAINMENT',
-			'FOOD',
-			'FUEL',
-			'LAUNDRY',
-			'PREPARED_FOOD'
+			'FUEL'
 			]
 			
-		List<String> occassional = [
+		List<String> continuousHistory = [
+			'ALCOHOL',
+			'FOOD'
+			]
+			
+		List<String> recentHistory = [
 			'CARAVAN_REPAIR',
+			'TRAVEL_PUBLICATION',
+			'CAMPING_EQUIPMENT',
+			'CARAVAN_EQUIPMENT',
+			'CAMPING_SUPPLIES',
+			'CARAVAN_SUPPLIES',
 			'CAR_REPAIR',
 			'FERRY',
 			'FISHING',
@@ -455,17 +483,23 @@ class BudgetReportService {
 			'SAFETY',
 			'TOLLS',
 			'TRANSIT',
-			'TRAVEL_PUBLICATION'
-			]
-			
-		List<String> equipment = [
-			'CAMPING_EQUIPMENT',
-			'CARAVAN_EQUIPMENT',
+			'CAR_SUPPLIES',
+			'LAUNDRY',
+			'PREPARED_FOOD',
+			'ENTERTAINMENT',
+			'CLOTHING',
+			'CLOUD_STORAGE',
 			'CAR_EQUIPMENT',
 			'TECHNOLOGY',
 			'TOOLS'
 			]
 			
+		List<String> unbudgeted = [
+			'BASS_STRAIT_FERRY',
+			'ELECTRONICS',
+			'OVERSEAS_TRAVEL'
+			]
+
 		List<String> other = [
 			'ACCOMODATION',
 			'ACCOUNTING_FEES',
@@ -482,7 +516,6 @@ class BudgetReportService {
 			'HOUSE_SALE',
 			'HOUSE_SUPPLIES',
 			'MISC',
-			'OVERSEAS_TRAVEL',
 			'PHONE_AND_DATA_PLAN',
 			'PURCHASE_DEPOSIT',
 			'PURCHASE_PAYMENT',
@@ -498,17 +531,19 @@ class BudgetReportService {
 			List<String> categoryList = databaseQueryService.buildAllCategoryList()
 			List<String> budgetList = []
 			budgetList.addAll(fixed)
-			budgetList.addAll(regular)
-			budgetList.addAll(occassional)
-			budgetList.addAll(equipment)
+			budgetList.addAll(continuousHistory)
+			budgetList.addAll(campingTimeline)
+			budgetList.addAll(recentHistory)
+			budgetList.addAll(unbudgeted)
 			budgetList.addAll(other)
 			Collections.sort(budgetList)
 			assert budgetList == categoryList
 
 			budgetCategoryMap[BudgetCategory.Fixed] = fixed
-			budgetCategoryMap[BudgetCategory.Regular] = regular
-			budgetCategoryMap[BudgetCategory.Occassional] = occassional
-			budgetCategoryMap[BudgetCategory.Equipment] = equipment
+			budgetCategoryMap[BudgetCategory.ContinuousHistory] = continuousHistory
+			budgetCategoryMap[BudgetCategory.CampingTimeline] = campingTimeline
+			budgetCategoryMap[BudgetCategory.RecentHistory] = recentHistory
+			budgetCategoryMap[BudgetCategory.Unbudgeted] = unbudgeted
 			budgetCategoryMap[BudgetCategory.Other] = other
 			
 		return budgetCategoryMap

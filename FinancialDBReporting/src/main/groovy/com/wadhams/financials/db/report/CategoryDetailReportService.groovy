@@ -4,8 +4,10 @@ import java.text.NumberFormat
 import java.time.format.DateTimeFormatter
 
 import com.wadhams.financials.db.dto.FinancialDTO
+import com.wadhams.financials.db.dto.TimelineDTO
 import com.wadhams.financials.db.service.CommonReportingService
 import com.wadhams.financials.db.service.DatabaseQueryService
+import com.wadhams.financials.db.service.TimelineXMLService
 
 class CategoryDetailReportService {
 	DatabaseQueryService databaseQueryService = new DatabaseQueryService()
@@ -18,6 +20,10 @@ class CategoryDetailReportService {
 			pw.println 'CATEGORY DETAIL REPORT'
 			pw.println '----------------------'
 	
+			TimelineXMLService timelineXMLService = new TimelineXMLService()
+			TimelineDTO timelineDTO = timelineXMLService.loadTimelineData()
+			//println timelineDTO
+		
 			//TODO: refactor to common Category enum
 			List<String> catList = databaseQueryService.buildAllCategoryList()
 			catList.each {cat ->
@@ -27,12 +33,12 @@ class CategoryDetailReportService {
 		
 				List<FinancialDTO> financialList = databaseQueryService.buildList(query)
 				
-				report(financialList, cat, pw)
+				report(financialList, cat, timelineDTO, pw)
 			}
 		}
 	}
 	
-	def report(List<FinancialDTO> financialList, String category, PrintWriter pw) {
+	def report(List<FinancialDTO> financialList, String category, TimelineDTO timelineDTO, PrintWriter pw) {
 		pw.println category
 		
 		int maxPayeeSize = commonReportingService.maxPayeeSize(financialList)
@@ -69,8 +75,10 @@ class CategoryDetailReportService {
 				rg1Found = true
 				s7 = dto.rg1
 			}
+
+			String s8 = (timelineDTO.nonCampingDateSet.contains(dto.transactionDt)) ? '[NC]' : '[C] '
 			
-			pw.println "\t${dto.transactionDt.format(dtf)}  $s1  $s2  ${(rg1Found)?s7:''}  ${(startDtFound)?("[$s5 - $s6]"):''}  ${(assetFound)?("Asset: $s4"):''}  $s3"
+			pw.println "\t$s8 ${dto.transactionDt.format(dtf)}  $s1  $s2  ${(rg1Found)?s7:''}  ${(startDtFound)?("[$s5 - $s6]"):''}  ${(assetFound)?("Asset: $s4"):''}  $s3"
 		}
 		
 		pw.println "\tTotal: ${nf.format(total)}"

@@ -6,6 +6,6 @@ class TotalDTOAmtComparator implements Comparator<TotalDTO> {
 
 	@Override
 	public int compare(TotalDTO dto1, TotalDTO dto2) {
-		return dto1.getAmount().compareTo(dto2.getAmount()) * -1	//descending
+		return dto1.getTotalAmount().compareTo(dto2.getTotalAmount()) * -1	//descending
 	}
 }

@@ -125,10 +125,10 @@ class DatabaseQueryService {
 		
 		sql.eachRow(query) {row ->
 			String totalName = row.TOTAL_NAME
-			BigDecimal amount = row.AMT
+			BigDecimal totalAmount = row.AMT
 			TotalDTO dto = new TotalDTO()
 			dto.totalName = totalName
-			dto.amount = amount
+			dto.totalAmount = totalAmount
 			totalList << dto
 		}
 		
@@ -139,6 +139,7 @@ class DatabaseQueryService {
 		return sql.firstRow(query)
 	}
 	
+	//TODO Test required. Will not work with a list of 0 or 1
 	String buildFormattedList(List<String> list) {
 		StringBuilder sb = new StringBuilder()
 		

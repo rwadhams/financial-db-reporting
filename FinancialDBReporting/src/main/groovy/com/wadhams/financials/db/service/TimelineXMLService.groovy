@@ -32,7 +32,7 @@ class TimelineXMLService {
 		timelineDTO.totalDays = timelineDTO.startTimelineDate.until(timelineDTO.endTimelineDate, ChronoUnit.DAYS) + 1
 
 		//CAMPING TRIPS
-		def trips = timeline.data
+		def trips = timeline.trip
 		List<TripDTO> campingTripList = []
 		trips.each {txn ->
 			//println txn
@@ -83,6 +83,17 @@ class TimelineXMLService {
 			nonCampingDays += trip.tripDays
 		}
 		timelineDTO.nonCampingDays = nonCampingDays
+		
+		//nonCampingDateSet
+		nonCampingTripList.each {trip ->
+			LocalDate ld = trip.startDate
+			while (ld.isBefore(trip.endDate)) {
+				timelineDTO.nonCampingDateSet << ld
+				ld = ld.next()
+			}
+			timelineDTO.nonCampingDateSet << trip.endDate
+		}
+		//println "nonCampingDateSet.size(): ${timelineDTO.nonCampingDateSet.size()}"
 		
 		return timelineDTO
 	}

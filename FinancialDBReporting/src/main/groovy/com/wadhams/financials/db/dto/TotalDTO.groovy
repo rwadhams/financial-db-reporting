@@ -5,5 +5,5 @@ import groovy.transform.ToString
 @ToString(includeNames=true)
 class TotalDTO {
 	String totalName
-	BigDecimal amount
+	BigDecimal totalAmount
 }

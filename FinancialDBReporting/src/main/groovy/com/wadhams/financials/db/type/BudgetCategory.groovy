@@ -1,10 +1,11 @@
 package com.wadhams.financials.db.type
 
 enum BudgetCategory {
-	Equipment,
 	Fixed,
-	Occassional,
+	CampingTimeline,
+	ContinuousHistory,
+	RecentHistory,
+	Unbudgeted,
 	Other,
-	Regular,
 	Unknown;
 }

@@ -76,12 +76,12 @@ class MonthlyAverageCampingCostReportService {
 		BigDecimal reportTotal = BigDecimal.ZERO
 			
 		totalList.each {dto ->
-			reportTotal = reportTotal.add(dto.amount)
+			reportTotal = reportTotal.add(dto.totalAmount)
 			
 			String col1 = dto.totalName.padRight(20, ' ')
-			String col2 = nf.format(dto.amount).padLeft(12, ' ')
+			String col2 = nf.format(dto.totalAmount).padLeft(12, ' ')
 			//pw.println "$col1$col2"
-			pw.println "${commonReportingService.buildFixedWidthLabel(dto.totalName, 25)} ${nf.format(dto.amount).padLeft(7, ' ')}"
+			pw.println "${commonReportingService.buildFixedWidthLabel(dto.totalName, 25)} ${nf.format(dto.totalAmount).padLeft(7, ' ')}"
 		}
 		
 		pw.println ''
@@ -166,11 +166,11 @@ class MonthlyAverageCampingCostReportService {
 		BigDecimal categoryDays = new BigDecimal(sedListDays)
 		
 		tl.each {t ->
-			BigDecimal categoryAverage = t.amount.multiply(daysPerYear).divide(monthsPerYear, 2).divide(categoryDays, 2)
+			BigDecimal categoryAverage = t.totalAmount.multiply(daysPerYear).divide(monthsPerYear, 2).divide(categoryDays, 2)
 			
 			TotalDTO dto = new TotalDTO()
 			dto.totalName = t.totalName
-			dto.amount = categoryAverage
+			dto.totalAmount = categoryAverage
 			totalList << dto
 		}
 		
@@ -202,7 +202,7 @@ class MonthlyAverageCampingCostReportService {
 			
 			TotalDTO dto = new TotalDTO()
 			dto.totalName = savedCategory
-			dto.amount = categoryAverage
+			dto.totalAmount = categoryAverage
 			totalList << dto
 		}
 
