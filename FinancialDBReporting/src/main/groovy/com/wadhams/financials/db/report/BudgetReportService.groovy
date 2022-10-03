@@ -94,6 +94,20 @@ class BudgetReportService {
 		pw.println commonReportingService.horizonalRule
 		pw.println ''
 		
+		//UNBUDGETED
+		//TODO
+		String query7 = buildQuery7(budgetCategoryMap[BudgetCategory.Unbudgeted])
+		//println query7
+		//println ''
+		
+		List<TotalDTO> totalList7 = databaseQueryService.buildTotalsList(query7)
+		
+		reportUnbudgeted(totalList7, pw)
+		
+		pw.println ''
+		pw.println commonReportingService.horizonalRule
+		pw.println ''
+		
 		//OTHER
 		String query4 = buildQuery4(budgetCategoryMap[BudgetCategory.Other])
 		//println query4
@@ -136,7 +150,7 @@ class BudgetReportService {
 	
 	def reportFixed(List<FinancialDTO> financialList, PrintWriter pw) {
 		pw.println 'FIXED DURATION CATEGORIES (MONTHLY AVERAGE)'
-		pw.println '--------------------------------------'
+		pw.println '-------------------------------------------'
 			
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
 
@@ -162,59 +176,19 @@ class BudgetReportService {
 			}
 			//println "$categoryTotal\t$categoryDays"
 			BigDecimal categoryAverage = categoryTotal.multiply(daysPerYear).divide(monthsPerYear, 2).divide(categoryDays, 2)
-			pw.println "${commonReportingService.buildFixedWidthLabel(savedCategory, 25)} ${nf.format(categoryAverage)}"
+			pw.println "${commonReportingService.buildFixedWidthLabel(savedCategory, 25)}${nf.format(categoryAverage).padLeft(11, ' ')}"
 			reportTotal = reportTotal.add(categoryAverage)
 		}
 		pw.println ''
-		pw.println "Monthly Average..........: ${nf.format(reportTotal)}"
+		pw.println "${commonReportingService.buildFixedWidthLabel('Monthly Average', 25)}${nf.format(reportTotal).padLeft(11, ' ')}"
 	}
 	
-//	def reportRegular(String heading, Collection<CampingNonCampingContinuousDTO> list, PrintWriter pw) {
-//		int w1 = 18
-//		int w2 = 12
-//		int w3 = 13
-//		int w4 = 12
-//		
-//		String h1 = heading.padRight(w1, ' ')
-//		String h2 = 'CAMPING'.padLeft(w2, ' ')
-//		String h3 = 'NON-CAMPING'.padLeft(w3, ' ')
-//		String h4 = 'CONTINUOUS'.padLeft(w4, ' ')
-//		String u1 = ''.padRight(w1+w2+w3+w4, '-')
-//		
-//		pw.println "$h1$h2$h3$h4"
-//		pw.println "$u1"
-//		
-//		NumberFormat nf = NumberFormat.getCurrencyInstance()
-//		
-//		BigDecimal campingTotal = new BigDecimal(0.0)
-//		BigDecimal nonCampingTotal = new BigDecimal(0.0)
-//		BigDecimal continuousTotal = new BigDecimal(0.0)
-//		
-//		list.each {dto ->
-//			campingTotal = campingTotal.add(dto.campingAmount)
-//			nonCampingTotal = nonCampingTotal.add(dto.nonCampingAmount)
-//			continuousTotal = continuousTotal.add(dto.continuousAmount)
-//			String col1 = dto.categoryName.padRight(w1, ' ')
-//			String col2 = nf.format(dto.campingAmount).padLeft(w2, ' ')
-//			String col3 = nf.format(dto.nonCampingAmount).padLeft(w3, ' ')
-//			String col4 = nf.format(dto.continuousAmount).padLeft(w4, ' ')
-//			pw.println "$col1$col2$col3$col4"
-//		}
-//		String t1 = 'Monthly Averages:'.padRight(w1, ' ')
-//		String t2 = nf.format(campingTotal).padLeft(w2, ' ')
-//		String t3 = nf.format(nonCampingTotal).padLeft(w3, ' ')
-//		String t4 = nf.format(continuousTotal).padLeft(w4, ' ')
-//
-//		pw.println ''
-//		pw.println "$t1$t2$t3$t4"
-//
-//	}
-	
-	def reportCategoryTotalAverageList(String heading1, Collection<CategoryTotalAverageDTO> list, PrintWriter pw) {
-		pw.println "$heading1"
+	def reportCategoryTotalAverageList(String heading, Collection<CategoryTotalAverageDTO> list, PrintWriter pw) {
+		String h1 = "$heading (MONTHLY AVERAGE)"
+		pw.println h1
 		
-		String u1 = ''.padRight(heading1.size(), '-')
-		pw.println "$u1"
+		String u1 = ''.padRight(h1.size(), '-')
+		pw.println u1
 		
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
 		
@@ -222,22 +196,18 @@ class BudgetReportService {
 		
 		list.each {dto ->
 			total = total.add(dto.average)
-			String col1 = dto.categoryName.padRight(18, ' ')
-			String col2 = nf.format(dto.average)
-			pw.println "$col1$col2"
+			pw.println "${commonReportingService.buildFixedWidthLabel(dto.categoryName, 25)}${nf.format(dto.average).padLeft(11, ' ')}"
 		}
 		
-		String t1 = 'Monthly Averages:'.padRight(18, ' ')
-		String t2 = nf.format(total)
-
 		pw.println ''
-		pw.println "$t1$t2"
+		pw.println "${commonReportingService.buildFixedWidthLabel('Monthly Average', 25)}${nf.format(total).padLeft(11, ' ')}"
 	}
 	
 	def reportRecentHistory(List<TotalDTO> totalList, long previousDays, PrintWriter pw) {
 		String h1 = "CATEGORIES FROM LAST $previousDays DAYS (MONTHLY AVERAGE)"
-		String u1 = ''.padRight(h1.size(), '-')
 		pw.println h1
+		
+		String u1 = ''.padRight(h1.size(), '-')
 		pw.println u1
 		
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
@@ -246,18 +216,15 @@ class BudgetReportService {
 		
 		totalList.each {dto ->
 			reportTotal = reportTotal.add(dto.totalAmount)
-			String col1 = dto.totalName
-			String col2 = nf.format(dto.totalAmount).padLeft(6, ' ')
-			pw.println "${commonReportingService.buildFixedWidthLabel(col1, 25)} $col2"
+			pw.println "${commonReportingService.buildFixedWidthLabel(dto.totalName, 25)}${nf.format(dto.totalAmount).padLeft(11, ' ')}"
 		}
 		pw.println ''
-		pw.println "Monthly Average..........: ${nf.format(reportTotal)}"
-
+		pw.println "${commonReportingService.buildFixedWidthLabel('Monthly Average', 25)}${nf.format(reportTotal).padLeft(11, ' ')}"
 	}
 	
-	def reportOther(List<TotalDTO> totalList, PrintWriter pw) {
-		pw.println 'OTHER CATEGORIES            TOTAL'
-		pw.println '---------------------------------'
+	def reportUnbudgeted(List<TotalDTO> totalList, PrintWriter pw) {
+		pw.println 'UNBUDGETED CATEGORIES            TOTAL'
+		pw.println '--------------------------------------'
 		
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
 		
@@ -265,13 +232,26 @@ class BudgetReportService {
 		
 		totalList.each {dto ->
 			grandTotal = grandTotal.add(dto.totalAmount)
-			String col1 = dto.totalName.padRight(21, ' ')
-			String col2 = nf.format(dto.totalAmount).padLeft(12, ' ')
-			pw.println "$col1$col2"
+			pw.println "${commonReportingService.buildFixedWidthLabel(dto.totalName, 25)}${nf.format(dto.totalAmount).padLeft(11, ' ')}"
 		}
 		pw.println ''
-		pw.println "Grand Total.........: ${nf.format(grandTotal)}"
-
+		pw.println "${commonReportingService.buildFixedWidthLabel('Grand Total', 25)}${nf.format(grandTotal).padLeft(11, ' ')}"
+	}
+	
+	def reportOther(List<TotalDTO> totalList, PrintWriter pw) {
+		pw.println 'OTHER CATEGORIES                 TOTAL'
+		pw.println '--------------------------------------'
+		
+		NumberFormat nf = NumberFormat.getCurrencyInstance()
+		
+		BigDecimal grandTotal = new BigDecimal(0.0)
+		
+		totalList.each {dto ->
+			grandTotal = grandTotal.add(dto.totalAmount)
+			pw.println "${commonReportingService.buildFixedWidthLabel(dto.totalName, 25)}${nf.format(dto.totalAmount).padLeft(11, ' ')}"
+		}
+		pw.println ''
+		pw.println "${commonReportingService.buildFixedWidthLabel('Grand Total', 25)}${nf.format(grandTotal).padLeft(11, ' ')}"
 	}
 	
 	String buildQuery1(List<String> categoryList) {
@@ -350,6 +330,20 @@ class BudgetReportService {
 	}
 
 	String buildQuery4(List<String> categoryList) {
+		StringBuilder sb = new StringBuilder()
+		
+		sb.append("SELECT CATEGORY as TOTAL_NAME, SUM(AMOUNT) as AMT ")
+		sb.append("FROM FINANCIAL ")
+		sb.append("WHERE CATEGORY IN (")
+		sb.append(databaseQueryService.buildFormattedList(categoryList))
+		sb.append(") ")
+		sb.append("GROUP BY CATEGORY ")
+		sb.append("ORDER BY CATEGORY")
+		
+		return sb.toString()
+	}
+
+	String buildQuery7(List<String> categoryList) {
 		StringBuilder sb = new StringBuilder()
 		
 		sb.append("SELECT CATEGORY as TOTAL_NAME, SUM(AMOUNT) as AMT ")
