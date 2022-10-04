@@ -15,13 +15,18 @@ import com.wadhams.financials.db.service.CommonReportingService
 import com.wadhams.financials.db.service.DatabaseQueryService
 import com.wadhams.financials.db.service.TimelineXMLService
 import com.wadhams.financials.db.type.BudgetCategory
+import com.wadhams.financials.db.type.ReportingAmount
 
 class BudgetReportService {
 	DatabaseQueryService databaseQueryService = new DatabaseQueryService()
 	CommonReportingService commonReportingService = new CommonReportingService()
 	
 	DateTimeFormatter reportingdtf = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+	NumberFormat cf = NumberFormat.getCurrencyInstance()
 	
+	BigDecimal monthsPerYear = new BigDecimal('12')
+	BigDecimal daysPerYear = new BigDecimal('365')
+
 	def execute(PrintWriter pw) {
 		Map<BudgetCategory, List<String>> budgetCategoryMap = buildBudgetCategoryMap()
 		assert budgetCategoryMap.size() > 0
@@ -36,44 +41,43 @@ class BudgetReportService {
 		pw.println commonReportingService.horizonalRule
 		pw.println ''
 
+		//Reused data structures
+		String query
+		List<FinancialDTO> financialDTOList
+		List<CategoryTotalAverageDTO> ctaDTOList
+		
 		//FIXED
-		String query1 = buildQuery1(budgetCategoryMap[BudgetCategory.Fixed])
-		//println query1
-		//println ''
-
-		List<FinancialDTO> financialList1 = databaseQueryService.buildList(query1)
-		reportFixed(financialList1, pw)
+		query = buildQuerySpecificOngoing(budgetCategoryMap[BudgetCategory.Fixed])
+		financialDTOList = databaseQueryService.buildList(query)
+		reportFixed('FIXED DURATION CATEGORIES (MONTHLY AVERAGE)', financialDTOList, pw)
 		
 		pw.println ''
 		pw.println commonReportingService.horizonalRule
 		pw.println ''
 		
 		//CAMPING TIMELINE CATEGORIES
-		List<CategoryTotalAverageDTO> campingTimelineList = []
-		//TODO Investigate overlapping buildQuery methods
-		String query5 = buildQuery5WithTransactionDates(budgetCategoryMap[BudgetCategory.CampingTimeline], timelineDTO.campingTripList)
-		List<TotalDTO> totalList5 = databaseQueryService.buildTotalsList(query5)
-		totalList5.each {t ->
-			BigDecimal average = averageBigDecimal(t.totalAmount, timelineDTO.campingDays)
-			campingTimelineList << new CategoryTotalAverageDTO(categoryName : t.totalName, total : t.totalAmount, average : average)
+		ctaDTOList = []
+		query = buildQueryWithTransactionDates(budgetCategoryMap[BudgetCategory.CampingTimeline], timelineDTO.campingTripList)
+		ctaDTOList = databaseQueryService.buildCategoryTotalAverageDTOList(query)
+		//average each total
+		ctaDTOList.each {cta ->
+			cta.average = averageBigDecimal(cta.total, timelineDTO.campingDays)
 		}
-		
-		reportCategoryTotalAverageList('CAMPING TIMELINE CATEGORIES', campingTimelineList, pw)
+		reportCategoryTotalAverageList('CAMPING TIMELINE CATEGORIES (MONTHLY AVERAGE)', ctaDTOList, ReportingAmount.Average, pw)
 		
 		pw.println ''
 		pw.println commonReportingService.horizonalRule
 		pw.println ''
 		
 		//CONTINUOUS HISTORY CATEGORIES
-		List<CategoryTotalAverageDTO> continuousHistoryList = []
-		String query6 = buildQuery6WithoutTransactionDates(budgetCategoryMap[BudgetCategory.ContinuousHistory])
-		List<TotalDTO> totalList6 = databaseQueryService.buildTotalsList(query6)
-		totalList6.each {t ->
-			BigDecimal average = averageBigDecimal(t.totalAmount, timelineDTO.totalDays)
-			continuousHistoryList << new CategoryTotalAverageDTO(categoryName : t.totalName, total : t.totalAmount, average : average)
+		ctaDTOList = []
+		query = buildQueryWithGreaterTransactionDate(budgetCategoryMap[BudgetCategory.ContinuousHistory], timelineDTO.startTimelineDate)
+		ctaDTOList = databaseQueryService.buildCategoryTotalAverageDTOList(query)
+		//average each total
+		ctaDTOList.each {cta ->
+			cta.average = averageBigDecimal(cta.total, timelineDTO.totalDays)
 		}
-		
-		reportCategoryTotalAverageList('CONTINUOUS HISTORY CATEGORIES', continuousHistoryList, pw)
+		reportCategoryTotalAverageList('CONTINUOUS HISTORY CATEGORIES (MONTHLY AVERAGE)', ctaDTOList, ReportingAmount.Average, pw)
 		
 		pw.println ''
 		pw.println commonReportingService.horizonalRule
@@ -81,41 +85,34 @@ class BudgetReportService {
 		
 		//RECENT HISTORY
 		long previousDays = 2 * 365L	//2 years
-		String query3 = buildQuery3(budgetCategoryMap[BudgetCategory.RecentHistory], previousDays)
-		//println query3
-		//println ''
-		
-		List<TotalDTO> totalListBeforeAveraging = databaseQueryService.buildTotalsList(query3)
-		List<TotalDTO> totalListAveraged = averageTotalsList(totalListBeforeAveraging, previousDays)
-		
-		reportRecentHistory(totalListAveraged, previousDays, pw)
-		
+		LocalDate now = LocalDate.now()
+		LocalDate startDate = now.minusDays(previousDays)
+		query = buildQueryWithGreaterTransactionDate(budgetCategoryMap[BudgetCategory.RecentHistory], startDate)
+		ctaDTOList = databaseQueryService.buildCategoryTotalAverageDTOList(query)
+		//average each total
+		ctaDTOList.each {cta ->
+			cta.average = averageBigDecimal(cta.total, previousDays)
+		}
+		String heading = "CATEGORIES FROM LAST $previousDays DAYS (MONTHLY AVERAGE)"
+		reportCategoryTotalAverageList(heading, ctaDTOList, ReportingAmount.Average, pw)
+
 		pw.println ''
 		pw.println commonReportingService.horizonalRule
 		pw.println ''
 		
 		//UNBUDGETED
-		//TODO
-		String query7 = buildQuery7(budgetCategoryMap[BudgetCategory.Unbudgeted])
-		//println query7
-		//println ''
-		
-		List<TotalDTO> totalList7 = databaseQueryService.buildTotalsList(query7)
-		
-		reportUnbudgeted(totalList7, pw)
+		query = buildQueryCategoryTotal(budgetCategoryMap[BudgetCategory.Unbudgeted])
+		ctaDTOList = databaseQueryService.buildCategoryTotalAverageDTOList(query)
+		reportCategoryTotalAverageList('UNBUDGETED CATEGORIES            TOTAL', ctaDTOList, ReportingAmount.Total, pw)
 		
 		pw.println ''
 		pw.println commonReportingService.horizonalRule
 		pw.println ''
 		
 		//OTHER
-		String query4 = buildQuery4(budgetCategoryMap[BudgetCategory.Other])
-		//println query4
-		//println ''
-		
-		List<TotalDTO> totalList = databaseQueryService.buildTotalsList(query4)
-		
-		reportOther(totalList, pw)
+		query = buildQueryCategoryTotal(budgetCategoryMap[BudgetCategory.Other])
+		ctaDTOList = databaseQueryService.buildCategoryTotalAverageDTOList(query)
+		reportCategoryTotalAverageList('OTHER CATEGORIES                 TOTAL', ctaDTOList, ReportingAmount.Total, pw)
 	}
 	
 	
@@ -148,12 +145,11 @@ class BudgetReportService {
 	}
 	
 	
-	def reportFixed(List<FinancialDTO> financialList, PrintWriter pw) {
-		pw.println 'FIXED DURATION CATEGORIES (MONTHLY AVERAGE)'
-		pw.println '-------------------------------------------'
+	def reportFixed(String heading, List<FinancialDTO> financialList, PrintWriter pw) {
+		pw.println heading
+		String u1 = ''.padRight(heading.size(), '-')
+		pw.println u1
 			
-		NumberFormat nf = NumberFormat.getCurrencyInstance()
-
 		BigDecimal monthsPerYear = new BigDecimal('12')
 		BigDecimal daysPerYear = new BigDecimal('365')
 		
@@ -176,85 +172,43 @@ class BudgetReportService {
 			}
 			//println "$categoryTotal\t$categoryDays"
 			BigDecimal categoryAverage = categoryTotal.multiply(daysPerYear).divide(monthsPerYear, 2).divide(categoryDays, 2)
-			pw.println "${commonReportingService.buildFixedWidthLabel(savedCategory, 25)}${nf.format(categoryAverage).padLeft(11, ' ')}"
+			pw.println "${commonReportingService.buildFixedWidthLabel(savedCategory, 25)}${cf.format(categoryAverage).padLeft(11, ' ')}"
 			reportTotal = reportTotal.add(categoryAverage)
 		}
 		pw.println ''
-		pw.println "${commonReportingService.buildFixedWidthLabel('Monthly Average', 25)}${nf.format(reportTotal).padLeft(11, ' ')}"
+		pw.println "${commonReportingService.buildFixedWidthLabel('Monthly Average', 25)}${cf.format(reportTotal).padLeft(11, ' ')}"
 	}
 	
-	def reportCategoryTotalAverageList(String heading, Collection<CategoryTotalAverageDTO> list, PrintWriter pw) {
-		String h1 = "$heading (MONTHLY AVERAGE)"
-		pw.println h1
-		
-		String u1 = ''.padRight(h1.size(), '-')
+	def reportCategoryTotalAverageList(String heading, List<CategoryTotalAverageDTO> list, ReportingAmount ra, PrintWriter pw) {
+		pw.println heading
+		String u1 = ''.padRight(heading.size(), '-')
 		pw.println u1
-		
-		NumberFormat nf = NumberFormat.getCurrencyInstance()
 		
 		BigDecimal total = new BigDecimal(0.0)
-		
 		list.each {dto ->
-			total = total.add(dto.average)
-			pw.println "${commonReportingService.buildFixedWidthLabel(dto.categoryName, 25)}${nf.format(dto.average).padLeft(11, ' ')}"
+			if (ra == ReportingAmount.Average) {
+				total = total.add(dto.average)
+				pw.println "${commonReportingService.buildFixedWidthLabel(dto.category, 25)}${cf.format(dto.average).padLeft(11, ' ')}"
+			}
+			else if (ra == ReportingAmount.Total) {
+				total = total.add(dto.total)
+				pw.println "${commonReportingService.buildFixedWidthLabel(dto.category, 25)}${cf.format(dto.total).padLeft(11, ' ')}"
+			}
 		}
 		
 		pw.println ''
-		pw.println "${commonReportingService.buildFixedWidthLabel('Monthly Average', 25)}${nf.format(total).padLeft(11, ' ')}"
-	}
-	
-	def reportRecentHistory(List<TotalDTO> totalList, long previousDays, PrintWriter pw) {
-		String h1 = "CATEGORIES FROM LAST $previousDays DAYS (MONTHLY AVERAGE)"
-		pw.println h1
-		
-		String u1 = ''.padRight(h1.size(), '-')
-		pw.println u1
-		
-		NumberFormat nf = NumberFormat.getCurrencyInstance()
-		
-		BigDecimal reportTotal = new BigDecimal(0.0)
-		
-		totalList.each {dto ->
-			reportTotal = reportTotal.add(dto.totalAmount)
-			pw.println "${commonReportingService.buildFixedWidthLabel(dto.totalName, 25)}${nf.format(dto.totalAmount).padLeft(11, ' ')}"
+		if (ra == ReportingAmount.Average) {
+			pw.println "${commonReportingService.buildFixedWidthLabel('Monthly Average', 25)}${cf.format(total).padLeft(11, ' ')}"
 		}
-		pw.println ''
-		pw.println "${commonReportingService.buildFixedWidthLabel('Monthly Average', 25)}${nf.format(reportTotal).padLeft(11, ' ')}"
-	}
-	
-	def reportUnbudgeted(List<TotalDTO> totalList, PrintWriter pw) {
-		pw.println 'UNBUDGETED CATEGORIES            TOTAL'
-		pw.println '--------------------------------------'
-		
-		NumberFormat nf = NumberFormat.getCurrencyInstance()
-		
-		BigDecimal grandTotal = new BigDecimal(0.0)
-		
-		totalList.each {dto ->
-			grandTotal = grandTotal.add(dto.totalAmount)
-			pw.println "${commonReportingService.buildFixedWidthLabel(dto.totalName, 25)}${nf.format(dto.totalAmount).padLeft(11, ' ')}"
+		else if (ra == ReportingAmount.Total) {
+			pw.println "${commonReportingService.buildFixedWidthLabel('Grand Total', 25)}${cf.format(total).padLeft(11, ' ')}"
 		}
-		pw.println ''
-		pw.println "${commonReportingService.buildFixedWidthLabel('Grand Total', 25)}${nf.format(grandTotal).padLeft(11, ' ')}"
-	}
-	
-	def reportOther(List<TotalDTO> totalList, PrintWriter pw) {
-		pw.println 'OTHER CATEGORIES                 TOTAL'
-		pw.println '--------------------------------------'
-		
-		NumberFormat nf = NumberFormat.getCurrencyInstance()
-		
-		BigDecimal grandTotal = new BigDecimal(0.0)
-		
-		totalList.each {dto ->
-			grandTotal = grandTotal.add(dto.totalAmount)
-			pw.println "${commonReportingService.buildFixedWidthLabel(dto.totalName, 25)}${nf.format(dto.totalAmount).padLeft(11, ' ')}"
+		else {
+			pw.println 'Unknown ReportingAmount Enum'
 		}
-		pw.println ''
-		pw.println "${commonReportingService.buildFixedWidthLabel('Grand Total', 25)}${nf.format(grandTotal).padLeft(11, ' ')}"
 	}
 	
-	String buildQuery1(List<String> categoryList) {
+	String buildQuerySpecificOngoing(List<String> categoryList) {
 		StringBuilder sb = new StringBuilder()
 		
 		sb.append("SELECT TRANSACTION_DT as TXN, AMOUNT as AMT, PAYEE, DESCRIPTION as DESC, ASSET, CATEGORY as CAT, SUB_CATEGORY as SUBCAT, START_DT as START, END_DT as END, RPT_GRP_1 as RG1, RPT_GRP_2 as RG2, RPT_GRP_3 as RG3 ")
@@ -269,70 +223,10 @@ class BudgetReportService {
 		return sb.toString()
 	}
 
-//	String buildQuery2WithTransactionDates(List<String> categoryList, List<TripDTO> tripList) {
-//		StringBuilder sb = new StringBuilder()
-//		sb.append("SELECT CATEGORY as TOTAL_NAME, SUM(AMOUNT) as AMT ")
-//		sb.append("FROM FINANCIAL ")
-//		sb.append("WHERE CATEGORY IN (")
-//		sb.append(databaseQueryService.buildFormattedList(categoryList))
-//		sb.append(") ")
-//		sb.append("AND (")
-//		sb.append("TRANSACTION_DT BETWEEN '")
-//		sb.append(tripList[0].startDate)
-//		sb.append("' AND '")
-//		sb.append(tripList[0].endDate)
-//		sb.append("' ")
-//		tripList[1..-1].each {trip ->
-//			sb.append("OR TRANSACTION_DT BETWEEN '")
-//			sb.append(trip.startDate)
-//			sb.append("' AND '")
-//			sb.append(trip.endDate)
-//			sb.append("' ")
-//		}
-//		sb.append(") GROUP BY CATEGORY ")
-//		sb.append("ORDER BY CATEGORY")
-//		
-//		return sb.toString()
-//	}
-
-//	String buildQuery2WithoutTransactionDates(List<String> categoryList) {
-//		StringBuilder sb = new StringBuilder()
-//		sb.append("SELECT CATEGORY as TOTAL_NAME, SUM(AMOUNT) as AMT ")
-//		sb.append("FROM FINANCIAL ")
-//		sb.append("WHERE CATEGORY IN (")
-//		sb.append(databaseQueryService.buildFormattedList(categoryList))
-//		sb.append(") ")
-//		sb.append("GROUP BY CATEGORY ")
-//		sb.append("ORDER BY CATEGORY")
-//		
-//		return sb.toString()
-//	}
-
-	String buildQuery3(List<String> categoryList, long previousDays) {
-		DateTimeFormatter h2dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-		LocalDate now = LocalDate.now()
-		LocalDate previousDate = now.minusDays(previousDays)
-		
+	String buildQueryCategoryTotal(List<String> categoryList) {
 		StringBuilder sb = new StringBuilder()
 		
-		sb.append("SELECT CATEGORY as TOTAL_NAME, SUM(AMOUNT) as AMT ")
-		sb.append("FROM FINANCIAL ")
-		sb.append("WHERE CATEGORY IN (")
-		sb.append(databaseQueryService.buildFormattedList(categoryList))
-		sb.append(") ")
-		sb.append("AND TRANSACTION_DT > '")
-		sb.append(previousDate.format(h2dtf))
-		sb.append("' ")
-		sb.append("GROUP BY CATEGORY ")
-		sb.append("ORDER BY CATEGORY")
-		
-		return sb.toString()
-	}
-
-	String buildQuery4(List<String> categoryList) {
-		StringBuilder sb = new StringBuilder()
-		
-		sb.append("SELECT CATEGORY as TOTAL_NAME, SUM(AMOUNT) as AMT ")
+		sb.append("SELECT CATEGORY as CAT, SUM(AMOUNT) as TOTAL ")
 		sb.append("FROM FINANCIAL ")
 		sb.append("WHERE CATEGORY IN (")
 		sb.append(databaseQueryService.buildFormattedList(categoryList))
@@ -343,24 +237,10 @@ class BudgetReportService {
 		return sb.toString()
 	}
 
-	String buildQuery7(List<String> categoryList) {
+	String buildQueryWithTransactionDates(List<String> categoryList, List<TripDTO> tripList) {
 		StringBuilder sb = new StringBuilder()
 		
-		sb.append("SELECT CATEGORY as TOTAL_NAME, SUM(AMOUNT) as AMT ")
-		sb.append("FROM FINANCIAL ")
-		sb.append("WHERE CATEGORY IN (")
-		sb.append(databaseQueryService.buildFormattedList(categoryList))
-		sb.append(") ")
-		sb.append("GROUP BY CATEGORY ")
-		sb.append("ORDER BY CATEGORY")
-		
-		return sb.toString()
-	}
-
-	String buildQuery5WithTransactionDates(List<String> categoryList, List<TripDTO> tripList) {
-		StringBuilder sb = new StringBuilder()
-		
-		sb.append("SELECT CATEGORY as TOTAL_NAME, SUM(AMOUNT) as AMT ")
+		sb.append("SELECT CATEGORY as CAT, SUM(AMOUNT) as TOTAL ")
 		sb.append("FROM FINANCIAL ")
 		sb.append("WHERE CATEGORY IN (")
 		sb.append(databaseQueryService.buildFormattedList(categoryList))
@@ -384,44 +264,26 @@ class BudgetReportService {
 		return sb.toString()
 	}
 
-	String buildQuery6WithoutTransactionDates(List<String> categoryList) {
+	String buildQueryWithGreaterTransactionDate(List<String> categoryList, LocalDate startDate) {
+		DateTimeFormatter h2dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+		
 		StringBuilder sb = new StringBuilder()
-		sb.append("SELECT CATEGORY as TOTAL_NAME, SUM(AMOUNT) as AMT ")
+		sb.append("SELECT CATEGORY as CAT, SUM(AMOUNT) as TOTAL ")
 		sb.append("FROM FINANCIAL ")
 		sb.append("WHERE CATEGORY IN (")
 		sb.append(databaseQueryService.buildFormattedList(categoryList))
 		sb.append(") ")
+		sb.append("AND TRANSACTION_DT >= '")
+		sb.append(startDate.format(h2dtf))
+		sb.append("' ")
 		sb.append("GROUP BY CATEGORY ")
 		sb.append("ORDER BY CATEGORY")
 		
 		return sb.toString()
 	}
 
-	List<TotalDTO> averageTotalsList(List<TotalDTO> tl, long days) {
-		List<TotalDTO> totalList = []
-		
-		BigDecimal monthsPerYear = new BigDecimal('12')
-		BigDecimal daysPerYear = new BigDecimal('365')
-		BigDecimal numberOfDays = new BigDecimal(days)
-		
-		tl.each {t ->
-			BigDecimal categoryAverage = t.totalAmount.multiply(daysPerYear).divide(monthsPerYear, 2).divide(numberOfDays, 2)
-			
-			TotalDTO dto = new TotalDTO()
-			dto.totalName = t.totalName
-			dto.totalAmount = categoryAverage
-			totalList << dto
-		}
-		
-		return totalList
-	}
-	
 	BigDecimal averageBigDecimal(BigDecimal bd, long days) {
-		//TODO
-		BigDecimal monthsPerYear = new BigDecimal('12')
-		BigDecimal daysPerYear = new BigDecimal('365')
 		BigDecimal numberOfDays = new BigDecimal(days)
-		
 		return bd.multiply(daysPerYear).divide(monthsPerYear, 2).divide(numberOfDays, 2)
 	}
 	
@@ -432,17 +294,17 @@ class BudgetReportService {
 			'CARAVAN_INSURANCE',
 			'CARAVAN_REGISTRATION',
 			'CARAVAN_SERVICING',
+			'CARAVAN_TYRES',
 			'CAR_INSURANCE',
 			'CAR_REGISTRATION',
 			'CAR_SERVICING',
 			'CAR_TYRES',
-			'CARAVAN_TYRES',
 			'DATA_PLAN',
 			'DRIVERS_LICENSE_MOLLY',
 			'DRIVERS_LICENSE_ROB',
+			'MEMBERSHIP',
 			'PHONE_PLAN_MOLLY',
 			'PHONE_PLAN_ROB',
-			'MEMBERSHIP',
 			'TRANSMISSION_SERVICING'
 			]
 		

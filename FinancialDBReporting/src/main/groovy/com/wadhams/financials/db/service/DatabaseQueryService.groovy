@@ -3,7 +3,7 @@ package com.wadhams.financials.db.service
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
-
+import com.wadhams.financials.db.dto.CategoryTotalAverageDTO
 import com.wadhams.financials.db.dto.FinancialDTO
 import com.wadhams.financials.db.dto.TotalDTO
 
@@ -133,6 +133,21 @@ class DatabaseQueryService {
 		}
 		
 		return totalList
+	}
+
+	List<CategoryTotalAverageDTO> buildCategoryTotalAverageDTOList(String query) {
+		List<CategoryTotalAverageDTO> dtoList = []
+		
+		sql.eachRow(query) {row ->
+			String category = row.CAT
+			BigDecimal total = row.TOTAL
+			CategoryTotalAverageDTO dto = new CategoryTotalAverageDTO()
+			dto.category = category
+			dto.total = total
+			dtoList << dto
+		}
+		
+		return dtoList
 	}
 
 	GroovyRowResult firstRow(String query) {

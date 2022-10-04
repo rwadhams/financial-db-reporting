@@ -21,12 +21,14 @@ class FinancialReportingApp {
 				DateTimeFormatter suffixdtf = DateTimeFormatter.ofPattern('yyyy-MM-dd-HH-mm-ss')
 				LocalDateTime ldt = LocalDateTime.now()
 				String datetime = ldt.format(suffixdtf)
-				PrintWriter pw1 = (new File("out/financial-report-${datetime}.txt")).newPrintWriter()
+				PrintWriter pw1a = (new File("out/financial-report-${datetime}.txt")).newPrintWriter()
+				PrintWriter pw1b = (new File("out/no-longer-required-report-${datetime}.txt")).newPrintWriter()
 				
 				FinancialReportingController controller = new FinancialReportingController()
-				controller.execute(pw1)
+				controller.execute(pw1a, pw1b)
 				
-				pw1.close()
+				pw1a.close()
+				pw1b.close()
 				
 				PrintWriter pw2 = (new File("out/budget-report-${datetime}.txt")).newPrintWriter()
 				BudgetReportingController controller2 = new BudgetReportingController()

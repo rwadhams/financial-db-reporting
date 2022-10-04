@@ -4,7 +4,7 @@ import groovy.transform.ToString
 
 @ToString(includeNames=true)
 class CategoryTotalAverageDTO {
-	String categoryName
+	String category
 	BigDecimal total = BigDecimal.ZERO
 	BigDecimal average = BigDecimal.ZERO
 }
