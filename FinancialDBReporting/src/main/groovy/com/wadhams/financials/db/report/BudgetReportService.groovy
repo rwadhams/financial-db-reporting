@@ -27,6 +27,8 @@ class BudgetReportService {
 	BigDecimal monthsPerYear = new BigDecimal('12')
 	BigDecimal daysPerYear = new BigDecimal('365')
 
+	BigDecimal monthlyAverageTotal = BigDecimal.ZERO
+
 	def execute(PrintWriter pw) {
 		Map<BudgetCategory, List<String>> budgetCategoryMap = buildBudgetCategoryMap()
 		assert budgetCategoryMap.size() > 0
@@ -113,8 +115,13 @@ class BudgetReportService {
 		query = buildQueryCategoryTotal(budgetCategoryMap[BudgetCategory.Other])
 		ctaDTOList = databaseQueryService.buildCategoryTotalAverageDTOList(query)
 		reportCategoryTotalAverageList('OTHER CATEGORIES                 TOTAL', ctaDTOList, ReportingAmount.Total, pw)
+		
+		pw.println ''
+		pw.println commonReportingService.horizonalRule
+		pw.println ''
+		
+		reportMonthlyYearlyTotal(pw)
 	}
-	
 	
 	def reportCampingNonCampingDates(TimelineDTO timelineDTO, PrintWriter pw) {
 		//report camping dates
@@ -177,6 +184,8 @@ class BudgetReportService {
 		}
 		pw.println ''
 		pw.println "${commonReportingService.buildFixedWidthLabel('Monthly Average', 25)}${cf.format(reportTotal).padLeft(11, ' ')}"
+		
+		monthlyAverageTotal += reportTotal
 	}
 	
 	def reportCategoryTotalAverageList(String heading, List<CategoryTotalAverageDTO> list, ReportingAmount ra, PrintWriter pw) {
@@ -199,6 +208,7 @@ class BudgetReportService {
 		pw.println ''
 		if (ra == ReportingAmount.Average) {
 			pw.println "${commonReportingService.buildFixedWidthLabel('Monthly Average', 25)}${cf.format(total).padLeft(11, ' ')}"
+			monthlyAverageTotal += total
 		}
 		else if (ra == ReportingAmount.Total) {
 			pw.println "${commonReportingService.buildFixedWidthLabel('Grand Total', 25)}${cf.format(total).padLeft(11, ' ')}"
@@ -206,6 +216,17 @@ class BudgetReportService {
 		else {
 			pw.println 'Unknown ReportingAmount Enum'
 		}
+	}
+	
+	def reportMonthlyYearlyTotal(PrintWriter pw) {
+		String heading = 'MONTHLY and YEARLY TOTALS:'
+		pw.println heading
+		String u1 = ''.padRight(heading.size(), '-')
+		pw.println u1
+
+		pw.println "${commonReportingService.buildFixedWidthLabel('Monthly Total', 25)}${cf.format(monthlyAverageTotal).padLeft(11, ' ')}"
+		BigDecimal yearlyAverageTotal = monthlyAverageTotal.multiply(monthsPerYear)
+		pw.println "${commonReportingService.buildFixedWidthLabel('Yearly Total', 25)}${cf.format(yearlyAverageTotal).padLeft(11, ' ')}"
 	}
 	
 	String buildQuerySpecificOngoing(List<String> categoryList) {
