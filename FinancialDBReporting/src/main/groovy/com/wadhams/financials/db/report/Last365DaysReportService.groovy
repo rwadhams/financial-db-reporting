@@ -14,6 +14,7 @@ class Last365DaysReportService {
 	CommonReportingService commonReportingService = new CommonReportingService()
 	
 	DateTimeFormatter dtf = DateTimeFormatter.ofPattern('dd/MM/yyyy')
+	NumberFormat cf = NumberFormat.getCurrencyInstance()
 	
 	def execute(PrintWriter pw) {
 		YearMonth now = YearMonth.now()
@@ -30,55 +31,32 @@ class Last365DaysReportService {
 		
 		String reportingDateRangeText = buildReportingDateRangeText(startDate, endDate)
 		
-		reportSummary(financialList, reportingDateRangeText, pw)
-		
-		reportDetail(financialList, reportingDateRangeText)
+		reportDetail(financialList, reportingDateRangeText, pw)
 	}
 	
-	def reportSummary(List<FinancialDTO> financialList, String reportingDateRangeText, PrintWriter pw) {
-		BigDecimal total = new BigDecimal(0.0)
-		
-		NumberFormat nf = NumberFormat.getCurrencyInstance()
-		
-		pw.println "LAST 365 DAYS REPORT ($reportingDateRangeText)"
-		pw.println '-----------------------------------------------'
-
-		financialList.each {dto ->
-			total = total.add(dto.amount)
-		}
-		
-		pw.println "Total...: ${nf.format(total)}"
-		pw.println ''
-		pw.println '\t(See \'last-365-days-detail-report.txt\' for specific details)'
-		pw.println ''
-		pw.println commonReportingService.horizonalRule
-		pw.println ''
-	}
-	
-	def reportDetail(List<FinancialDTO> financialList, String reportingDateRangeText) {
+	def reportDetail(List<FinancialDTO> financialList, String reportingDateRangeText, PrintWriter pw) {
 		int maxPayeeSize = commonReportingService.maxPayeeSize(financialList)
 		
 		BigDecimal total = new BigDecimal(0.0)
-		
-		File f = new File("out/last-365-days-detail-report.txt")
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-		NumberFormat nf = NumberFormat.getCurrencyInstance()
-		
-		f.withPrintWriter {pw ->
-			pw.println "Last 365 Days Details ($reportingDateRangeText):"
-			pw.println ''
-			
-			financialList.each {dto ->
-				total = total.add(dto.amount)
-				String col2 = nf.format(dto.amount).padLeft(12, ' ')
-				String col3 = dto.payee.padRight(maxPayeeSize, ' ')
-				String col4 = (dto.description == 'null') ? '' : dto.description
-				pw.println "${dto.transactionDt.format(dtf)}  $col2  $col3  $col4"
-			}
-	
-			pw.println ''
-			pw.println "Total: ${nf.format(total)}"
+		financialList.each {dto ->
+			total = total.add(dto.amount)
 		}
+
+		pw.println "LAST 365 DAYS REPORT ($reportingDateRangeText)"
+		pw.println '-----------------------------------------------'
+		pw.println ''
+		pw.println "Total...: ${cf.format(total)}"
+		pw.println ''
+					
+		financialList.each {dto ->
+			String col2 = cf.format(dto.amount).padLeft(12, ' ')
+			String col3 = dto.payee.padRight(maxPayeeSize, ' ')
+			String col4 = (dto.description == 'null') ? '' : dto.description
+			pw.println "${dto.transactionDt.format(dtf)}  $col2  $col3  $col4"
+		}
+
+		pw.println ''
+		pw.println "Total: ${cf.format(total)}"
 	}
 	
 	String buildReportingDateRangeText(LocalDate startDate, LocalDate endDate) {
@@ -107,5 +85,4 @@ class Last365DaysReportService {
 		return sb.toString()
 	}
 
-	
 }

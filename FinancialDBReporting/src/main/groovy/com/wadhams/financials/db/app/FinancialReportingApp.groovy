@@ -5,7 +5,10 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 import com.wadhams.financials.db.controller.BudgetReportingController
+import com.wadhams.financials.db.controller.ExtraReportingController
 import com.wadhams.financials.db.controller.FinancialReportingController
+import com.wadhams.financials.db.controller.Last365DaysReportingController
+import com.wadhams.financials.db.controller.NoLongerRequiredReportingController
 import com.wadhams.financials.db.type.Run
 
 class FinancialReportingApp {
@@ -21,32 +24,53 @@ class FinancialReportingApp {
 				DateTimeFormatter suffixdtf = DateTimeFormatter.ofPattern('yyyy-MM-dd-HH-mm-ss')
 				LocalDateTime ldt = LocalDateTime.now()
 				String datetime = ldt.format(suffixdtf)
-				PrintWriter pw1a = (new File("out/financial-report-${datetime}.txt")).newPrintWriter()
-				PrintWriter pw1b = (new File("out/no-longer-required-report-${datetime}.txt")).newPrintWriter()
-				
-				FinancialReportingController controller = new FinancialReportingController()
-				controller.execute(pw1a, pw1b)
-				
-				pw1a.close()
-				pw1b.close()
+
+				PrintWriter pw1 = (new File("out/financial-report-${datetime}.txt")).newPrintWriter()
+				FinancialReportingController controller1 = new FinancialReportingController()
+				controller1.execute(pw1)
+				pw1.close()
 				
 				PrintWriter pw2 = (new File("out/budget-report-${datetime}.txt")).newPrintWriter()
 				BudgetReportingController controller2 = new BudgetReportingController()
 				controller2.execute(pw2)
 				pw2.close()
+				
+				PrintWriter pw3 = (new File("out/no-longer-required-report-${datetime}.txt")).newPrintWriter()
+				NoLongerRequiredReportingController controller3 = new NoLongerRequiredReportingController()
+				controller3.execute(pw3)
+				pw3.close()
+				
+				PrintWriter pw4 = (new File("out/last-365-days-detail-report-${datetime}.txt")).newPrintWriter()
+				Last365DaysReportingController controller4 = new Last365DaysReportingController()
+				controller4.execute(pw4)
+				pw4.close()
+				
+				ExtraReportingController controller9 = new ExtraReportingController()
+				controller9.execute()
 			}
 			else if (run == Run.OverWriteReport) {
-				PrintWriter pw1a = (new File('out/financial-report.txt')).newPrintWriter()
-				PrintWriter pw1b = (new File('out/no-longer-required-report.txt')).newPrintWriter()
+				PrintWriter pw1 = (new File('out/financial-report.txt')).newPrintWriter()
 				FinancialReportingController controller1 = new FinancialReportingController()
-				controller1.execute(pw1a, pw1b)
-				pw1a.close()
-				pw1b.close()
+				controller1.execute(pw1)
+				pw1.close()
 				
 				PrintWriter pw2 = (new File('out/budget-report.txt')).newPrintWriter()
 				BudgetReportingController controller2 = new BudgetReportingController()
 				controller2.execute(pw2)
 				pw2.close()
+				
+				PrintWriter pw3 = (new File('out/no-longer-required-report.txt')).newPrintWriter()
+				NoLongerRequiredReportingController controller3 = new NoLongerRequiredReportingController()
+				controller3.execute(pw3)
+				pw3.close()
+				
+				PrintWriter pw4 = (new File('out/last-365-days-detail-report.txt')).newPrintWriter()
+				Last365DaysReportingController controller4 = new Last365DaysReportingController()
+				controller4.execute(pw4)
+				pw4.close()
+				
+				ExtraReportingController controller9 = new ExtraReportingController()
+				controller9.execute()
 			}
 			else {
 				println 'Unknown parameter. Application did not run.'

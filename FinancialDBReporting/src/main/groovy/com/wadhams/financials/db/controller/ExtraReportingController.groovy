@@ -14,15 +14,14 @@ import com.wadhams.financials.db.report.RenovationReportService
 import com.wadhams.financials.db.report.SmallMediumLargeReportService
 import com.wadhams.financials.db.report.Last365DaysReportService
 
-class FinancialReportingController {
+class ExtraReportingController {
 	
-	def execute(PrintWriter pw) {
-		//report headings
-		pw.println 'Financial Report'
-		pw.println '================'
-		pw.println ''
-		
-		CategoryByMonthReportService categoryByMonthReportService = new CategoryByMonthReportService()
-		categoryByMonthReportService.execute(pw)
+	def execute() {
+		//Extra reports
+		CategoryDetailReportService categoryDetailReportService = new CategoryDetailReportService()
+		categoryDetailReportService.execute()
+
+		AssetDetailReportService assetDetailReportService = new AssetDetailReportService()
+		assetDetailReportService.execute()
 	}
 }

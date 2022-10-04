@@ -72,9 +72,6 @@ class CategoryByMonthReportService {
 //			pw.println "\t$cat"
 //		}
 		
-		pw.println ''
-		pw.println commonReportingService.horizonalRule
-		pw.println ''
 	}
 	
 	//TODO: refactor to common Category enum
