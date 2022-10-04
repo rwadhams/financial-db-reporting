@@ -95,6 +95,17 @@ class TimelineXMLService {
 		}
 		//println "nonCampingDateSet.size(): ${timelineDTO.nonCampingDateSet.size()}"
 		
+		//campingDateSet
+		campingTripList.each {trip ->
+			LocalDate ld = trip.startDate
+			while (ld.isBefore(trip.endDate)) {
+				timelineDTO.campingDateSet << ld
+				ld = ld.next()
+			}
+			timelineDTO.campingDateSet << trip.endDate
+		}
+		//println "campingDateSet.size(): ${timelineDTO.campingDateSet.size()}"
+		
 		return timelineDTO
 	}
 	

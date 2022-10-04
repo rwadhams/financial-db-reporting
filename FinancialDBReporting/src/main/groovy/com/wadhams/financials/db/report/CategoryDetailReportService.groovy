@@ -76,8 +76,17 @@ class CategoryDetailReportService {
 				s7 = dto.rg1
 			}
 
-			String s8 = (timelineDTO.nonCampingDateSet.contains(dto.transactionDt)) ? '[NC]' : '[C] '
-			
+			String s8
+			if (timelineDTO.campingDateSet.contains(dto.transactionDt)) {
+				s8 = '[C] '
+			}
+			else if (timelineDTO.nonCampingDateSet.contains(dto.transactionDt)) {
+				s8 = '[NC]'
+			}
+			else {
+				s8 = '[X] '
+			}	
+						
 			pw.println "\t$s8 ${dto.transactionDt.format(dtf)}  $s1  $s2  ${(rg1Found)?s7:''}  ${(startDtFound)?("[$s5 - $s6]"):''}  ${(assetFound)?("Asset: $s4"):''}  $s3"
 		}
 		
