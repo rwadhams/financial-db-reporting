@@ -1,6 +1,7 @@
 package com.wadhams.financials.db.app
 
 import com.wadhams.financials.db.report.BudgetReportService
+import com.wadhams.financials.db.report.TrendingReportService
 
 class FinancialReportingTestApp {
 	static main(args) {
@@ -9,8 +10,8 @@ class FinancialReportingTestApp {
 
 		PrintWriter pw = new PrintWriter(System.out, true)
 		
-		BudgetReportService budgetReportService = new BudgetReportService()
-		budgetReportService.execute(pw)
+		TrendingReportService service = new TrendingReportService()
+		service.execute(pw)
 
 		println ''
 		println 'FinancialReportingTestApp ended.'
