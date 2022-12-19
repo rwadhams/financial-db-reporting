@@ -19,7 +19,11 @@ class CategoryDetailReportService {
 		f.withPrintWriter {pw ->
 			pw.println 'CATEGORY DETAIL REPORT'
 			pw.println '----------------------'
-	
+			
+			pw.println ''
+			pw.println 'Legend: [X] = prior to 28/03/2020, [C] = Camping date, [NC] = Non-camping date'
+			pw.println ''
+			
 			TimelineXMLService timelineXMLService = new TimelineXMLService()
 			TimelineDTO timelineDTO = timelineXMLService.loadTimelineData()
 			//println timelineDTO

@@ -373,6 +373,7 @@ class BudgetReportService {
 			
 		List<String> unbudgeted = [
 			'BASS_STRAIT_FERRY',
+			'DOMESTIC_TRAVEL',
 			'ELECTRONICS',
 			'OVERSEAS_TRAVEL'
 			]

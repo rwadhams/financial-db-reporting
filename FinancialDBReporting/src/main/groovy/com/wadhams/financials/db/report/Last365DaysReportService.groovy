@@ -35,7 +35,7 @@ class Last365DaysReportService {
 	}
 	
 	def reportDetail(List<FinancialDTO> financialList, String reportingDateRangeText, PrintWriter pw) {
-		int maxPayeeSize = commonReportingService.maxPayeeSize(financialList)
+		int maxCategorySize = commonReportingService.maxCategorySize(financialList)
 		
 		BigDecimal total = new BigDecimal(0.0)
 		financialList.each {dto ->
@@ -50,7 +50,7 @@ class Last365DaysReportService {
 					
 		financialList.each {dto ->
 			String col2 = cf.format(dto.amount).padLeft(12, ' ')
-			String col3 = dto.payee.padRight(maxPayeeSize, ' ')
+			String col3 = dto.category.padRight(maxCategorySize, ' ')
 			String col4 = (dto.description == 'null') ? '' : dto.description
 			pw.println "${dto.transactionDt.format(dtf)}  $col2  $col3  $col4"
 		}
