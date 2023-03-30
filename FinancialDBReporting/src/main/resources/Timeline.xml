@@ -45,6 +45,11 @@
 	<trip>
 		<name>Central - South - Tassie Trip</name>
 		<start>25/06/2022</start>
+		<end>31/01/2023</end>
+	</trip>
+	<trip>
+		<name>All Seasons Tasmania</name>
+		<start>15/02/2023</start>
 		<end></end>
 	</trip>
 	<!-- 
