@@ -2,6 +2,7 @@ package com.wadhams.financials.db.type
 
 import java.time.YearMonth
 
+//TODO Fix this abomonation
 enum MonthDateRange implements Comparator<MonthDateRange> {
 	Jun2019(2019, 6),
 	Jul2019(2019, 7),
