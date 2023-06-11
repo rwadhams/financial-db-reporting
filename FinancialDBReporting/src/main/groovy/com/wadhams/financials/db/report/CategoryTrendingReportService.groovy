@@ -16,13 +16,13 @@ import groovy.sql.GroovyRowResult
 
 class CategoryTrendingReportService {
 	DatabaseQueryService databaseQueryService = new DatabaseQueryService()
-	DateTimeFormatter h2dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+	DateTimeFormatter h2DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 		
 	NumberFormat cf = NumberFormat.getCurrencyInstance()
 	DateTimeFormatter reportDTF = DateTimeFormatter.ofPattern("LLL yyyy")
 	
 	def execute(PrintWriter pw) {
-		int monthRange = 12
+		int monthRange = 6
 		YearMonth firstYM = YearMonth.of(2020, Month.MAY)
 		YearMonth lastYM = YearMonth.of(2023, Month.APRIL)
 //		println "monthRange...: $monthRange"
@@ -39,7 +39,8 @@ class CategoryTrendingReportService {
 
 		reportHeading(monthRange, pw)
 		
-		List<String> categoryList = ['FOOD', 'ALCOHOL', 'FUEL', 'DRINKS', 'PREPARED_FOOD', 'CAMPING_FEES', 'ENTERTAINMENT', 'MEDICAL', 'PHARMACY']
+		List<String> categoryList = ['CARAVAN_EQUIPMENT']
+//		List<String> categoryList = ['FOOD', 'ALCOHOL', 'FUEL', 'DRINKS', 'PREPARED_FOOD', 'CAMPING_FEES', 'ENTERTAINMENT', 'MEDICAL', 'PHARMACY']
 		categoryList.each {category ->
 			trendingRangeDTOList.each {dto ->
 				augmentWithCategoryTotal(dto, category)
@@ -116,10 +117,10 @@ class CategoryTrendingReportService {
 		sb.append(category)
 		sb.append("' ")
 		sb.append("AND TRANSACTION_DT >= '")
-		sb.append(startRangeDate.format(h2dtf))
+		sb.append(startRangeDate.format(h2DTF))
 		sb.append("' ")
 		sb.append("AND TRANSACTION_DT <= '")
-		sb.append(endRangeDate.format(h2dtf))
+		sb.append(endRangeDate.format(h2DTF))
 		sb.append("'")
 		
 		return sb.toString()
