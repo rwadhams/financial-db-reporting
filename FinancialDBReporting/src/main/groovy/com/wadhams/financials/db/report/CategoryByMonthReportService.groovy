@@ -1,27 +1,30 @@
 package com.wadhams.financials.db.report
 
 import java.text.NumberFormat
+import java.time.LocalDate
+import java.time.YearMonth
+import java.time.format.DateTimeFormatter
 
+import com.wadhams.financials.db.service.CategoryListService
 import com.wadhams.financials.db.service.CommonReportingService
 import com.wadhams.financials.db.service.DatabaseQueryService
-import com.wadhams.financials.db.type.MonthDateRange
 
 import groovy.sql.GroovyRowResult
 
 class CategoryByMonthReportService {
 	DatabaseQueryService databaseQueryService = new DatabaseQueryService()
 	CommonReportingService commonReportingService = new CommonReportingService()
+	CategoryListService categoryListService = new CategoryListService()
 	
+	DateTimeFormatter h2DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+	DateTimeFormatter reportDTF = DateTimeFormatter.ofPattern("LLLyyyy")
+
 	def execute(PrintWriter pw) {
 		pw.println 'CATEGORY EXPENSE TOTALS BY MONTH REPORT'
 		pw.println '---------------------------------------'
 
-		//TODO: refactor to common Category enum
-		//List<String> blackList = ['4WD', 'BATH', 'CAMPING_EQUIPMENT', /*'CARAVAN_EQUIPMENT',*/ 'CARAVAN_INSURANCE', 'CARAVAN_MAINTENANCE', 'CARAVAN_REGISTRATION', 'CAR_EQUIPMENT', 'CAR_MAINTENANCE', 'CAR_INSURANCE', 'CAR_REGISTRATION', 'CAR_SERVICING', 'CAR_SUPPLIES', 'DRIVERS_LICENSE_ROB', 'DRIVERS_LICENSE_MOLLY', 'ELECTRIC_UTILITIES', 'EQUIPMENT', 'FLIGHTS', 'FURNITURE', 'GAS_UTILITIES', 'GIFTS', 'HOUSE_SALE', 'HOUSE_INSURANCE', 'HOUSE_MAINTENANCE', 'HOUSE_SUPPLIES', 'PURCHASE', 'MEMBERSHIP', 'RATES', 'RENO', 'RENTAL_CAR', 'TAX', 'TECHNOLOGY', 'TELECOMMUNICATIONS', 'TOOLS', 'WATER_UTILITIES']
-		
-		//List<String> categoryList = databaseQueryService.buildAllCategoryList() - blackList
-		//List<String> categoryList = databaseQueryService.buildPreviousThreeMonthCategoryList()
-		List<String> categoryList = databaseQueryService.buildPreviousYearPopularCategoryList()
+//		List<String> categoryList = databaseQueryService.buildPreviousYearPopularCategoryList()
+		List<String> categoryList = categoryListService.dayToDayCategoryList
 		//println categoryList
 		
 		int maxCategorySize = 0
@@ -33,24 +36,29 @@ class CategoryByMonthReportService {
 		//println "maxCategorySize: $maxCategorySize"
 		maxCategorySize = maxCategorySize + 5	//add margin for report
 
-		//previous 12 month range
-		List<MonthDateRange> mdrList = MonthDateRange.previousTwelve(MonthDateRange.now())
-		
+		//previous 12 YearMonth
+		YearMonth now = YearMonth.now()
+		List<YearMonth> previous12List = []
+		12.times {i ->
+			previous12List << now.minusMonths(i+1)
+		}
+		previous12List.sort()
+
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
 		int maxAmountSize = 12	//used for padding amount
 		
 		//Print heading
 		pw.print 'Categories'.padRight(maxCategorySize)
-		mdrList.each {mdr ->
-			pw.print mdr.name().padLeft(maxAmountSize)
+		previous12List.each {ym ->
+			pw.print ym.format(reportDTF).padLeft(maxAmountSize)
 		}
 		pw.println '  Categories'
 
 		categoryList.each {cat ->
 			//println cat
 			pw.print cat.padRight(maxCategorySize)
-			mdrList.each {mdr ->
-				String query = buildCategoryMonthQuery(cat, mdr.firstDate, mdr.lastDate)
+			previous12List.each {ym ->
+				String query = buildCategoryMonthQuery(cat, ym.atDay(1), ym.atEndOfMonth())
 				//println query
 				GroovyRowResult grr = databaseQueryService.firstRow(query)
 				def amount = grr.getProperty('AMT')
@@ -65,17 +73,10 @@ class CategoryByMonthReportService {
 			}
 			pw.println "  $cat"
 		}
-
-//		pw.println ''
-//		pw.println 'Excluded categories:'
-//		blackList.each {cat ->
-//			pw.println "\t$cat"
-//		}
-		
 	}
 	
 	//TODO: refactor to common Category enum
-	String buildCategoryMonthQuery(String category, String firstDate, String lastDate) {
+	String buildCategoryMonthQuery(String category, LocalDate firstDate, LocalDate lastDate) {
 		StringBuilder sb = new StringBuilder()
 		sb.append("SELECT SUM(AMOUNT) AS AMT ")
 		sb.append("FROM FINANCIAL ")
@@ -83,10 +84,10 @@ class CategoryByMonthReportService {
 		sb.append(category)
 		sb.append("' ")
 		sb.append("AND TRANSACTION_DT >= '")
-		sb.append(firstDate)
+		sb.append(h2DTF.format(firstDate))
 		sb.append("' ")
 		sb.append("AND TRANSACTION_DT <= '")
-		sb.append(lastDate)
+		sb.append(h2DTF.format(lastDate))
 		sb.append("'")
 
 		return sb.toString()

@@ -1,10 +1,12 @@
 package com.wadhams.financials.db.report
 
 import java.text.NumberFormat
+import java.time.LocalDate
+import java.time.YearMonth
+import java.time.format.DateTimeFormatter
 
 import com.wadhams.financials.db.service.CommonReportingService
 import com.wadhams.financials.db.service.DatabaseQueryService
-import com.wadhams.financials.db.type.MonthDateRange
 
 import groovy.sql.GroovyRowResult
 
@@ -12,21 +14,29 @@ class MonthlyTotalsReportService {
 	DatabaseQueryService databaseQueryService = new DatabaseQueryService()
 	CommonReportingService commonReportingService = new CommonReportingService()
 	
+	DateTimeFormatter h2DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+	DateTimeFormatter reportDTF = DateTimeFormatter.ofPattern("LLLyyyy")
+	
 	def execute(PrintWriter pw) {
 		String largeAmount = '400'
 		String heading = "MONTHLY SMALL TOTALS REPORT (Transactions not exceeeding \$$largeAmount)" 
 		pw.println heading
 		pw.println ''.padLeft(heading.size(), '-')
 
-		//previous 12 month range
-		List<MonthDateRange> mdrList = MonthDateRange.previousTwelve(MonthDateRange.now())
+		//previous 12 YearMonth
+		YearMonth now = YearMonth.now()
+		List<YearMonth> previous12List = []
+		12.times {i ->
+			previous12List << now.minusMonths(i+1)
+		}
+		previous12List.sort()
 		
 		BigDecimal total = new BigDecimal(0.0)
 		
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
 		
-		mdrList.each {mdr ->
-			String query = buildMonthlyTotalsQuery(largeAmount, mdr.firstDate, mdr.lastDate)
+		previous12List.each {ym ->
+			String query = buildMonthlyTotalsQuery(largeAmount, ym.atDay(1), ym.atEndOfMonth())
 			//println query
 			GroovyRowResult grr = databaseQueryService.firstRow(query)
 			def amount = grr.getProperty('AMT')
@@ -34,7 +44,7 @@ class MonthlyTotalsReportService {
 			if (amount) {
 				total = total.add(amount)
 				String formattedAmount = nf.format(amount)
-				pw.println "${mdr.name().padRight(12, '.')}: ${formattedAmount.padLeft(11)}"
+				pw.println "${ym.format(reportDTF).padRight(12, '.')}: ${formattedAmount.padLeft(11)}"
 			}
 		}
 		pw.println ''
@@ -47,17 +57,16 @@ class MonthlyTotalsReportService {
 	}
 	
 	//TODO: refactor to common Category enum
-	String buildMonthlyTotalsQuery(String largeAmount, String firstDate, String lastDate) {
+	String buildMonthlyTotalsQuery(String largeAmount, LocalDate firstDate, LocalDate lastDate) {
 		StringBuilder sb = new StringBuilder()
 		sb.append("SELECT SUM(AMOUNT) AS AMT ")
 		sb.append("FROM FINANCIAL ")
-//		sb.append("WHERE CATEGORY NOT IN ('PURCHASE') ")
 		sb.append("WHERE AMOUNT <= $largeAmount ")
 		sb.append("AND TRANSACTION_DT >= '")
-		sb.append(firstDate)
+		sb.append(h2DTF.format(firstDate))
 		sb.append("' ")
 		sb.append("AND TRANSACTION_DT <= '")
-		sb.append(lastDate)
+		sb.append(h2DTF.format(lastDate))
 		sb.append("'")
 
 		return sb.toString()
