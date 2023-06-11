@@ -7,6 +7,19 @@ import groovy.sql.Sql
 class DataValueReportingService {
 	SQLBuilderService sqlBuilderService = new SQLBuilderService()
 	
+	def execute() {
+		File f = new File("out/data-value-report.txt")
+		
+		f.withPrintWriter {pw ->
+			//report headings
+			pw.println 'Data Value Report'
+			pw.println '================='
+			pw.println ''
+			
+			reportDistinctValues(pw)
+		}
+	}
+	
 	def reportDistinctValues(PrintWriter pw) {
 		Sql sql = Sql.newInstance('jdbc:h2:~/financial', 'sa', '', 'org.h2.Driver')
 

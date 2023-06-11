@@ -21,9 +21,9 @@ class FinancialReportingApp {
 			println "Run parameter: $run"
 			println ''
 			if (run == Run.TimestampReport) {
-				DateTimeFormatter suffixdtf = DateTimeFormatter.ofPattern('yyyy-MM-dd-HH-mm-ss')
+				DateTimeFormatter suffixDTF = DateTimeFormatter.ofPattern('yyyy-MM-dd-HH-mm-ss')
 				LocalDateTime ldt = LocalDateTime.now()
-				String datetime = ldt.format(suffixdtf)
+				String datetime = ldt.format(suffixDTF)
 
 				PrintWriter pw1 = (new File("out/financial-report-${datetime}.txt")).newPrintWriter()
 				FinancialReportingController controller1 = new FinancialReportingController()
