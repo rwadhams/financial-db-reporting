@@ -23,14 +23,12 @@ class DatabaseAnalysisReportingApp {
 	}
 	
 	def execute() {
-//		allCategories()
-//		categoryCounts()
-//		categoryAmounts()
-//		assets()
-//		reportGroupOne()
-//		categoryStartEndDates()
+		generalAnaylsis()
+		
 //		research01()
 //		research02()
+//		research03()
+//		research04()
 //		categoryAmountsByList()
 //		categoryCountsByList()
 	}
@@ -74,6 +72,35 @@ class DatabaseAnalysisReportingApp {
 		println ''
 	}
 	
+	def research03() {
+	}
+	
+	def research04() {
+		String q1 = 'select asset as ASSET, category as CAT, count(*) as COUNT from financial where asset is not null group by asset,category order by 1,2'
+		String uq1 = ''.padRight(q1.size(), '-')
+		println uq1
+		println q1
+		println uq1
+		
+		sql.eachRow(q1) {row ->
+			String asset = row.ASSET
+			String category = row.CAT
+			String count = row.COUNT
+			println "$asset $category $count"
+		}
+		println ''
+	}
+	
+	def generalAnaylsis() {
+		allCategories()
+		categoryCounts()
+		categoryAmounts()
+		assets()
+		reportGroupOne()
+		categoryStartEndDates()
+		categoryRunningCosts()
+	}
+	
 	def allCategories() {
 		String q1 = 'select distinct category as CAT from financial order by 1'
 		String uq1 = ''.padRight(q1.size(), '-')
@@ -93,6 +120,28 @@ class DatabaseAnalysisReportingApp {
 		}
 		println ''
 		println "${categoryCount} distinct categories"
+		println ''
+	}
+	
+	def categoryRunningCosts() {
+		String q1 = "SELECT distinct category as CAT, rpt_grp_1 as RG1 FROM FINANCIAL where rpt_grp_1 in ('ONGOING_RUNNING_COST','SPECIFIC_RUNNING_COST') order by 1"
+		String uq1 = ''.padRight(q1.size(), '-')
+		println uq1
+		println q1
+		println uq1
+
+		println ''		
+		println 'Categories assocoated with ongoing and specific running costs. Category MUST NOT repeat.'
+		println ''		
+		String h1 = "${'Category'.padRight(25, ' ')} Report Grouping 1"
+		String u1 = '------------------------- ---------------------'
+		println h1
+		println u1
+		sql.eachRow(q1) {row ->
+			String category = row.CAT
+			String rg1 = row.RG1
+			println "${category.padRight(25, ' ')} $rg1"
+		}
 		println ''
 	}
 	
