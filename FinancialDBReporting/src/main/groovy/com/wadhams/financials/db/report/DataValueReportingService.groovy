@@ -25,8 +25,8 @@ class DataValueReportingService {
 
 		//DistinctPayeeCountTwoPlus
 		String payeeCountTwoPlusQuery = sqlBuilderService.buildDistinctPayeeCountTwoPlus()
-		println payeeCountTwoPlusQuery
-		println ''
+//		println payeeCountTwoPlusQuery
+//		println ''
 		
 		List<String> payeeCountTwoPlusList = []
 		sql.eachRow(payeeCountTwoPlusQuery) {row ->
@@ -43,8 +43,8 @@ class DataValueReportingService {
 		
 		//DistinctPayeeCountOne
 		String payeeCountOneQuery = sqlBuilderService.buildDistinctPayeeCountOne()
-		println payeeCountOneQuery
-		println ''
+//		println payeeCountOneQuery
+//		println ''
 		
 		List<String> payeeCountOneList = []
 		sql.eachRow(payeeCountOneQuery) {row ->
@@ -60,8 +60,8 @@ class DataValueReportingService {
 		
 		//DistinctCategorySubCategorySelect
 		String categorySubCategoryQuery = sqlBuilderService.buildDistinctCategorySubCategorySelect()
-		println categorySubCategoryQuery
-		println ''
+//		println categorySubCategoryQuery
+//		println ''
 		
 		List<String> catSubcatList = []
 		sql.eachRow(categorySubCategoryQuery) {row ->
@@ -83,8 +83,8 @@ class DataValueReportingService {
 		
 		//AssetSelectWithoutReportGrouping
 		String assetQuery = sqlBuilderService.buildAssetSelectWithoutReportGrouping()
-		println assetQuery
-		println ''
+//		println assetQuery
+//		println ''
 		pw.println 'Asset Category SubCategory (not part of report grouping)'
 		pw.println '--------------------------------------------------------'
 		sql.eachRow(assetQuery) {row ->
@@ -100,8 +100,8 @@ class DataValueReportingService {
 		
 		//SpecificRunningCostSelect
 		String specificRunningCostQuery = sqlBuilderService.buildSpecificRunningCostSelect()
-		println specificRunningCostQuery
-		println ''
+//		println specificRunningCostQuery
+//		println ''
 		pw.println "Specific Running Costs (Asset|Category)\t\t<rg1>SPECIFIC_RUNNING_COST</rg1>"
 		pw.println '---------------------------------------'
 		sql.eachRow(specificRunningCostQuery) {row ->
@@ -118,8 +118,8 @@ class DataValueReportingService {
 		
 		//OngoingRunningCostSelect
 		String ongoingRunningCostQuery = sqlBuilderService.buildOngoingRunningCostSelect()
-		println ongoingRunningCostQuery
-		println ''
+//		println ongoingRunningCostQuery
+//		println ''
 		pw.println "Ongoing Running Costs (Asset|Category)\t\t<rg1>ONGOING_RUNNING_COST</rg1>"
 		pw.println '--------------------------------------'
 		sql.eachRow(ongoingRunningCostQuery) {row ->
@@ -136,8 +136,8 @@ class DataValueReportingService {
 		
 		//DistinctReportGrouping1Select
 		String reportGrouping1Query = sqlBuilderService.buildDistinctReportGrouping1Select()
-		println reportGrouping1Query
-		println ''
+//		println reportGrouping1Query
+//		println ''
 		pw.println 'Distinct Report Grouping 1'
 		pw.println '--------------------------'
 		sql.eachRow(reportGrouping1Query) {row ->
