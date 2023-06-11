@@ -1,4 +1,4 @@
-package com.wadhams.financials.db.app
+package com.wadhams.financials.db.app.test
 
 import com.wadhams.financials.db.controller.FinancialReportingController
 import com.wadhams.financials.db.report.CategoryTrendingReportService

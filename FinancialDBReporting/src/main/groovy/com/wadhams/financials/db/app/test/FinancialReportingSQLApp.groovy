@@ -1,4 +1,4 @@
-package com.wadhams.financials.db.app
+package com.wadhams.financials.db.app.test
 
 import java.time.format.DateTimeFormatter
 
