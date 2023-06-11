@@ -25,6 +25,7 @@ class FinancialReportingApp {
 				LocalDateTime ldt = LocalDateTime.now()
 				String datetime = ldt.format(suffixDTF)
 
+				//TODO Fix the repeating code below (DRY)
 				PrintWriter pw1 = (new File("out/financial-report-${datetime}.txt")).newPrintWriter()
 				FinancialReportingController controller1 = new FinancialReportingController()
 				controller1.execute(pw1)

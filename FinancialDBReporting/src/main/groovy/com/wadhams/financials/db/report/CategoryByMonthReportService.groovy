@@ -8,13 +8,15 @@ import java.time.format.DateTimeFormatter
 import com.wadhams.financials.db.service.CategoryListService
 import com.wadhams.financials.db.service.CommonReportingService
 import com.wadhams.financials.db.service.DatabaseQueryService
+import com.wadhams.financials.db.service.DateService
 
 import groovy.sql.GroovyRowResult
 
 class CategoryByMonthReportService {
-	DatabaseQueryService databaseQueryService = new DatabaseQueryService()
-	CommonReportingService commonReportingService = new CommonReportingService()
-	CategoryListService categoryListService = new CategoryListService()
+	CategoryListService categoryListService
+	CommonReportingService commonReportingService
+	DatabaseQueryService databaseQueryService
+	DateService dateService
 	
 	DateTimeFormatter h2DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 	DateTimeFormatter reportDTF = DateTimeFormatter.ofPattern("LLLyyyy")
@@ -37,12 +39,7 @@ class CategoryByMonthReportService {
 		maxCategorySize = maxCategorySize + 5	//add margin for report
 
 		//previous 12 YearMonth
-		YearMonth now = YearMonth.now()
-		List<YearMonth> previous12List = []
-		12.times {i ->
-			previous12List << now.minusMonths(i+1)
-		}
-		previous12List.sort()
+		List<YearMonth> previous12List = dateService.previous12YearMonthList
 
 		NumberFormat nf = NumberFormat.getCurrencyInstance()
 		int maxAmountSize = 12	//used for padding amount
