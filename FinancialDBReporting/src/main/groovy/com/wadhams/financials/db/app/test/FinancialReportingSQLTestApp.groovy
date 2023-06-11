@@ -10,18 +10,18 @@ import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import java.time.LocalDate
 
-class FinancialReportingSQLApp {
+class FinancialReportingSQLTestApp {
 		Sql sql = Sql.newInstance('jdbc:h2:~/financial', 'sa', '', 'org.h2.Driver')
 		DateTimeFormatter h2DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 		
 	static main(args) {
-		println 'FinancialReportingSQLApp started...'
+		println 'FinancialReportingSQLTestApp started...'
 		println ''
 
-		FinancialReportingSQLApp app = new FinancialReportingSQLApp()
+		FinancialReportingSQLTestApp app = new FinancialReportingSQLTestApp()
 		app.execute()
 
-		println 'FinancialReportingSQLApp ended.'
+		println 'FinancialReportingSQLTestApp ended.'
 	}
 	
 	def execute() {
