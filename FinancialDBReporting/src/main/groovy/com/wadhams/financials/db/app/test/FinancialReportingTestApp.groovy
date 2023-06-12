@@ -1,5 +1,6 @@
 package com.wadhams.financials.db.app.test
 
+import com.wadhams.financials.db.controller.CategoryTrendingReportingController
 import com.wadhams.financials.db.controller.ExtraReportingController
 import com.wadhams.financials.db.controller.FinancialReportingController
 import com.wadhams.financials.db.report.BudgetReportService
@@ -25,20 +26,14 @@ class FinancialReportingTestApp {
 		
 		PrintWriter pw = new PrintWriter(System.out, true)
 
-		BudgetReportService budgetReportService = new BudgetReportService()
-		budgetReportService.execute(pw)
+//		BudgetReportService budgetReportService = new BudgetReportService()
+//		budgetReportService.execute(pw)
 
 //		FinancialReportingController controller = new FinancialReportingController()
 //		controller.execute(pw)
 		
-//		FinancialReportingController controller1 = new FinancialReportingController()
-//		controller1.execute(pw)
-
-//		MonthlyTotalsReportService monthlyTotalsReportService = new MonthlyTotalsReportService()
-//		monthlyTotalsReportService.execute(pw)
-		
-//		CategoryTrendingReportService service = new CategoryTrendingReportService()
-//		service.execute(pw)
+		CategoryTrendingReportingController controller = new CategoryTrendingReportingController()
+		controller.execute(pw)
 
 		println ''
 		println 'FinancialReportingTestApp ended.'
