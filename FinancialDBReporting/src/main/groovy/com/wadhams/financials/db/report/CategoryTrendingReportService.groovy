@@ -9,49 +9,59 @@ import java.time.format.DateTimeFormatter
 import com.wadhams.financials.db.dto.CountDTO
 import com.wadhams.financials.db.dto.TotalDTO
 import com.wadhams.financials.db.dto.TrendingRangeDTO
+import com.wadhams.financials.db.service.CategoryListService
 import com.wadhams.financials.db.service.CommonReportingService
 import com.wadhams.financials.db.service.DatabaseQueryService
+import com.wadhams.financials.db.service.DateService
 
 import groovy.sql.GroovyRowResult
 
 class CategoryTrendingReportService {
-	DatabaseQueryService databaseQueryService = new DatabaseQueryService()
+	CategoryListService categoryListService
+	CommonReportingService commonReportingService
+	DatabaseQueryService databaseQueryService
+	DateService dateService
+	
 	DateTimeFormatter h2DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-		
-	NumberFormat cf = NumberFormat.getCurrencyInstance()
 	DateTimeFormatter reportDTF = DateTimeFormatter.ofPattern("LLL yyyy")
 	
+	NumberFormat cf = NumberFormat.getCurrencyInstance()
+	
 	def execute(PrintWriter pw) {
-		int monthRange = 6
-		YearMonth firstYM = YearMonth.of(2020, Month.MAY)
-		YearMonth lastYM = YearMonth.of(2023, Month.APRIL)
-//		println "monthRange...: $monthRange"
-//		println "firstYM......: $firstYM"
-//		println "lastYM.......: $lastYM"
+		report(12, pw)
+		report(3, pw)
+	}
+	
+	def report(int trendingMonths, PrintWriter pw) {
+		YearMonth firstYM = YearMonth.from(dateService.caravanStartDate)
+		YearMonth lastYM = dateService.latestYearMonth
+//		println "trendingMonths...: $trendingMonths"
+//		println "firstYM..........: $firstYM"
+//		println "lastYM...........: $lastYM"
 //		println ''
 		
-		List<TrendingRangeDTO> trendingRangeDTOList = buildTrendingRangeDTOList(monthRange, firstYM, lastYM)
+		List<TrendingRangeDTO> trendingRangeDTOList = buildTrendingRangeDTOList(trendingMonths, firstYM, lastYM)
 //		println "trendingRangeDTOList size: ${trendingRangeDTOList.size()}"
 //		trendingRangeDTOList.each {dto ->
 //			println dto
 //		}
 //		println ''
 
-		reportHeading(monthRange, pw)
+		reportHeading(trendingMonths, pw)
 		
-		List<String> categoryList = ['CARAVAN_EQUIPMENT']
+		List<String> categoryList = databaseQueryService.orderCategoryList(dateService.caravanStartDate, categoryListService.dayToDayCategoryList)
+//		List<String> categoryList = categoryListService.dayToDayCategoryList
+//		List<String> categoryList = ['CARAVAN_EQUIPMENT']
 //		List<String> categoryList = ['FOOD', 'ALCOHOL', 'FUEL', 'DRINKS', 'PREPARED_FOOD', 'CAMPING_FEES', 'ENTERTAINMENT', 'MEDICAL', 'PHARMACY']
 		categoryList.each {category ->
 			trendingRangeDTOList.each {dto ->
 				augmentWithCategoryTotal(dto, category)
 			}
-			reportTrending(monthRange, category, trendingRangeDTOList, pw)
+			reportTrending(trendingMonths, category, trendingRangeDTOList, pw)
 		}
-		
-		
 	}
 	
-	def reportTrending(int monthRange, String category, List<TrendingRangeDTO> trendingRangeDTOList, PrintWriter pw) {
+	def reportTrending(int trendingMonths, String category, List<TrendingRangeDTO> trendingRangeDTOList, PrintWriter pw) {
 		pw.println "$category"
 		
 		TrendingRangeDTO firstDTO = trendingRangeDTOList[0]
@@ -60,17 +70,18 @@ class CategoryTrendingReportService {
 		
 		BigDecimal prevAmount = firstDTO.amount
 		trendingRangeDTOList[1..-1].each {dto ->
-			pw.println "\t${reportDTF.format(dto.startYM)} - ${reportDTF.format(dto.endYM)} ${cf.format(dto.amount).padLeft(10, ' ')}\t${cf.format(dto.amount.subtract(prevAmount)).padLeft(10, ' ')}"
+			//pw.println "\t${reportDTF.format(dto.startYM)} - ${reportDTF.format(dto.endYM)} ${cf.format(dto.amount).padLeft(10, ' ')}\t${cf.format(dto.amount.subtract(prevAmount)).padLeft(10, ' ')}"
+			pw.println "\t${reportDTF.format(dto.startYM)} - ${reportDTF.format(dto.endYM)} ${cf.format(dto.amount).padLeft(10, ' ')}"
 			total = total.add(dto.amount)
 			prevAmount = dto.amount
 		}
 		BigDecimal average = total.divide(trendingRangeDTOList.size(), 2)
-		pw.println "\t           Average: ${cf.format(average).padLeft(10, ' ')}"
+		pw.println "\t           Average: ${cf.format(average).padLeft(10, ' ')} every ${trendingMonths} months"
 		pw.println ''
 	}
 	
-	def reportHeading(int monthRange, PrintWriter pw) {
-		String heading = "CATEGORY TRENDING REPORT OVER $monthRange MONTHS"
+	def reportHeading(int trendingMonths, PrintWriter pw) {
+		String heading = "CATEGORY TRENDING REPORT OVER $trendingMonths MONTHS"
 		pw.println heading
 		String u1 = ''.padRight(heading.size(), '-')
 		pw.println u1
@@ -86,19 +97,21 @@ class CategoryTrendingReportService {
 		if (amount) {
 			dto.amount = amount
 		}
+		else {
+			dto.amount = BigDecimal.ZERO
+		}
 //		println dto
 	}
 	
-	List<TrendingRangeDTO> buildTrendingRangeDTOList(int monthRange, YearMonth firstYM, YearMonth lastYM) {
+	List<TrendingRangeDTO> buildTrendingRangeDTOList(int trendingMonths, YearMonth firstYM, YearMonth lastYM) {
 		List<TrendingRangeDTO> dtoList = []
 		
 		//initialise startYM and endYM
-		long monthSpan = monthRange - 1L
+		long monthSpan = trendingMonths - 1L
 		YearMonth endYM = lastYM
 		YearMonth startYM = endYM.minus(monthSpan)
 		//println "Initial: startYM: $startYM endYM: $endYM"
 		
-		//while (startYM.isAfter(firstYM)) {
 		while (startYM >= firstYM) {
 			TrendingRangeDTO dto = new TrendingRangeDTO(startYM, endYM)
 			dtoList << dto

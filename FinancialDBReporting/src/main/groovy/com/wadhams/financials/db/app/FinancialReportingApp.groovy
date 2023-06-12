@@ -5,6 +5,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 import com.wadhams.financials.db.controller.BudgetReportingController
+import com.wadhams.financials.db.controller.CategoryTrendingReportingController
 import com.wadhams.financials.db.controller.ExtraReportingController
 import com.wadhams.financials.db.controller.FinancialReportingController
 import com.wadhams.financials.db.controller.Last365DaysReportingController
@@ -38,15 +39,20 @@ class FinancialReportingApp {
 				controller2.execute(pw2)
 				pw2.close()
 				
-				PrintWriter pw3 = (new File("out/no-longer-required-report${filenameSuffix}.txt")).newPrintWriter()
-				NoLongerRequiredReportingController controller3 = new NoLongerRequiredReportingController()
+				PrintWriter pw3 = (new File("out/trending-report${filenameSuffix}.txt")).newPrintWriter()
+				CategoryTrendingReportingController controller3 = new CategoryTrendingReportingController()
 				controller3.execute(pw3)
 				pw3.close()
 				
-				PrintWriter pw4 = (new File("out/last-365-days-detail-report${filenameSuffix}.txt")).newPrintWriter()
-				Last365DaysReportingController controller4 = new Last365DaysReportingController()
+				PrintWriter pw4 = (new File("out/no-longer-required-report${filenameSuffix}.txt")).newPrintWriter()
+				NoLongerRequiredReportingController controller4 = new NoLongerRequiredReportingController()
 				controller4.execute(pw4)
 				pw4.close()
+				
+				PrintWriter pw5 = (new File("out/last-365-days-detail-report${filenameSuffix}.txt")).newPrintWriter()
+				Last365DaysReportingController controller5 = new Last365DaysReportingController()
+				controller5.execute(pw5)
+				pw5.close()
 				
 				ExtraReportingController controller9 = new ExtraReportingController()
 				controller9.execute()

@@ -14,14 +14,14 @@ import groovy.sql.Sql
 class DatabaseQueryService {
 	Sql sql = Sql.newInstance('jdbc:h2:~/financial', 'sa', '', 'org.h2.Driver')
 	
-	DateTimeFormatter h2dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+	DateTimeFormatter h2DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 	
 	List<FinancialDTO> buildList(String query) {
 		List<FinancialDTO> financialList = []
 
 		sql.eachRow(query) {row ->
 			Date c01 = row.TXN
-			LocalDate d01 = LocalDate.parse(c01.toString(), h2dtf)
+			LocalDate d01 = LocalDate.parse(c01.toString(), h2DTF)
 			BigDecimal c02 = row.AMT
 			String c03 = row.PAYEE
 			String c04 = row.DESC
@@ -29,9 +29,9 @@ class DatabaseQueryService {
 			String c06 = row.CAT
 			String c07 = row.SUBCAT
 			Date c08 = row.START
-			LocalDate d08 = (c08) ? LocalDate.parse(c08.toString(), h2dtf) : null     
+			LocalDate d08 = (c08) ? LocalDate.parse(c08.toString(), h2DTF) : null     
 			Date c09 = row.END
-			LocalDate d09 = (c09) ? LocalDate.parse(c09.toString(), h2dtf) : null
+			LocalDate d09 = (c09) ? LocalDate.parse(c09.toString(), h2DTF) : null
 			String c10 = row.RG1
 			String c11 = row.RG2
 			String c12 = row.RG3
@@ -119,6 +119,29 @@ class DatabaseQueryService {
 		}
 		
 		return categoryList
+	}
+
+	List<String> orderCategoryList(LocalDate startDate, List<String> categoryList) {
+		List<String> orderedCategoryList = []
+		
+		StringBuilder sb = new StringBuilder()
+		sb.append("SELECT CATEGORY as CAT, sum(amount) ")
+		sb.append("FROM FINANCIAL ")
+		sb.append("WHERE TRANSACTION_DT > '")
+		sb.append(startDate.format(h2DTF))
+		sb.append("' ")
+		sb.append("AND CATEGORY IN (")
+		sb.append(buildFormattedList(categoryList))
+		sb.append(") ")
+		sb.append("GROUP BY CATEGORY ")
+		sb.append("ORDER BY 2 DESC")
+		
+		sql.eachRow(sb.toString()) {row ->
+			String category = row.CAT
+			orderedCategoryList << category
+		}
+		
+		return orderedCategoryList
 	}
 
 	List<TotalDTO> buildTotalsList(String query) {
