@@ -8,8 +8,8 @@ import com.wadhams.financials.db.service.CommonReportingService
 import com.wadhams.financials.db.service.DatabaseQueryService
 
 class AssetDetailReportService {
-	DatabaseQueryService databaseQueryService = new DatabaseQueryService()
-	CommonReportingService commonReportingService = new CommonReportingService()
+	DatabaseQueryService databaseQueryService
+	CommonReportingService commonReportingService
 	
 	def execute() {
 		File f = new File("out/asset-detail-report.txt")

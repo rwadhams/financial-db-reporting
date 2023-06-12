@@ -15,11 +15,10 @@ import com.wadhams.financials.db.service.DateService
 import com.wadhams.financials.db.type.ReportingAmount
 
 class BudgetReportService {
-	//TODO inject from controller
-	CategoryListService categoryListService = new CategoryListService()
-	CommonReportingService commonReportingService = new CommonReportingService()
-	DatabaseQueryService databaseQueryService = new DatabaseQueryService()
-	DateService dateService = new DateService()
+	CategoryListService categoryListService
+	CommonReportingService commonReportingService
+	DatabaseQueryService databaseQueryService
+	DateService dateService
 	
 	DateTimeFormatter reportingDTF = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 	NumberFormat cf = NumberFormat.getCurrencyInstance()

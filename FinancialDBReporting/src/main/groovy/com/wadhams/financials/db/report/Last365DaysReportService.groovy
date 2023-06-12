@@ -10,8 +10,8 @@ import com.wadhams.financials.db.service.CommonReportingService
 import com.wadhams.financials.db.service.DatabaseQueryService
 
 class Last365DaysReportService {
-	DatabaseQueryService databaseQueryService = new DatabaseQueryService()
-	CommonReportingService commonReportingService = new CommonReportingService()
+	DatabaseQueryService databaseQueryService
+	CommonReportingService commonReportingService
 	
 	DateTimeFormatter dtf = DateTimeFormatter.ofPattern('dd/MM/yyyy')
 	NumberFormat cf = NumberFormat.getCurrencyInstance()

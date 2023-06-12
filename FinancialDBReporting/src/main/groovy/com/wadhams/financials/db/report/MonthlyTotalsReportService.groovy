@@ -11,8 +11,8 @@ import com.wadhams.financials.db.service.DatabaseQueryService
 import groovy.sql.GroovyRowResult
 
 class MonthlyTotalsReportService {
-	DatabaseQueryService databaseQueryService = new DatabaseQueryService()
-	CommonReportingService commonReportingService = new CommonReportingService()
+	DatabaseQueryService databaseQueryService
+	CommonReportingService commonReportingService
 	
 	DateTimeFormatter h2DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 	DateTimeFormatter reportDTF = DateTimeFormatter.ofPattern("LLLyyyy")

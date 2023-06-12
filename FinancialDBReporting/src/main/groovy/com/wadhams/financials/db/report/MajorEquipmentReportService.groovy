@@ -8,8 +8,8 @@ import com.wadhams.financials.db.service.CommonReportingService
 import com.wadhams.financials.db.service.DatabaseQueryService
 
 class MajorEquipmentReportService {
-	DatabaseQueryService databaseQueryService = new DatabaseQueryService()
-	CommonReportingService commonReportingService = new CommonReportingService()
+	DatabaseQueryService databaseQueryService
+	CommonReportingService commonReportingService
 	
 	def execute(PrintWriter pw) {
 		String query = buildQuery('100')

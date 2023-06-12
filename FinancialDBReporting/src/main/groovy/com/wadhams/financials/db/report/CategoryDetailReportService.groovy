@@ -10,8 +10,8 @@ import com.wadhams.financials.db.service.DatabaseQueryService
 import com.wadhams.financials.db.service.TimelineXMLService
 
 class CategoryDetailReportService {
-	DatabaseQueryService databaseQueryService = new DatabaseQueryService()
-	CommonReportingService commonReportingService = new CommonReportingService()
+	DatabaseQueryService databaseQueryService
+	CommonReportingService commonReportingService
 	
 	def execute() {
 		File f = new File("out/category-detail-report.txt")

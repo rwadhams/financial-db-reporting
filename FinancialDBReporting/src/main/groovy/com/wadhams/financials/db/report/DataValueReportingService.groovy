@@ -5,7 +5,7 @@ import com.wadhams.financials.db.service.SQLBuilderService
 import groovy.sql.Sql
 
 class DataValueReportingService {
-	SQLBuilderService sqlBuilderService = new SQLBuilderService()
+	SQLBuilderService sqlBuilderService
 	
 	def execute() {
 		File f = new File("out/data-value-report.txt")
