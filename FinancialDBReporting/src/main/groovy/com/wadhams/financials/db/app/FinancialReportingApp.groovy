@@ -20,52 +20,30 @@ class FinancialReportingApp {
 			Run run = Run.findByName(args[0])
 			println "Run parameter: $run"
 			println ''
+			String filenameSuffix = ''
 			if (run == Run.TimestampReport) {
 				DateTimeFormatter suffixDTF = DateTimeFormatter.ofPattern('yyyy-MM-dd-HH-mm-ss')
 				LocalDateTime ldt = LocalDateTime.now()
-				String datetime = ldt.format(suffixDTF)
-
-				//TODO Fix the repeating code below (DRY)
-				PrintWriter pw1 = (new File("out/financial-report-${datetime}.txt")).newPrintWriter()
-				FinancialReportingController controller1 = new FinancialReportingController()
-				controller1.execute(pw1)
-				pw1.close()
-				
-				PrintWriter pw2 = (new File("out/budget-report-${datetime}.txt")).newPrintWriter()
-				BudgetReportingController controller2 = new BudgetReportingController()
-				controller2.execute(pw2)
-				pw2.close()
-				
-				PrintWriter pw3 = (new File("out/no-longer-required-report-${datetime}.txt")).newPrintWriter()
-				NoLongerRequiredReportingController controller3 = new NoLongerRequiredReportingController()
-				controller3.execute(pw3)
-				pw3.close()
-				
-				PrintWriter pw4 = (new File("out/last-365-days-detail-report-${datetime}.txt")).newPrintWriter()
-				Last365DaysReportingController controller4 = new Last365DaysReportingController()
-				controller4.execute(pw4)
-				pw4.close()
-				
-				ExtraReportingController controller9 = new ExtraReportingController()
-				controller9.execute()
+				filenameSuffix = '-' + ldt.format(suffixDTF)
 			}
-			else if (run == Run.OverWriteReport) {
-				PrintWriter pw1 = (new File('out/financial-report.txt')).newPrintWriter()
+
+			if (run == Run.OverWriteReport || run == Run.TimestampReport) {
+				PrintWriter pw1 = (new File("out/financial-report${filenameSuffix}.txt")).newPrintWriter()
 				FinancialReportingController controller1 = new FinancialReportingController()
 				controller1.execute(pw1)
 				pw1.close()
 				
-				PrintWriter pw2 = (new File('out/budget-report.txt')).newPrintWriter()
+				PrintWriter pw2 = (new File("out/budget-report${filenameSuffix}.txt")).newPrintWriter()
 				BudgetReportingController controller2 = new BudgetReportingController()
 				controller2.execute(pw2)
 				pw2.close()
 				
-				PrintWriter pw3 = (new File('out/no-longer-required-report.txt')).newPrintWriter()
+				PrintWriter pw3 = (new File("out/no-longer-required-report${filenameSuffix}.txt")).newPrintWriter()
 				NoLongerRequiredReportingController controller3 = new NoLongerRequiredReportingController()
 				controller3.execute(pw3)
 				pw3.close()
 				
-				PrintWriter pw4 = (new File('out/last-365-days-detail-report.txt')).newPrintWriter()
+				PrintWriter pw4 = (new File("out/last-365-days-detail-report${filenameSuffix}.txt")).newPrintWriter()
 				Last365DaysReportingController controller4 = new Last365DaysReportingController()
 				controller4.execute(pw4)
 				pw4.close()

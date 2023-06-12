@@ -13,7 +13,7 @@ class CategoryListService {
 	List<String> campHillRenoCategoryList
 	List<String> fingalCategoryList
 	List<String> assetRelatedCostCategoryList
-	List<String> timeSpannedCategoryList
+	List<String> runningCostCategoryList
 	List<String> dayToDayCategoryList
 	List<String> unbudgetedCategoryList
 	List<String> otherCategoryList
@@ -28,7 +28,7 @@ class CategoryListService {
 			'CASH',
 			'PHONE_AND_DATA_PLAN'
 			]
-		startingCategoryList = startingCategoryList - obsoleteCategoryList
+		startingCategoryList -= obsoleteCategoryList
 		
 		//Camp Hill Reno
 		campHillRenoCategoryList = startingCategoryList.findAll {cat ->
@@ -38,7 +38,7 @@ class CategoryListService {
 //			'CH_RENO_COST',
 //			'CH_RENO_SERVICES'
 //			]
-		startingCategoryList = startingCategoryList - campHillRenoCategoryList
+		startingCategoryList -= campHillRenoCategoryList
 		
 		//Camp Hill
 		campHillCategoryList = startingCategoryList.findAll {cat ->
@@ -55,7 +55,7 @@ class CategoryListService {
 //			'CH_SUPPLIES',
 //			'CH_WATER_UTILITIES'
 //			]
-		startingCategoryList = startingCategoryList - campHillCategoryList
+		startingCategoryList -= campHillCategoryList
 		
 		//Fingal
 		fingalCategoryList = startingCategoryList.findAll {cat ->
@@ -67,16 +67,16 @@ class CategoryListService {
 //			'FINGAL_SUPPLIES',
 //			'FINGAL_WORK'
 //			]
-		startingCategoryList = startingCategoryList - fingalCategoryList
+		startingCategoryList -= fingalCategoryList
 
 		//Asset Relared Cost
 		assetRelatedCostCategoryList = [
 			'ASSET_RELATED_COST'
 			]
-		startingCategoryList = startingCategoryList - assetRelatedCostCategoryList
+		startingCategoryList -= assetRelatedCostCategoryList
 		
 		//Time Spanned. Items with a start and end date
-		timeSpannedCategoryList = [
+		runningCostCategoryList = [
 			'CARAVAN_INSURANCE',
 			'CARAVAN_REGISTRATION',
 			'CARAVAN_SERVICING',
@@ -93,7 +93,7 @@ class CategoryListService {
 			'PHONE_PLAN_ROB',
 			'TRANSMISSION_SERVICING'
 			]
-			startingCategoryList = startingCategoryList - timeSpannedCategoryList
+			startingCategoryList -= runningCostCategoryList
 			
 			//DayToDay
 			dayToDayCategoryList = [
@@ -117,11 +117,12 @@ class CategoryListService {
 				'PHARMACY',
 				'PREPARED_FOOD'
 				]
-			startingCategoryList = startingCategoryList - dayToDayCategoryList
+			startingCategoryList -= dayToDayCategoryList
 			
 			//Unbudgeted
 			unbudgetedCategoryList = [
 				'ACCOMODATION',
+				'ACCOUNTING_FEES',
 				'BASS_STRAIT_FERRY',
 				'CARAVAN_STORAGE',
 				'DOMESTIC_TRAVEL',
@@ -131,7 +132,7 @@ class CategoryListService {
 				'OVERSEAS_TRAVEL',
 				'RENTAL_CAR'
 				]
-			startingCategoryList = startingCategoryList - unbudgetedCategoryList
+			startingCategoryList -= unbudgetedCategoryList
 			
 			//Other
 			otherCategoryList = startingCategoryList
@@ -147,7 +148,7 @@ class CategoryListService {
 							 campHillCategoryList.size() +
 							 fingalCategoryList.size() +
 							 assetRelatedCostCategoryList.size() +
-							 timeSpannedCategoryList.size() +
+							 runningCostCategoryList.size() +
 							 dayToDayCategoryList.size() + 
 							 unbudgetedCategoryList.size() +
 							 otherCategoryList.size()
@@ -178,8 +179,8 @@ class CategoryListService {
 		println 'assetRelatedCostCategoryList:'
 		assetRelatedCostCategoryList.each {cat-> println "\t$cat"}
 		println ''
-		println 'timeSpannedCategoryList:'
-		timeSpannedCategoryList.each {cat-> println "\t$cat"}
+		println 'runningCostCategoryList:'
+		runningCostCategoryList.each {cat-> println "\t$cat"}
 		println ''
 		println 'dayToDayCategoryList:'
 		dayToDayCategoryList.each {cat-> println "\t$cat"}

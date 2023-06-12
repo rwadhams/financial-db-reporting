@@ -8,6 +8,7 @@ import com.wadhams.financials.db.report.FurnitureReportService
 import com.wadhams.financials.db.report.LargeTransactionReportService
 import com.wadhams.financials.db.report.MajorEquipmentReportService
 import com.wadhams.financials.db.report.MonthlyAverageCampingCostReportService
+import com.wadhams.financials.db.report.MonthlyCategoryDetailReportService
 import com.wadhams.financials.db.report.MonthlyRunningCostReportService
 import com.wadhams.financials.db.report.MonthlyTotalsReportService
 import com.wadhams.financials.db.report.RenovationReportService
@@ -38,5 +39,19 @@ class FinancialReportingController {
 		categoryByMonthReportService.dateService = dateService
 		//execute
 		categoryByMonthReportService.execute(pw)
+		
+		pw.println ''
+		pw.println commonReportingService.horizonalRule
+		pw.println ''
+		
+		MonthlyCategoryDetailReportService monthlyCategoryDetailReportService = new MonthlyCategoryDetailReportService()
+		//inject services
+		monthlyCategoryDetailReportService.categoryListService = categoryListService
+		monthlyCategoryDetailReportService.commonReportingService = commonReportingService
+		monthlyCategoryDetailReportService.databaseQueryService = databaseQueryService
+		monthlyCategoryDetailReportService.dateService = dateService
+		//execute
+		monthlyCategoryDetailReportService.execute(dateService.latestYearMonth, pw)
+
 	}
 }

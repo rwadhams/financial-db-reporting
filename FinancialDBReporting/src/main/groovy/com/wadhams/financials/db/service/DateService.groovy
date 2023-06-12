@@ -18,6 +18,7 @@ class DateService {
 	LocalDate fingalPurchaseDate
 	
 	LocalDate maxTransactionDate
+	YearMonth latestYearMonth
 	List<YearMonth> previous12YearMonthList
 	
 	public DateService() {
@@ -26,6 +27,7 @@ class DateService {
 		fingalPurchaseDate = LocalDate.of(2023, 3, 2)
 		
 		maxTransactionDate = findMaxTransactionDate()
+		latestYearMonth = YearMonth.from(maxTransactionDate)
 		previous12YearMonthList = buildPrevious12YearMonthList()
 	}
 
@@ -48,6 +50,7 @@ class DateService {
 		println ''
 		
 		println "maxTransactionDate...........: $maxTransactionDate"
+		println "latestYearMonth..............: $latestYearMonth"
 		println "previous12YearMonthList......: $previous12YearMonthList"
 	}
 	
