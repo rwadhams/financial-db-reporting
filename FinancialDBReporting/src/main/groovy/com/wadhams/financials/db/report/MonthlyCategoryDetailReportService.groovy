@@ -6,12 +6,10 @@ import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
 import com.wadhams.financials.db.dto.FinancialDTO
-import com.wadhams.financials.db.dto.TimelineDTO
 import com.wadhams.financials.db.service.CategoryListService
 import com.wadhams.financials.db.service.CommonReportingService
 import com.wadhams.financials.db.service.DatabaseQueryService
 import com.wadhams.financials.db.service.DateService
-import com.wadhams.financials.db.service.TimelineXMLService
 
 class MonthlyCategoryDetailReportService {
 	CategoryListService categoryListService
