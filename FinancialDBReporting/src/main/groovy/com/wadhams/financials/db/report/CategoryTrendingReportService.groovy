@@ -3,11 +3,8 @@ package com.wadhams.financials.db.report
 import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.YearMonth
-import java.time.Month
 import java.time.format.DateTimeFormatter
 
-import com.wadhams.financials.db.dto.CountDTO
-import com.wadhams.financials.db.dto.TotalDTO
 import com.wadhams.financials.db.dto.TrendingRangeDTO
 import com.wadhams.financials.db.service.CategoryListService
 import com.wadhams.financials.db.service.CommonReportingService

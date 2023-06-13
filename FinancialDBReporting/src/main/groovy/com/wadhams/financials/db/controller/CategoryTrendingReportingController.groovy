@@ -1,8 +1,6 @@
 package com.wadhams.financials.db.controller
 
-import com.wadhams.financials.db.report.BudgetReportService
 import com.wadhams.financials.db.report.CategoryTrendingReportService
-import com.wadhams.financials.db.report.TrendingReportService
 import com.wadhams.financials.db.service.CategoryListService
 import com.wadhams.financials.db.service.CommonReportingService
 import com.wadhams.financials.db.service.DatabaseQueryService
