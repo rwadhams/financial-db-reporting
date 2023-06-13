@@ -1,4 +1,4 @@
-package com.wadhams.financials.db.type
+package com.wadhams.financials.db.type.obsolete
 
 import java.time.YearMonth
 

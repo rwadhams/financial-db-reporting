@@ -3,6 +3,8 @@ package com.wadhams.financials.db.type
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+import com.wadhams.financials.db.type.obsolete.MonthDateRange2
+
 import spock.lang.Title
 
 @Title("Unit tests for MonthDateRange")
