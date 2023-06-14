@@ -15,14 +15,12 @@ import com.wadhams.financials.db.report.RenovationReportService
 import com.wadhams.financials.db.report.SmallMediumLargeReportService
 import com.wadhams.financials.db.service.CommonReportingService
 import com.wadhams.financials.db.service.DatabaseQueryService
-import com.wadhams.financials.db.service.SQLBuilderService
 import com.wadhams.financials.db.service.TimelineService
 import com.wadhams.financials.db.report.Last365DaysReportService
 
 class ExtraReportingController {
 	CommonReportingService commonReportingService = new CommonReportingService()
 	DatabaseQueryService databaseQueryService = new DatabaseQueryService()
-	SQLBuilderService sqlBuilderService = new SQLBuilderService()
 	TimelineService timelineService = new TimelineService()
 	
 	def execute() {
@@ -44,8 +42,6 @@ class ExtraReportingController {
 		assetDetailReportService.execute()
 		
 		DataValueReportingService dataValueReportingService = new DataValueReportingService()
-		//inject services
-		dataValueReportingService.sqlBuilderService = sqlBuilderService
 		//execute
 		dataValueReportingService.execute()
 	}

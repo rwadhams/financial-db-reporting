@@ -99,6 +99,7 @@ class DatabaseAnalysisReportingApp {
 		reportGroupOne()
 		categoryStartEndDates()
 		categoryRunningCosts()
+		allSubCategories()
 	}
 	
 	def allCategories() {
@@ -120,6 +121,28 @@ class DatabaseAnalysisReportingApp {
 		}
 		println ''
 		println "${categoryCount} distinct categories"
+		println ''
+	}
+	
+	def allSubCategories() {
+		String q1 = 'select distinct sub_category as SUBCAT from financial where sub_category is not null order by 1'
+		String uq1 = ''.padRight(q1.size(), '-')
+		println uq1
+		println q1
+		println uq1
+		
+		String h1 = "SubCategory"
+		String u1 = '-----------'
+		println h1
+		println u1
+		int subCategoryCount = 0
+		sql.eachRow(q1) {row ->
+			String subCategory = row.SUBCAT
+			println "$subCategory"
+			subCategoryCount++
+		}
+		println ''
+		println "${subCategoryCount} distinct subCategories"
 		println ''
 	}
 	
