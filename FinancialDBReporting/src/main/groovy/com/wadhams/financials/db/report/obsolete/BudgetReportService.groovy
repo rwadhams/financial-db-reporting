@@ -13,7 +13,7 @@ import com.wadhams.financials.db.helper.ListControlBreak
 import com.wadhams.financials.db.service.CommonReportingService
 import com.wadhams.financials.db.service.DatabaseQueryService
 import com.wadhams.financials.db.service.TimelineService
-import com.wadhams.financials.db.type.BudgetCategory
+import com.wadhams.financials.db.type.obsolete.BudgetCategory
 import com.wadhams.financials.db.type.obsolete.ReportingAmount
 
 class BudgetReportService {
