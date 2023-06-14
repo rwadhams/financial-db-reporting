@@ -1,4 +1,4 @@
-package com.wadhams.financials.db.dto
+package com.wadhams.financials.db.dto.obsolete
 
 import groovy.transform.ToString
 

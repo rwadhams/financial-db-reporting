@@ -4,7 +4,7 @@ import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
-import com.wadhams.financials.db.dto.CategoryTotalAverageDTO
+import com.wadhams.financials.db.dto.CategoryAmountDTO
 import com.wadhams.financials.db.dto.FinancialDTO
 import com.wadhams.financials.db.dto.TotalDTO
 
@@ -159,15 +159,34 @@ class DatabaseQueryService {
 		return totalList
 	}
 
-	List<CategoryTotalAverageDTO> buildCategoryTotalAverageDTOList(String query) {
-		List<CategoryTotalAverageDTO> dtoList = []
+	List<CategoryAmountDTO> buildCategoryTotalList(String query) {
+		List<CategoryAmountDTO> dtoList = []
 		
 		sql.eachRow(query) {row ->
 			String category = row.CAT
 			BigDecimal total = row.TOTAL
-			CategoryTotalAverageDTO dto = new CategoryTotalAverageDTO()
+			CategoryAmountDTO dto = new CategoryAmountDTO()
 			dto.category = category
-			dto.total = total
+			dto.amount = total
+			dtoList << dto
+		}
+		
+		return dtoList
+	}
+	
+	List<CategoryAmountDTO> buildCategoryAverageList(String query, long days) {
+		List<CategoryAmountDTO> dtoList = []
+		
+		BigDecimal monthsPerYear = new BigDecimal('12')
+		BigDecimal daysPerYear = new BigDecimal('365')
+		BigDecimal numberOfDays = new BigDecimal(days)
+		
+		sql.eachRow(query) {row ->
+			String category = row.CAT
+			BigDecimal total = row.TOTAL
+			CategoryAmountDTO dto = new CategoryAmountDTO()
+			dto.category = category
+			dto.amount = total.multiply(daysPerYear).divide(monthsPerYear, 2).divide(numberOfDays, 2)
 			dtoList << dto
 		}
 		

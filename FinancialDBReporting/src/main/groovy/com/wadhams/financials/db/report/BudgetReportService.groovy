@@ -4,15 +4,13 @@ import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
-
-import com.wadhams.financials.db.dto.CategoryTotalAverageDTO
+import com.wadhams.financials.db.dto.CategoryAmountDTO
 import com.wadhams.financials.db.dto.FinancialDTO
 import com.wadhams.financials.db.helper.ListControlBreak
 import com.wadhams.financials.db.service.CategoryListService
 import com.wadhams.financials.db.service.CommonReportingService
 import com.wadhams.financials.db.service.DatabaseQueryService
 import com.wadhams.financials.db.service.DateService
-import com.wadhams.financials.db.type.ReportingAmount
 
 class BudgetReportService {
 	CategoryListService categoryListService
@@ -33,7 +31,7 @@ class BudgetReportService {
 		String query
 		String heading
 		List<FinancialDTO> financialDTOList
-		List<CategoryTotalAverageDTO> ctaDTOList
+		List<CategoryAmountDTO> caDTOList
 		
 		//RUNNING COSTS
 		query = buildQuerySpecificOngoing(categoryListService.runningCostCategoryList)
@@ -45,17 +43,13 @@ class BudgetReportService {
 		pw.println ''
 		
 		//average calculations use caravanStartDate and maxTransactionDate in it's calculations
-		int elapsedDays = ChronoUnit.DAYS.between(dateService.caravanStartDate, dateService.maxTransactionDate) + 1
+		long elapsedDays = ChronoUnit.DAYS.between(dateService.caravanStartDate, dateService.maxTransactionDate) + 1L
 		
 		//DAY TO DAY CATEGORIES
 		query = buildQueryWithGreaterTransactionDate(categoryListService.dayToDayCategoryList, dateService.caravanStartDate)
-		ctaDTOList = databaseQueryService.buildCategoryTotalAverageDTOList(query)
-		//average each total
-		ctaDTOList.each {cta ->
-			cta.average = averageBigDecimal(cta.total, elapsedDays)
-		}
+		caDTOList = databaseQueryService.buildCategoryAverageList(query, elapsedDays)
 		heading = "DAY TO DAY CATEGORIES FROM LAST $elapsedDays DAYS (MONTHLY AVERAGE)"
-		reportCategoryTotalAverageList(heading, ctaDTOList, ReportingAmount.Average, pw)
+		reportCategoryAverageList(heading, caDTOList, pw)
 
 		pw.println ''
 		pw.println commonReportingService.horizonalRule
@@ -63,9 +57,9 @@ class BudgetReportService {
 		
 		//UNBUDGETED
 		query = buildQueryWithGreaterTransactionDate(categoryListService.unbudgetedCategoryList, dateService.caravanStartDate)
-		ctaDTOList = databaseQueryService.buildCategoryTotalAverageDTOList(query)
+		caDTOList = databaseQueryService.buildCategoryTotalList(query)
 		heading = "UNBUDGETED CATEGORIES            TOTAL (Transactions after ${dateService.caravanStartDate.format(reportingDTF)})" 
-		reportCategoryTotalAverageList(heading, ctaDTOList, ReportingAmount.Total, pw)
+		reportCategoryTotalList(heading, caDTOList, pw)
 		
 		pw.println ''
 		pw.println commonReportingService.horizonalRule
@@ -73,9 +67,9 @@ class BudgetReportService {
 		
 		//OTHER
 		query = buildQueryWithGreaterTransactionDate(categoryListService.otherCategoryList, dateService.caravanStartDate)
-		ctaDTOList = databaseQueryService.buildCategoryTotalAverageDTOList(query)
+		caDTOList = databaseQueryService.buildCategoryTotalList(query)
 		heading = "OTHER CATEGORIES                 TOTAL (Transactions after ${dateService.caravanStartDate.format(reportingDTF)})"
-		reportCategoryTotalAverageList(heading, ctaDTOList, ReportingAmount.Total, pw)
+		reportCategoryTotalList(heading, caDTOList, pw)
 		
 		pw.println ''
 		pw.println commonReportingService.horizonalRule
@@ -120,34 +114,35 @@ class BudgetReportService {
 		monthlyAverageTotal += reportTotal
 	}
 	
-	def reportCategoryTotalAverageList(String heading, List<CategoryTotalAverageDTO> list, ReportingAmount ra, PrintWriter pw) {
+	def reportCategoryAverageList(String heading, List<CategoryAmountDTO> list, PrintWriter pw) {
 		pw.println heading
 		String u1 = ''.padRight(heading.size(), '-')
 		pw.println u1
 		
 		BigDecimal total = new BigDecimal(0.0)
 		list.each {dto ->
-			if (ra == ReportingAmount.Average) {
-				total = total.add(dto.average)
-				pw.println "${commonReportingService.buildFixedWidthLabel(dto.category, 25)}${cf.format(dto.average).padLeft(11, ' ')}"
-			}
-			else if (ra == ReportingAmount.Total) {
-				total = total.add(dto.total)
-				pw.println "${commonReportingService.buildFixedWidthLabel(dto.category, 25)}${cf.format(dto.total).padLeft(11, ' ')}"
-			}
+			total = total.add(dto.amount)
+			pw.println "${commonReportingService.buildFixedWidthLabel(dto.category, 25)}${cf.format(dto.amount).padLeft(11, ' ')}"
 		}
 		
 		pw.println ''
-		if (ra == ReportingAmount.Average) {
-			pw.println "${commonReportingService.buildFixedWidthLabel('Monthly Average', 25)}${cf.format(total).padLeft(11, ' ')}"
-			monthlyAverageTotal += total
+		pw.println "${commonReportingService.buildFixedWidthLabel('Monthly Average', 25)}${cf.format(total).padLeft(11, ' ')}"
+		monthlyAverageTotal += total
+	}
+	
+	def reportCategoryTotalList(String heading, List<CategoryAmountDTO> list, PrintWriter pw) {
+		pw.println heading
+		String u1 = ''.padRight(heading.size(), '-')
+		pw.println u1
+		
+		BigDecimal total = new BigDecimal(0.0)
+		list.each {dto ->
+			total = total.add(dto.amount)
+			pw.println "${commonReportingService.buildFixedWidthLabel(dto.category, 25)}${cf.format(dto.amount).padLeft(11, ' ')}"
 		}
-		else if (ra == ReportingAmount.Total) {
-			pw.println "${commonReportingService.buildFixedWidthLabel('Grand Total', 25)}${cf.format(total).padLeft(11, ' ')}"
-		}
-		else {
-			pw.println 'Unknown ReportingAmount Enum'
-		}
+		
+		pw.println ''
+		pw.println "${commonReportingService.buildFixedWidthLabel('Grand Total', 25)}${cf.format(total).padLeft(11, ' ')}"
 	}
 	
 	def reportMonthlyYearlyTotal(PrintWriter pw) {
@@ -194,9 +189,8 @@ class BudgetReportService {
 		return sb.toString()
 	}
 
-	BigDecimal averageBigDecimal(BigDecimal bd, long days) {
-		BigDecimal numberOfDays = new BigDecimal(days)
-		return bd.multiply(daysPerYear).divide(monthsPerYear, 2).divide(numberOfDays, 2)
-	}
-	
+//	BigDecimal averageBigDecimal(BigDecimal bd, long days) {
+//		BigDecimal numberOfDays = new BigDecimal(days)
+//		return bd.multiply(daysPerYear).divide(monthsPerYear, 2).divide(numberOfDays, 2)
+//	}
 }

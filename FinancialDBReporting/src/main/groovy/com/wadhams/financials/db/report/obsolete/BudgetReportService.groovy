@@ -7,14 +7,14 @@ import java.time.format.DateTimeFormatter
 import com.wadhams.financials.db.dto.CampingNonCampingContinuousDTO
 import com.wadhams.financials.db.dto.FinancialDTO
 import com.wadhams.financials.db.dto.NamedTimePeriodDTO
-import com.wadhams.financials.db.dto.CategoryTotalAverageDTO
 import com.wadhams.financials.db.dto.TotalDTO
+import com.wadhams.financials.db.dto.obsolete.CategoryTotalAverageDTO
 import com.wadhams.financials.db.helper.ListControlBreak
 import com.wadhams.financials.db.service.CommonReportingService
 import com.wadhams.financials.db.service.DatabaseQueryService
 import com.wadhams.financials.db.service.TimelineService
 import com.wadhams.financials.db.type.BudgetCategory
-import com.wadhams.financials.db.type.ReportingAmount
+import com.wadhams.financials.db.type.obsolete.ReportingAmount
 
 class BudgetReportService {
 	DatabaseQueryService databaseQueryService = new DatabaseQueryService()
