@@ -67,7 +67,7 @@ class TimelineService {
 	
 	def parseXML() {
 		File tripFile
-		URL resource = getClass().getClassLoader().getResource("Timeline2.xml")
+		URL resource = getClass().getClassLoader().getResource("Timeline.xml")
 		if (resource == null) {
 			throw new IllegalArgumentException("file not found!")
 		}

@@ -1,13 +1,8 @@
 package com.wadhams.financials.db.app.test
 
-import com.wadhams.financials.db.controller.CategoryTrendingReportingController
 import com.wadhams.financials.db.controller.ExtraReportingController
-import com.wadhams.financials.db.controller.FinancialReportingController
-import com.wadhams.financials.db.report.BudgetReportService
-import com.wadhams.financials.db.report.CategoryTrendingReportService
-import com.wadhams.financials.db.report.MonthlyTotalsReportService
-import com.wadhams.financials.db.service.CategoryListService
-import com.wadhams.financials.db.service.DateService
+import com.wadhams.financials.db.report.obsolete.BudgetReportService
+import com.wadhams.financials.db.service.TimelineService
 
 class FinancialReportingTestApp {
 	static main(args) {
@@ -26,14 +21,17 @@ class FinancialReportingTestApp {
 		
 		PrintWriter pw = new PrintWriter(System.out, true)
 
+//		TimelineService timelineService = new TimelineService()
+//		timelineService.reportTimeline(pw)
+		
 //		BudgetReportService budgetReportService = new BudgetReportService()
 //		budgetReportService.execute(pw)
 
 //		FinancialReportingController controller = new FinancialReportingController()
 //		controller.execute(pw)
 		
-		CategoryTrendingReportingController controller = new CategoryTrendingReportingController()
-		controller.execute(pw)
+//		CategoryTrendingReportingController controller = new CategoryTrendingReportingController()
+//		controller.execute(pw)
 
 		println ''
 		println 'FinancialReportingTestApp ended.'

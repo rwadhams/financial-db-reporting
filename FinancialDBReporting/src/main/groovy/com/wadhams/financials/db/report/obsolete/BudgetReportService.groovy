@@ -6,20 +6,20 @@ import java.time.format.DateTimeFormatter
 
 import com.wadhams.financials.db.dto.CampingNonCampingContinuousDTO
 import com.wadhams.financials.db.dto.FinancialDTO
+import com.wadhams.financials.db.dto.NamedTimePeriodDTO
 import com.wadhams.financials.db.dto.CategoryTotalAverageDTO
-import com.wadhams.financials.db.dto.TimelineDTO
 import com.wadhams.financials.db.dto.TotalDTO
-import com.wadhams.financials.db.dto.TripDTO
 import com.wadhams.financials.db.helper.ListControlBreak
 import com.wadhams.financials.db.service.CommonReportingService
 import com.wadhams.financials.db.service.DatabaseQueryService
-import com.wadhams.financials.db.service.TimelineXMLService
+import com.wadhams.financials.db.service.TimelineService
 import com.wadhams.financials.db.type.BudgetCategory
 import com.wadhams.financials.db.type.ReportingAmount
 
 class BudgetReportService {
 	DatabaseQueryService databaseQueryService = new DatabaseQueryService()
 	CommonReportingService commonReportingService = new CommonReportingService()
+	TimelineService timelineService = new TimelineService()
 	
 	DateTimeFormatter reportingdtf = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 	NumberFormat cf = NumberFormat.getCurrencyInstance()
@@ -33,12 +33,8 @@ class BudgetReportService {
 		Map<BudgetCategory, List<String>> budgetCategoryMap = buildBudgetCategoryMap()
 		assert budgetCategoryMap.size() > 0
 		
-		TimelineXMLService timelineXMLService = new TimelineXMLService()
-		TimelineDTO timelineDTO = timelineXMLService.loadTimelineData()
-		//println timelineDTO
-		
-		reportCampingNonCampingDates(timelineDTO, pw)
-		
+		timelineService.reportTimeline(pw)
+				
 		pw.println ''
 		pw.println commonReportingService.horizonalRule
 		pw.println ''
@@ -59,11 +55,11 @@ class BudgetReportService {
 		
 		//CAMPING TIMELINE CATEGORIES
 		ctaDTOList = []
-		query = buildQueryWithTransactionDates(budgetCategoryMap[BudgetCategory.CampingTimeline], timelineDTO.campingTripList)
+		query = buildQueryWithTransactionDates(budgetCategoryMap[BudgetCategory.CampingTimeline], timelineService.caravanNamedTimePeriodDTOList)
 		ctaDTOList = databaseQueryService.buildCategoryTotalAverageDTOList(query)
 		//average each total
 		ctaDTOList.each {cta ->
-			cta.average = averageBigDecimal(cta.total, timelineDTO.campingDays)
+			cta.average = averageBigDecimal(cta.total, timelineService.caravanDays,)
 		}
 		reportCategoryTotalAverageList('CAMPING TIMELINE CATEGORIES (MONTHLY AVERAGE)', ctaDTOList, ReportingAmount.Average, pw)
 		
@@ -73,11 +69,11 @@ class BudgetReportService {
 		
 		//CONTINUOUS HISTORY CATEGORIES
 		ctaDTOList = []
-		query = buildQueryWithGreaterTransactionDate(budgetCategoryMap[BudgetCategory.ContinuousHistory], timelineDTO.startTimelineDate)
+		query = buildQueryWithGreaterTransactionDate(budgetCategoryMap[BudgetCategory.ContinuousHistory], timelineService.startTimelineDate)
 		ctaDTOList = databaseQueryService.buildCategoryTotalAverageDTOList(query)
 		//average each total
 		ctaDTOList.each {cta ->
-			cta.average = averageBigDecimal(cta.total, timelineDTO.totalDays)
+			cta.average = averageBigDecimal(cta.total, timelineService.totalDays)
 		}
 		reportCategoryTotalAverageList('CONTINUOUS HISTORY CATEGORIES (MONTHLY AVERAGE)', ctaDTOList, ReportingAmount.Average, pw)
 		
@@ -122,35 +118,6 @@ class BudgetReportService {
 		
 		reportMonthlyYearlyTotal(pw)
 	}
-	
-	def reportCampingNonCampingDates(TimelineDTO timelineDTO, PrintWriter pw) {
-		//report camping dates
-		List<TripDTO> campingList = timelineDTO.campingTripList
-		pw.println 'CAMPING DATES:'
-		campingList.each {trip ->
-			String s1 = trip.startDate.format(reportingdtf)
-			String s2 = trip.endDate.format(reportingdtf)
-			String s3 = trip.tripDays.toString().padLeft(4, ' ')
-			pw.println "\t$s1 - $s2 $s3 days  ${trip.tripName}" 
-		}
-		pw.println "\tTotal Days: ${timelineDTO.campingDays}"
-		pw.println ''
-
-		//report non-camping dates
-		List<TripDTO> nonCampingList = timelineDTO.nonCampingTripList
-		pw.println 'NON CAMPING DATES:'
-		nonCampingList.each {trip ->
-			String s1 = trip.startDate.format(reportingdtf)
-			String s2 = trip.endDate.format(reportingdtf)
-			String s3 = trip.tripDays.toString().padLeft(4, ' ')
-			pw.println "\t$s1 - $s2 $s3 days"
-		}
-		pw.println "\tTotal Days: ${timelineDTO.nonCampingDays}"
-		pw.println ''
-
-		pw.println "CONTINUOUS DAYS: ${timelineDTO.totalDays} days"
-	}
-	
 	
 	def reportFixed(String heading, List<FinancialDTO> financialList, PrintWriter pw) {
 		pw.println heading
@@ -258,7 +225,7 @@ class BudgetReportService {
 		return sb.toString()
 	}
 
-	String buildQueryWithTransactionDates(List<String> categoryList, List<TripDTO> tripList) {
+	String buildQueryWithTransactionDates(List<String> categoryList, List<NamedTimePeriodDTO> ntpList) {
 		StringBuilder sb = new StringBuilder()
 		
 		sb.append("SELECT CATEGORY as CAT, SUM(AMOUNT) as TOTAL ")
@@ -268,15 +235,15 @@ class BudgetReportService {
 		sb.append(") ")
 		sb.append("AND (")
 		sb.append("TRANSACTION_DT BETWEEN '")
-		sb.append(tripList[0].startDate)
+		sb.append(ntpList[0].startDate)
 		sb.append("' AND '")
-		sb.append(tripList[0].endDate)
+		sb.append(ntpList[0].endDate)
 		sb.append("' ")
-		tripList[1..-1].each {trip ->
+		ntpList[1..-1].each {ntp ->
 			sb.append("OR TRANSACTION_DT BETWEEN '")
-			sb.append(trip.startDate)
+			sb.append(ntp.startDate)
 			sb.append("' AND '")
-			sb.append(trip.endDate)
+			sb.append(ntp.endDate)
 			sb.append("' ")
 		}
 		sb.append(") GROUP BY CATEGORY ")

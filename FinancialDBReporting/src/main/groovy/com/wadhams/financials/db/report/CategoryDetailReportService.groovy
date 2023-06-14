@@ -4,14 +4,15 @@ import java.text.NumberFormat
 import java.time.format.DateTimeFormatter
 
 import com.wadhams.financials.db.dto.FinancialDTO
-import com.wadhams.financials.db.dto.TimelineDTO
 import com.wadhams.financials.db.service.CommonReportingService
 import com.wadhams.financials.db.service.DatabaseQueryService
-import com.wadhams.financials.db.service.TimelineXMLService
+import com.wadhams.financials.db.service.TimelineService
+import com.wadhams.financials.db.type.Residence
 
 class CategoryDetailReportService {
 	DatabaseQueryService databaseQueryService
 	CommonReportingService commonReportingService
+	TimelineService timelineService
 	
 	def execute() {
 		File f = new File("out/category-detail-report.txt")
@@ -24,10 +25,6 @@ class CategoryDetailReportService {
 			pw.println 'Legend: [X] = prior to 28/03/2020, [C] = Camping date, [NC] = Non-camping date'
 			pw.println ''
 			
-			TimelineXMLService timelineXMLService = new TimelineXMLService()
-			TimelineDTO timelineDTO = timelineXMLService.loadTimelineData()
-			//println timelineDTO
-		
 			//TODO: refactor to common Category enum
 			List<String> catList = databaseQueryService.buildAllCategoryList()
 			catList.each {cat ->
@@ -37,12 +34,12 @@ class CategoryDetailReportService {
 		
 				List<FinancialDTO> financialList = databaseQueryService.buildList(query)
 				
-				report(financialList, cat, timelineDTO, pw)
+				report(financialList, cat, pw)
 			}
 		}
 	}
 	
-	def report(List<FinancialDTO> financialList, String category, TimelineDTO timelineDTO, PrintWriter pw) {
+	def report(List<FinancialDTO> financialList, String category, PrintWriter pw) {
 		pw.println category
 		
 		int maxPayeeSize = commonReportingService.maxPayeeSize(financialList)
@@ -80,15 +77,19 @@ class CategoryDetailReportService {
 				s7 = dto.rg1
 			}
 
+			Residence residence = timelineService.determineResidence(dto.transactionDt)
 			String s8
-			if (timelineDTO.campingDateSet.contains(dto.transactionDt)) {
+			if (residence == Residence.Caravan) {
 				s8 = '[C] '
 			}
-			else if (timelineDTO.nonCampingDateSet.contains(dto.transactionDt)) {
+			else if (residence == Residence.NonCaravan) {
 				s8 = '[NC]'
 			}
-			else {
+			else if (residence == Residence.BeforeCaravan) {
 				s8 = '[X] '
+			}
+			else {
+				s8 = '[?] '
 			}	
 						
 			pw.println "\t$s8 ${dto.transactionDt.format(dtf)}  $s1  $s2  ${(rg1Found)?s7:''}  ${(startDtFound)?("[$s5 - $s6]"):''}  ${(assetFound)?("Asset: $s4"):''}  $s3"

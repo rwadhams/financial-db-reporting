@@ -2,62 +2,65 @@
 <timeline>
 	<!-- <startTimelineDate>13/08/2019</startTimelineDate> -->
 	<startTimelineDate>28/03/2020</startTimelineDate>
-	<trip>
+	<namedTimePeriod>
 		<name>Pickup Caravan - Melbourne to Brisbane</name>
 		<start>28/03/2020</start>
 		<end>31/03/2020</end>
-	</trip>
-	<trip>
+		<after>Covid lockdown in Brisbane</after>
+	</namedTimePeriod>
+	<namedTimePeriod>
 		<name>Shakedown Trip</name>
 		<start>01/06/2020</start>
 		<end>12/06/2020</end>
-	</trip>
-	<trip>
+	</namedTimePeriod>
+	<namedTimePeriod>
 		<name>Brisbane SW Trip</name>
 		<start>17/06/2020</start>
 		<end>26/06/2020</end>
-	</trip>
-	<trip>
+	</namedTimePeriod>
+	<namedTimePeriod>
 		<name>SE QLD Loop</name>
 		<start>13/07/2020</start>
 		<end>01/09/2020</end>
-	</trip>
-	<trip>
+	</namedTimePeriod>
+	<namedTimePeriod>
 		<name>SE QLD - NE NSW Loop</name>
 		<start>12/10/2020</start>
 		<end>13/12/2020</end>
-	</trip>
-	<trip>
+	</namedTimePeriod>
+	<namedTimePeriod>
 		<name>Brisbane to Tasmania Return Trip</name>
 		<start>30/12/2020</start>
 		<end>21/04/2021</end>
-	</trip>
-	<trip>
+		<after>Time with Mum</after>
+	</namedTimePeriod>
+	<namedTimePeriod>
 		<name>Central West and North QLD Trip</name>
 		<start>10/06/2021</start>
 		<end>09/09/2021</end>
-	</trip>
-	<trip>
+	</namedTimePeriod>
+	<namedTimePeriod>
 		<name>South Australia Summer Trip</name>
 		<start>13/09/2021</start>
 		<end>27/03/2022</end>
-	</trip>
-	<trip>
+	</namedTimePeriod>
+	<namedTimePeriod>
 		<name>Central - South - Tassie Trip</name>
 		<start>25/06/2022</start>
 		<end>31/01/2023</end>
-	</trip>
-	<trip>
+		<after>February trip to Brisbane</after>
+	</namedTimePeriod>
+	<namedTimePeriod>
 		<name>All Seasons Tasmania</name>
 		<start>15/02/2023</start>
 		<end></end>
-	</trip>
+	</namedTimePeriod>
 	<!-- 
-	<trip>
+	<namedTimePeriod>
 		<name></name>
 		<start>dd/MM/yyyy</start>
 		<end></end>
 		<end>dd/MM/yyyy</end>
-	</trip>
+	</namedTimePeriod>
 	-->
 </timeline>
