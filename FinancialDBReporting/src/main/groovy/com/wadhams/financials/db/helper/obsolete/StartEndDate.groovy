@@ -1,4 +1,4 @@
-package com.wadhams.financials.db.helper
+package com.wadhams.financials.db.helper.obsolete
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter

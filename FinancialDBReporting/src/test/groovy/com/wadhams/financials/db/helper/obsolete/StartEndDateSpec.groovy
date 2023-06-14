@@ -1,7 +1,10 @@
-package com.wadhams.financials.db.helper
+package com.wadhams.financials.db.helper.obsolete
 
 import java.time.LocalDate
 import java.time.Month
+
+import com.wadhams.financials.db.helper.obsolete.StartEndDate
+
 import spock.lang.Title
 
 @Title("Unit tests for StartEndDate")

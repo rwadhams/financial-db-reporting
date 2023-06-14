@@ -7,7 +7,6 @@ import com.wadhams.financials.db.report.CategoryTotalReportService
 import com.wadhams.financials.db.report.FurnitureReportService
 import com.wadhams.financials.db.report.LargeTransactionReportService
 import com.wadhams.financials.db.report.MajorEquipmentReportService
-import com.wadhams.financials.db.report.MonthlyAverageCampingCostReportService
 import com.wadhams.financials.db.report.MonthlyCategoryDetailReportService
 import com.wadhams.financials.db.report.MonthlyRunningCostReportService
 import com.wadhams.financials.db.report.MonthlyTotalsReportService

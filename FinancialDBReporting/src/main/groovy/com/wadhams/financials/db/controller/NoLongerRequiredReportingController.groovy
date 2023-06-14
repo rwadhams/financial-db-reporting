@@ -7,7 +7,6 @@ import com.wadhams.financials.db.report.CategoryTotalReportService
 import com.wadhams.financials.db.report.FurnitureReportService
 import com.wadhams.financials.db.report.LargeTransactionReportService
 import com.wadhams.financials.db.report.MajorEquipmentReportService
-import com.wadhams.financials.db.report.MonthlyAverageCampingCostReportService
 import com.wadhams.financials.db.report.MonthlyRunningCostReportService
 import com.wadhams.financials.db.report.MonthlyTotalsReportService
 import com.wadhams.financials.db.report.RenovationReportService
@@ -53,13 +52,6 @@ class NoLongerRequiredReportingController {
 		monthlyRunningCostReportService.databaseQueryService = databaseQueryService
 		//execute
 		monthlyRunningCostReportService.execute(pw)
-				
-		MonthlyAverageCampingCostReportService monthlyAverageCampingCostReportService = new MonthlyAverageCampingCostReportService()
-		//inject services
-		monthlyAverageCampingCostReportService.commonReportingService = commonReportingService
-		monthlyAverageCampingCostReportService.databaseQueryService = databaseQueryService
-		//execute
-		monthlyAverageCampingCostReportService.execute(pw)
 		
 		MonthlyTotalsReportService monthlyTotalsReportService = new MonthlyTotalsReportService()
 		//inject services
