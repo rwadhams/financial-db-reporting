@@ -3,7 +3,7 @@ package com.wadhams.financials.db.type.obsolete
 import java.time.YearMonth
 
 //TODO Fix this abomonation
-enum MonthDateRange2 implements Comparator<MonthDateRange2> {
+enum MonthDateRange implements Comparator<MonthDateRange> {
 	Jun2019(2019, 6),
 	Jul2019(2019, 7),
 	Aug2019(2019, 8),
@@ -60,18 +60,18 @@ enum MonthDateRange2 implements Comparator<MonthDateRange2> {
 	Nov2023(2023, 11),
 	Dec2023(2023, 12);
 
-	private static EnumSet<MonthDateRange2> allEnums = EnumSet.allOf(MonthDateRange2.class)
+	private static EnumSet<MonthDateRange> allEnums = EnumSet.allOf(MonthDateRange.class)
 
 	private final YearMonth yearMonth
 	
-	MonthDateRange2(int year, int month) {
+	MonthDateRange(int year, int month) {
 		yearMonth = YearMonth.of(year, month)
 	}
 	
-	static List<MonthDateRange2> previousTwelve(MonthDateRange2 mdr) {
-		List<MonthDateRange2> list = []
+	static List<MonthDateRange> previousTwelve(MonthDateRange mdr) {
+		List<MonthDateRange> list = []
 		
-		for (MonthDateRange2 e : allEnums) {
+		for (MonthDateRange e : allEnums) {
 			if (e.yearMonth.isBefore(mdr.yearMonth)) {
 				list << e
 			}
@@ -87,8 +87,8 @@ enum MonthDateRange2 implements Comparator<MonthDateRange2> {
 		return list
 	}
 	
-	static MonthDateRange2 now() {
-		for (MonthDateRange2 e : allEnums) {
+	static MonthDateRange now() {
+		for (MonthDateRange e : allEnums) {
 			if (e.yearMonth.equals(YearMonth.now())) {
 				return e
 			}
@@ -97,8 +97,8 @@ enum MonthDateRange2 implements Comparator<MonthDateRange2> {
 		return null
 	}
 	
-	static MonthDateRange2 findByFirstDate(String firstDate) {
-		for (MonthDateRange2 e : allEnums) {
+	static MonthDateRange findByFirstDate(String firstDate) {
+		for (MonthDateRange e : allEnums) {
 			if (e.getFirstDate() == firstDate) {
 				return e
 			}
@@ -116,7 +116,7 @@ enum MonthDateRange2 implements Comparator<MonthDateRange2> {
 	}
 
 	@Override
-	public int compare(MonthDateRange2 mdr1, MonthDateRange2 mdr2) {
+	public int compare(MonthDateRange mdr1, MonthDateRange mdr2) {
 		return mdr1.compareTo(mdr2)
 	}
 
