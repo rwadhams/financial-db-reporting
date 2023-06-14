@@ -12,7 +12,7 @@ class MajorEquipmentReportService {
 	CommonReportingService commonReportingService
 	
 	def execute(PrintWriter pw) {
-		String query = buildQuery('100')
+		String query = buildQuery()
 		//println query
 		//println ''
 
@@ -71,14 +71,12 @@ class MajorEquipmentReportService {
 	}
 	
 	//TODO: refactor to common Category enum
-	String buildQuery(String largeAmount) {
+	String buildQuery() {
 		StringBuilder sb = new StringBuilder()
 		sb.append("SELECT TRANSACTION_DT as TXN, AMOUNT as AMT, PAYEE, DESCRIPTION as DESC, ASSET, CATEGORY as CAT, SUB_CATEGORY as SUBCAT, START_DT as START, END_DT as END, RPT_GRP_1 as RG1, RPT_GRP_2 as RG2, RPT_GRP_3 as RG3 ")
 		sb.append("FROM FINANCIAL ")
-		sb.append("WHERE CATEGORY = 'EQUIPMENT' ")
-		sb.append("AND ABS(AMOUNT) > ")
-		sb.append(largeAmount)
-		sb.append(" ORDER BY TRANSACTION_DT, AMOUNT DESC")
+		sb.append("WHERE CATEGORY = 'MAJOR_EQUIPMENT' ")
+		sb.append("ORDER BY TRANSACTION_DT, AMOUNT DESC")
 		
 		return sb.toString()
 	}
