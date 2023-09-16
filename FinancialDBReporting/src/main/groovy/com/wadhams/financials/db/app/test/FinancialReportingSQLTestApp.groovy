@@ -20,7 +20,8 @@ class FinancialReportingSQLTestApp {
 
 		FinancialReportingSQLTestApp app = new FinancialReportingSQLTestApp()
 		app.execute()
-
+		app.execute2()
+		
 		println 'FinancialReportingSQLTestApp ended.'
 	}
 	
@@ -28,11 +29,21 @@ class FinancialReportingSQLTestApp {
 //		String query = "select max(transaction_dt) as MD from financial"
 		String query = "select max(transaction_dt) as MD from financial where transaction_dt <= '${LocalDate.now().format(h2DTF)}'"
 		println query
-		println ''
 
 		GroovyRowResult grr = sql.firstRow(query)
 		def maxDate = grr.getProperty('MD')
 		println maxDate
+		
+		println ''
+	}
+	
+	def execute2() {
+		String query = "select count(*) TOTAL from financial where category is null"
+		println query
+
+		GroovyRowResult grr = sql.firstRow(query)
+		def total = grr.getProperty('TOTAL')
+		println total
 		
 		println ''
 	}

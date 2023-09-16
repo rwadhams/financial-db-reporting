@@ -97,6 +97,8 @@ class DatabaseAnalysisReportingApp {
 		categoryAmounts()
 		assets()
 		reportGroupOne()
+		reportGroupTwo()
+		reportGroupThree()
 		categoryStartEndDates()
 		categoryRunningCosts()
 		allSubCategories()
@@ -220,6 +222,52 @@ class DatabaseAnalysisReportingApp {
 				println "    $category"
 			}
 			println ''
+		}
+		println ''
+	}
+	
+	def reportGroupTwo() {
+		String q1 = 'select distinct rpt_grp_2 as RG2 from financial where rpt_grp_2 is not null order by 1 asc'
+		String uq1 = ''.padRight(q1.size(), '-')
+		println uq1
+		println q1
+		println uq1
+		
+		List<String> rg2List = []
+		sql.eachRow(q1) {row ->
+			String rg2 = row.RG2
+			rg2List << rg2
+		}
+
+		String h1 = "Distinct Report Group Two"
+		String u1 = '-------------------------'
+		println h1
+		println u1
+		rg2List.each {rg2 ->
+			println rg2
+		}
+		println ''
+	}
+	
+	def reportGroupThree() {
+		String q1 = 'select distinct rpt_grp_3 as RG3 from financial where rpt_grp_3 is not null order by 1 asc'
+		String uq1 = ''.padRight(q1.size(), '-')
+		println uq1
+		println q1
+		println uq1
+		
+		List<String> rg3List = []
+		sql.eachRow(q1) {row ->
+			String rg3 = row.RG3
+			rg3List << rg3
+		}
+
+		String h1 = "Distinct Report Group Three"
+		String u1 = '---------------------------'
+		println h1
+		println u1
+		rg3List.each {rg3 ->
+			println rg3
 		}
 		println ''
 	}

@@ -1,7 +1,8 @@
 package com.wadhams.financials.db.app.test
 
+import com.wadhams.financials.db.controller.BudgetReportingController
 import com.wadhams.financials.db.controller.ExtraReportingController
-import com.wadhams.financials.db.report.obsolete.BudgetReportService
+import com.wadhams.financials.db.report.BudgetReportService
 import com.wadhams.financials.db.service.TimelineService
 
 class FinancialReportingTestApp {
@@ -24,8 +25,8 @@ class FinancialReportingTestApp {
 //		TimelineService timelineService = new TimelineService()
 //		timelineService.reportTimeline(pw)
 		
-//		BudgetReportService budgetReportService = new BudgetReportService()
-//		budgetReportService.execute(pw)
+		BudgetReportingController controller = new BudgetReportingController()
+		controller.execute(pw)
 
 //		FinancialReportingController controller = new FinancialReportingController()
 //		controller.execute(pw)
