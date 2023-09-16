@@ -1,12 +1,11 @@
 package com.wadhams.financials.db.service
 
-import com.wadhams.financials.db.dto.FinancialDTO
-import groovy.sql.GroovyRowResult
-import groovy.sql.Sql
-
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
+
+import groovy.sql.GroovyRowResult
+import groovy.sql.Sql
 
 class DateService {
 	Sql sql = Sql.newInstance('jdbc:h2:~/financial', 'sa', '', 'org.h2.Driver')
@@ -32,9 +31,10 @@ class DateService {
 	}
 
 	LocalDate findMaxTransactionDate() {
-		String query = "select max(transaction_dt) as MD from financial where transaction_dt <= '${LocalDate.now().format(h2DTF)}'"
-//		println query
-//		println ''
+		//String query = "select max(transaction_dt) as MD from financial where transaction_dt <= '${LocalDate.now().format(h2DTF)}' and (rpt_grp_2 is null or rpt_grp_2 <> 'FUTURE')"
+		String query = "select max(transaction_dt) as MD from financial where transaction_dt <= '${LocalDate.now().format(h2DTF)}' and rpt_grp_2 is null"
+		//println query
+		//println ''
 
 		GroovyRowResult grr = sql.firstRow(query)
 		Date maxDate = grr.getProperty('MD')
