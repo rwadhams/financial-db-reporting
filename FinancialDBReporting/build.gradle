@@ -2,6 +2,9 @@ plugins {
 	// Apply the groovy plugin to add support for Groovy
 	id 'groovy'
 
+    // Apply the application plugin to add support for building a CLI application.
+    id 'application'
+    
 	id 'eclipse'
 }
 
@@ -19,4 +22,22 @@ dependencies {
 	
 	// Use the awesome Spock testing and specification framework
 	testImplementation 'org.spockframework:spock-core:2.0-groovy-3.0'
+}
+
+application {
+	// Define the main class for the application.
+	mainClassName = 'com.wadhams.financials.db.app.FinancialReportingApp'
+}
+
+startScripts {
+	doLast {
+		def windowsScriptFile = file getWindowsScript()
+		//Add base directory to classpath so the Appliaction can locate file resources
+		windowsScriptFile.text = windowsScriptFile.text.replace('CLASSPATH=', 'CLASSPATH=.;')
+	}
+}
+
+applicationDistribution.from("bat") {
+	into "$executableDir"
+	include "*.bat"
 }
