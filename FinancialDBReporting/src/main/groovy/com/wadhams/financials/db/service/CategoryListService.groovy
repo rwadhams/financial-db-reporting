@@ -34,39 +34,18 @@ class CategoryListService {
 		campHillRenoCategoryList = startingCategoryList.findAll {cat ->
 			cat.startsWith('CH_RENO_')
 		}
-//		campHillRenoCategoryList = [
-//			'CH_RENO_COST',
-//			'CH_RENO_SERVICES'
-//			]
 		startingCategoryList -= campHillRenoCategoryList
 		
 		//Camp Hill
 		campHillCategoryList = startingCategoryList.findAll {cat ->
 			cat.startsWith('CH_')
 		}
-//		campHillCategoryList = [
-//			'CH_ELECTRIC_UTILITIES',
-//			'CH_FURNITURE',
-//			'CH_GAS_UTILITIES',
-//			'CH_HOUSEWARES',
-//			'CH_INSURANCE',
-//			'CH_MAINTENANCE',
-//			'CH_RATES',
-//			'CH_SUPPLIES',
-//			'CH_WATER_UTILITIES'
-//			]
 		startingCategoryList -= campHillCategoryList
 		
 		//Fingal
 		fingalCategoryList = startingCategoryList.findAll {cat ->
 			cat.startsWith('FINGAL_')
 		}
-//		fingalCategoryList = [
-//			'FINGAL_EQUIPMENT',
-//			'FINGAL_PLANNING',
-//			'FINGAL_SUPPLIES',
-//			'FINGAL_WORK'
-//			]
 		startingCategoryList -= fingalCategoryList
 
 		//Asset Relared Cost
@@ -75,62 +54,59 @@ class CategoryListService {
 			]
 		startingCategoryList -= assetRelatedCostCategoryList
 		
-		//Time Spanned. Items with a start and end date
+		//Time Spanned. Items with a start and end date, except FUEL
 		runningCostCategoryList = [
 			'CARAVAN_INSURANCE',
 			'CARAVAN_REGISTRATION',
 			'CARAVAN_SERVICING',
-			'CARAVAN_TYRES',
 			'CAR_INSURANCE',
 			'CAR_REGISTRATION',
 			'CAR_SERVICING',
-			'CAR_TYRES',
 			'DATA_PLAN',
 			'DRIVERS_LICENSE_MOLLY',
 			'DRIVERS_LICENSE_ROB',
 			'MEMBERSHIP',
 			'PHONE_PLAN_MOLLY',
-			'PHONE_PLAN_ROB',
-			'TRANSMISSION_SERVICING'
+			'PHONE_PLAN_ROB'
 			]
 			startingCategoryList -= runningCostCategoryList
 			
 			//DayToDay
-			dayToDayCategoryList = [
-				'ALCOHOL',
-				'CAMPING_FEES',
-				'CAMPING_SUPPLIES',
-				'CARAVAN_EQUIPMENT',
-				'CARAVAN_SUPPLIES',
-				'CAR_SUPPLIES',
-				'CLOTHING',
-				'CLOUD_STORAGE',
-				'DRINKS',
-				'ENTERTAINMENT',
-				'FOOD',
-				'FUEL',
-				'GIFTS',
-				'LAUNDRY',
-				'MEDICAL',
-				'OFFICE',
-				'PARKING',
-				'PHARMACY',
-				'PREPARED_FOOD'
-				]
+		dayToDayCategoryList = [
+			'ALCOHOL',
+			'CAMPING_FEES',
+			'CAMPING_SUPPLIES',
+			'CARAVAN_EQUIPMENT',
+			'CARAVAN_SUPPLIES',
+			'CLEANING',
+			'CLOTHING',
+			'CLOUD_STORAGE',
+			'DRINKS',
+			'ENTERTAINMENT',
+			'FOOD',
+			'FUEL',
+			'GIFTS',
+			'LAUNDRY',
+			'MEDICAL',
+			'OFFICE',
+			'PARKING',
+			'PHARMACY',
+			'PREPARED_FOOD'
+			]
 			startingCategoryList -= dayToDayCategoryList
 			
 			//Unbudgeted
 			unbudgetedCategoryList = [
-				'ACCOMODATION',
-				'ACCOUNTING_FEES',
-				'BASS_STRAIT_FERRY',
-				'CARAVAN_STORAGE',
-				'DOMESTIC_TRAVEL',
+				'CAMPING_EQUIPMENT',
+				'CAR_EQUIPMENT',
+				'CAR_MAINTENANCE',
+				'CAR_REPAIR',
+				'CARAVAN_MAINTENANCE',
+				'CARAVAN_REPAIR',
 				'ELECTRONICS',
-				'MAJOR_EQUIPMENT',
-				'MAJOR_WORK',
-				'OVERSEAS_TRAVEL',
-				'RENTAL_CAR'
+				'PARKS_PASS',
+				'SPECIAL_ACTIVITY',
+				'TECHNOLOGY'
 				]
 			startingCategoryList -= unbudgetedCategoryList
 			
@@ -161,9 +137,9 @@ class CategoryListService {
 	}
 	
 	def printLists() {
-//		println 'allCategoryList:'
-//		allCategoryList.each {cat-> println "\t$cat"}
-//		println ''
+		println 'allCategoryList:'
+		allCategoryList.each {cat-> println "\t$cat"}
+		println ''
 		println 'obsoleteCategoryList:'
 		obsoleteCategoryList.each {cat-> println "\t$cat"}
 		println ''
@@ -190,5 +166,6 @@ class CategoryListService {
 		println ''
 		println 'otherCategoryList:'
 		otherCategoryList.each {cat-> println "\t$cat"}
+		println ''
 	}
 }
