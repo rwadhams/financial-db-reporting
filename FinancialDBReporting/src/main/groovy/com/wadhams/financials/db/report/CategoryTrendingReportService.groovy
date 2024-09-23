@@ -25,11 +25,33 @@ class CategoryTrendingReportService {
 	NumberFormat cf = NumberFormat.getCurrencyInstance()
 	
 	def execute(PrintWriter pw) {
-		report(12, pw)
-		report(3, pw)
+		//Day to Day Categories
+		List<String> dayToDayCategoryList = categoryListService.dayToDayCategoryList
+		
+		int trendingMonths = 12
+		reportHeading("DAY TO DAY CATEGORY TRENDING REPORT OVER $trendingMonths MONTHS", pw)
+		report(trendingMonths, dayToDayCategoryList, pw)
+		
+		trendingMonths = 3
+		reportHeading("DAY TO DAY CATEGORY TRENDING REPORT OVER $trendingMonths MONTHS", pw)
+		report(trendingMonths, dayToDayCategoryList, pw)
+		
+		//Unbudgeted Categories
+		List<String> unbudgetedCategoryList = categoryListService.unbudgetedCategoryList
+		
+		trendingMonths = 12
+		reportHeading("UNBUDGETED CATEGORY TRENDING REPORT OVER $trendingMonths MONTHS", pw)
+		report(trendingMonths, unbudgetedCategoryList, pw)
+		
+		//Other Categories
+		List<String> otherCategoryList = categoryListService.otherCategoryList
+		
+		trendingMonths = 12
+		reportHeading("OTHER CATEGORY TRENDING REPORT OVER $trendingMonths MONTHS", pw)
+		report(trendingMonths, otherCategoryList, pw)
 	}
 	
-	def report(int trendingMonths, PrintWriter pw) {
+	def report(int trendingMonths, List<String> reportCategoryList, PrintWriter pw) {
 		YearMonth firstYM = YearMonth.from(dateService.caravanStartDate)
 		YearMonth lastYM = dateService.latestYearMonth
 //		println "trendingMonths...: $trendingMonths"
@@ -44,9 +66,7 @@ class CategoryTrendingReportService {
 //		}
 //		println ''
 
-		reportHeading(trendingMonths, pw)
-		
-		List<String> categoryList = databaseQueryService.orderCategoryList(dateService.caravanStartDate, categoryListService.dayToDayCategoryList)
+		List<String> categoryList = databaseQueryService.orderCategoryList(dateService.caravanStartDate, reportCategoryList /*categoryListService.dayToDayCategoryList*/)
 //		List<String> categoryList = categoryListService.dayToDayCategoryList
 //		List<String> categoryList = ['CARAVAN_EQUIPMENT']
 //		List<String> categoryList = ['FOOD', 'ALCOHOL', 'FUEL', 'DRINKS', 'PREPARED_FOOD', 'CAMPING_FEES', 'ENTERTAINMENT', 'MEDICAL', 'PHARMACY']
@@ -56,6 +76,12 @@ class CategoryTrendingReportService {
 			}
 			reportTrending(trendingMonths, category, trendingRangeDTOList, pw)
 		}
+	}
+	
+	def reportHeading(String heading, PrintWriter pw) {
+		pw.println heading
+		String u1 = ''.padRight(heading.size(), '-')
+		pw.println u1
 	}
 	
 	def reportTrending(int trendingMonths, String category, List<TrendingRangeDTO> trendingRangeDTOList, PrintWriter pw) {
@@ -75,13 +101,6 @@ class CategoryTrendingReportService {
 		BigDecimal average = total.divide(trendingRangeDTOList.size(), 2)
 		pw.println "\t           Average: ${cf.format(average).padLeft(10, ' ')} every ${trendingMonths} months"
 		pw.println ''
-	}
-	
-	def reportHeading(int trendingMonths, PrintWriter pw) {
-		String heading = "CATEGORY TRENDING REPORT OVER $trendingMonths MONTHS"
-		pw.println heading
-		String u1 = ''.padRight(heading.size(), '-')
-		pw.println u1
 	}
 	
 	def augmentWithCategoryTotal(TrendingRangeDTO dto, String category) {
