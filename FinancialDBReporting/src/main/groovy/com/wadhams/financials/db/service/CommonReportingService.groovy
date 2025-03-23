@@ -10,6 +10,16 @@ class CommonReportingService {
 		horizonalRule = baseString.padRight(100, '+')
 	}
 
+	int maxTextSize(List<String> textList) {
+		int maxTextSize = 0
+		textList.each {t ->
+			if (t.size() > maxTextSize) {
+				maxTextSize = t.size()
+			}
+		}
+		return maxTextSize
+	}
+	
 	int maxPayeeSize(List<FinancialDTO> financialList) {
 		int maxPayeeSize = 0
 		financialList.each {dto ->

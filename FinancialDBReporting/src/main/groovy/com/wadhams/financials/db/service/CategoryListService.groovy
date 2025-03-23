@@ -3,6 +3,7 @@ package com.wadhams.financials.db.service
 import com.wadhams.financials.db.dto.FinancialDTO
 
 class CategoryListService {
+	CommonReportingService commonReportingService = new CommonReportingService()
 	DatabaseQueryService databaseQueryService = new DatabaseQueryService()
 	
 	List<String> allCategoryList
@@ -137,35 +138,90 @@ class CategoryListService {
 	}
 	
 	def printLists() {
+		List<String> reportLineList
+		int numberOfColumns = 4
+		
+		reportLineList = buildReportLines(allCategoryList, numberOfColumns)
 		println 'allCategoryList:'
-		allCategoryList.each {cat-> println "\t$cat"}
+		reportLineList.each {line-> println "\t$line"}
 		println ''
+
+		reportLineList = buildReportLines(obsoleteCategoryList, numberOfColumns)
 		println 'obsoleteCategoryList:'
-		obsoleteCategoryList.each {cat-> println "\t$cat"}
+		reportLineList.each {line-> println "\t$line"}
 		println ''
+		
+		reportLineList = buildReportLines(campHillRenoCategoryList, numberOfColumns)
 		println 'campHillRenoCategoryList:'
-		campHillRenoCategoryList.each {cat-> println "\t$cat"}
+		reportLineList.each {line-> println "\t$line"}
 		println ''
+		
+		reportLineList = buildReportLines(campHillCategoryList, numberOfColumns)
 		println 'campHillCategoryList:'
-		campHillCategoryList.each {cat-> println "\t$cat"}
+		reportLineList.each {line-> println "\t$line"}
 		println ''
+		
+		reportLineList = buildReportLines(fingalCategoryList, numberOfColumns)
 		println 'fingalCategoryList:'
-		fingalCategoryList.each {cat-> println "\t$cat"}
+		reportLineList.each {line-> println "\t$line"}
 		println ''
+		
+		reportLineList = buildReportLines(assetRelatedCostCategoryList, numberOfColumns)
 		println 'assetRelatedCostCategoryList:'
-		assetRelatedCostCategoryList.each {cat-> println "\t$cat"}
+		reportLineList.each {line-> println "\t$line"}
 		println ''
+		
+		reportLineList = buildReportLines(runningCostCategoryList, numberOfColumns)
 		println 'runningCostCategoryList:'
-		runningCostCategoryList.each {cat-> println "\t$cat"}
+		reportLineList.each {line-> println "\t$line"}
 		println ''
+		
+		reportLineList = buildReportLines(dayToDayCategoryList, numberOfColumns)
 		println 'dayToDayCategoryList:'
-		dayToDayCategoryList.each {cat-> println "\t$cat"}
+		reportLineList.each {line-> println "\t$line"}
 		println ''
+		
+		reportLineList = buildReportLines(unbudgetedCategoryList, numberOfColumns)
 		println 'unbudgetedCategoryList:'
-		unbudgetedCategoryList.each {cat-> println "\t$cat"}
+		reportLineList.each {line-> println "\t$line"}
 		println ''
+		
+		reportLineList = buildReportLines(otherCategoryList, numberOfColumns)
 		println 'otherCategoryList:'
-		otherCategoryList.each {cat-> println "\t$cat"}
+		reportLineList.each {line-> println "\t$line"}
 		println ''
+	}
+	
+	def printAllCategories() {
+		List<String> reportLineList = buildReportLines(allCategoryList, 1)
+		println 'allCategoryList:'
+		reportLineList.each {line-> println "\t$line"}
+		println ''
+	}
+	
+	List<String> buildReportLines(List<String> categoryList, int numberOfColumns) {
+		List<String> reportLineList = []
+		
+		int maxTextSize = commonReportingService.maxTextSize(categoryList)
+		
+		int count = 1
+		String reportLine = ''
+		categoryList.each {cat ->
+			String s = cat.padRight(maxTextSize, ' ') + '  '
+			reportLine += s
+			if (count < numberOfColumns) {
+				count++
+			}
+			else {
+				reportLineList << reportLine
+				//reset
+				reportLine = ''
+				count = 1
+			}
+		}
+		//add last line to list
+		reportLineList << reportLine
+		
+		return reportLineList
 	}
 }

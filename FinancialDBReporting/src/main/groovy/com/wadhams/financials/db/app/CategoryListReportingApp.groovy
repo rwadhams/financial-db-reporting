@@ -16,7 +16,16 @@ class CategoryListReportingApp {
 	}
 	
 	def execute() {
-		categoryListService.verifyLists()
+		Boolean result = categoryListService.verifyLists()
+		if (result) {
+			println 'CategoryList verified'
+			println ''
+		}
+		else {
+			println 'CategoryList unverified'
+			println ''
+		}
+		categoryListService.printAllCategories()
 		
 		categoryListService.printLists()
 	}
