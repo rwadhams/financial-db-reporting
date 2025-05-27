@@ -5,11 +5,10 @@ import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
-import com.wadhams.financials.db.dto.FinancialDTO
 import com.wadhams.financials.db.service.CategoryListService
 import com.wadhams.financials.db.service.CommonReportingService
 import com.wadhams.financials.db.service.DatabaseQueryService
-import com.wadhams.financials.db.type.Residence
+
 import groovy.sql.GroovyRowResult
 
 class TotalsReportService {
@@ -26,9 +25,6 @@ class TotalsReportService {
 		List<Integer> yearList = buildYearRange()
 //		println yearList
 
-		List<String> catListMinusAssetCosts = buildCatListMinusAssetCosts()
-		List<String> catListLivingCosts = buildCatListLivingCosts()
-		
 		File f1 = new File("out/totals-yearly-report.txt")
 		f1.withPrintWriter {pw ->
 			heading = 'YEARLY TOTALS REPORT'
@@ -38,35 +34,33 @@ class TotalsReportService {
 			pw.println commonReportingService.horizonalRule
 			pw.println ''
 	
-			heading = 'YEARLY TOTALS MINUS ASSET COSTS REPORT'
-			reportYearly(yearList, catListMinusAssetCosts, heading, pw)
+			heading = 'YEARLY TOTALS REPORT (Non Camping Categories)'
+			reportYearly(yearList, categoryListService.nonCampingCategoryList, heading, pw)
 			
 			pw.println ''
 			pw.println commonReportingService.horizonalRule
 			pw.println ''
 	
-			heading = 'YEARLY LIVING TOTALS REPORT'
-			reportYearly(yearList, catListLivingCosts, heading, pw)
+			heading = 'YEARLY TOTALS REPORT (Camping Categories)'
+			reportYearly(yearList, categoryListService.campingCategoryList, heading, pw)
 		}
 		
-		File f2 = new File("out/totals-monthly-report.txt")
+		File f2 = new File("out/totals-monthly-camping-report.txt")
 		f2.withPrintWriter {pw ->
-			heading = 'MONTHLY TOTALS REPORT'
-			reportMonthly(yearList, [], heading, pw)
-			
+			heading = 'MONTHLY TOTALS REPORT (Camping Categories)'
+			reportMonthly(yearList, categoryListService.campingCategoryList, heading, pw)
+		}
+	}
+
+	def printCategories(List<String> catList, PrintWriter pw) {
+		if (catList.size() > 0) {
+			int maxTextSize = commonReportingService.maxTextSize(catList)
+			pw.println 'Categories included:'
+			List<String> reportLineList = categoryListService.buildReportLines(catList, maxTextSize, 4)
+			reportLineList.each {rl ->
+				pw.println "\t$rl"
+			}
 			pw.println ''
-			pw.println commonReportingService.horizonalRule
-			pw.println ''
-	
-			heading = 'MONTHLY TOTALS MINUS ASSET COSTS REPORT'
-			reportMonthly(yearList, catListMinusAssetCosts, heading, pw)
-			
-			pw.println ''
-			pw.println commonReportingService.horizonalRule
-			pw.println ''
-	
-			heading = 'MONTHLY LIVING TOTALS REPORT'
-			reportMonthly(yearList, catListLivingCosts, heading, pw)
 		}
 	}
 
@@ -75,6 +69,18 @@ class TotalsReportService {
 		String u1 = ''.padRight(heading.size(), '-')
 		pw.println u1
 
+		//print categories
+		printCategories(catList, pw)
+//		if (catList.size() > 0) {
+//			int maxTextSize = commonReportingService.maxTextSize(catList)
+//			pw.println 'Categories included:'
+//			List<String> reportLineList = categoryListService.buildReportLines(catList, maxTextSize, 4)
+//			reportLineList.each {rl ->
+//				pw.println "\t$rl"
+//			}
+//			pw.println ''
+//		}
+		
 		BigDecimal grandTotal = BigDecimal.ZERO
 
 		yearList.each {year ->
@@ -105,6 +111,9 @@ class TotalsReportService {
 		String u1 = ''.padRight(heading.size(), '-')
 		pw.println u1
 
+		//print categories
+		printCategories(catList, pw)
+
 		yearList.each {year ->
 			12.times {zeroBasedMonth ->
 				YearMonth ym = YearMonth.of(year, zeroBasedMonth+1)
@@ -125,7 +134,7 @@ class TotalsReportService {
 					pw.println formattedAmount.padLeft(12)
 				}
 				else {
-					pw.println '$0.00'.padLeft(12)
+					pw.println ''
 				}
 			}
 		}
@@ -142,27 +151,6 @@ class TotalsReportService {
 			year++
 		}
 		return yearList
-	}
-	
-	List<String> buildCatListMinusAssetCosts() {
-		List<String> allCategoryList = categoryListService.allCategoryList
-		List<String> startingCategoryList = allCategoryList.collect()	//copy
-		startingCategoryList -= categoryListService.obsoleteCategoryList
-		startingCategoryList -= categoryListService.assetRelatedCostCategoryList
-		startingCategoryList -= ['FINGAL_SHED']
-		return startingCategoryList
-	}
-	
-	List<String> buildCatListLivingCosts() {
-		List<String> allCategoryList = categoryListService.allCategoryList
-		List<String> startingCategoryList = allCategoryList.collect()	//copy
-		startingCategoryList -= categoryListService.obsoleteCategoryList
-		startingCategoryList -= categoryListService.assetRelatedCostCategoryList
-		startingCategoryList -= categoryListService.campHillRenoCategoryList
-		startingCategoryList -= categoryListService.campHillCategoryList
-		startingCategoryList -= categoryListService.fingalCategoryList
-		
-		return startingCategoryList
 	}
 	
 	String buildYearlyQuery(Integer year, List<String> catList) {

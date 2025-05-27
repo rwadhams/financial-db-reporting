@@ -37,12 +37,12 @@ class ExtraReportingController {
 		//execute
 		dataValueReportingService.execute()
 		
-		TotalsReportService service = new TotalsReportService()
+		TotalsReportService totalsReportService = new TotalsReportService()
 		//inject services
-		service.commonReportingService = commonReportingService
-		service.databaseQueryService = databaseQueryService
-		service.categoryListService = categoryListService
+		totalsReportService.commonReportingService = commonReportingService
+		totalsReportService.databaseQueryService = databaseQueryService
+		totalsReportService.categoryListService = categoryListService
 		//execute
-		service.execute()
+		totalsReportService.execute()
 	}
 }

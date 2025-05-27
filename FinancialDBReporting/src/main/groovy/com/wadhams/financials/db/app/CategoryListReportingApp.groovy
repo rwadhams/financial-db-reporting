@@ -20,14 +20,13 @@ class CategoryListReportingApp {
 		if (result) {
 			println 'CategoryList verified'
 			println ''
+			categoryListService.printLists()
+			categoryListService.printAllCategories()	//vertical list of Categories
 		}
 		else {
 			println 'CategoryList unverified'
 			println ''
 		}
-		categoryListService.printAllCategories()
-		
-		categoryListService.printLists()
 	}
 	
 }
