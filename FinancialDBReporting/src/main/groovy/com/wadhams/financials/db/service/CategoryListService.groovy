@@ -76,9 +76,13 @@ class CategoryListService {
 			'DATA_PLAN',
 			'DRIVERS_LICENSE_MOLLY',
 			'DRIVERS_LICENSE_ROB',
+			'KK_INSURANCE',
+			'KK_REGISTRATION',
+			'KK_SERVICING',
 			'MEMBERSHIP',
 			'PHONE_PLAN_MOLLY',
-			'PHONE_PLAN_ROB'
+			'PHONE_PLAN_ROB',
+			'STAR_LINK_DATA'
 			]
 			startingCategoryList -= runningCostCategoryList
 			
@@ -87,8 +91,6 @@ class CategoryListService {
 			'ALCOHOL',
 			'CAMPING_FEES',
 			'CAMPING_SUPPLIES',
-			'CARAVAN_EQUIPMENT',
-			'CARAVAN_SUPPLIES',
 			'CLEANING',
 			'CLOTHING',
 			'CLOUD_STORAGE',
@@ -112,9 +114,11 @@ class CategoryListService {
 				'CAR_EQUIPMENT',
 				'CAR_MAINTENANCE',
 				'CAR_REPAIR',
+				'CARAVAN_EQUIPMENT',
 				'CARAVAN_MAINTENANCE',
 				'CARAVAN_REPAIR',
 				'ELECTRONICS',
+				'KK_EQUIPMENT',
 				'PARKS_PASS',
 				'SPECIAL_ACTIVITY',
 				'TECHNOLOGY'
