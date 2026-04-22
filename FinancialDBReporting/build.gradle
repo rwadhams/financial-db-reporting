@@ -16,6 +16,8 @@ repositories {
 }
 
 dependencies {
+	implementation 'com.wadhams.financials.db.common:FinancialDBCommon:1.0'
+	
 	// Use the latest Groovy version for building this library
 	implementation 'org.codehaus.groovy:groovy-all:3.0.9'
 

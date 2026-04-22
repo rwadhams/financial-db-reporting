@@ -16,6 +16,8 @@ class CategoryListReportingApp {
 	}
 	
 	def execute() {
+		categoryListService.printCommonCategoryDetails()
+		
 		Boolean result = categoryListService.verifyLists()
 		if (result) {
 			println 'CategoryList verified'
@@ -27,8 +29,7 @@ class CategoryListReportingApp {
 			println ''
 		}
 		
-		//vertical list of Categories
-		categoryListService.printAllCategories()
+		categoryListService.printCommonCategoriesWithCounts()
 	}
 	
 }
