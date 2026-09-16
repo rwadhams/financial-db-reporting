@@ -1,5 +1,6 @@
 package com.wadhams.financials.db.app
 
+import com.wadhams.financials.db.controller.BigPictureReportingController
 import com.wadhams.financials.db.controller.BudgetReportingController
 import com.wadhams.financials.db.controller.ExtraReportingController
 import com.wadhams.financials.db.controller.FinancialReportingController
@@ -30,12 +31,15 @@ class FinancialReportingTestApp {
 //		BudgetReportingController controller = new BudgetReportingController()
 //		controller.execute(pw)
 
-		FinancialReportingController controller = new FinancialReportingController()
-		controller.execute(pw)
+//		FinancialReportingController controller = new FinancialReportingController()
+//		controller.execute(pw)
 		
 //		CategoryTrendingReportingController controller = new CategoryTrendingReportingController()
 //		controller.execute(pw)
 
+		BigPictureReportingController controller = new BigPictureReportingController()
+		controller.execute(pw)
+		
 //		TestReportingController testController = new TestReportingController()
 //		testController.execute()
 
