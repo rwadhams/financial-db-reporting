@@ -10,6 +10,7 @@ import com.wadhams.financials.db.service.CategoryListService
 import com.wadhams.financials.db.service.CommonReportingService
 import com.wadhams.financials.db.service.DatabaseQueryService
 import com.wadhams.financials.db.service.DateService
+import com.wadhams.financials.db.type.SQLOrdering
 
 import groovy.sql.GroovyRowResult
 
@@ -66,7 +67,7 @@ class CategoryTrendingReportService {
 //		}
 //		println ''
 
-		List<String> categoryList = databaseQueryService.orderCategoryList(dateService.caravanStartDate, reportCategoryList /*categoryListService.dayToDayCategoryList*/)
+		List<String> categoryList = databaseQueryService.orderCategoryList(reportCategoryList, SQLOrdering.Decsending, dateService.caravanStartDate /*categoryListService.dayToDayCategoryList*/)
 //		List<String> categoryList = categoryListService.dayToDayCategoryList
 //		List<String> categoryList = ['CARAVAN_EQUIPMENT']
 //		List<String> categoryList = ['FOOD', 'ALCOHOL', 'FUEL', 'DRINKS', 'PREPARED_FOOD', 'CAMPING_FEES', 'ENTERTAINMENT', 'MEDICAL', 'PHARMACY']

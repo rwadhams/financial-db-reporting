@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter
 import com.wadhams.financials.db.dto.CategoryAmountDTO
 import com.wadhams.financials.db.dto.FinancialDTO
 import com.wadhams.financials.db.dto.TotalDTO
-
+import com.wadhams.financials.db.type.SQLOrdering
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 
@@ -121,20 +121,22 @@ class DatabaseQueryService {
 		return categoryList
 	}
 
-	List<String> orderCategoryList(LocalDate startDate, List<String> categoryList) {
+	List<String> orderCategoryList(List<String> categoryList, SQLOrdering sqlOrdering, LocalDate startDate) {
 		List<String> orderedCategoryList = []
 		
 		StringBuilder sb = new StringBuilder()
 		sb.append("SELECT CATEGORY as CAT, sum(amount) ")
 		sb.append("FROM FINANCIAL ")
-		sb.append("WHERE TRANSACTION_DT > '")
-		sb.append(startDate.format(h2DTF))
-		sb.append("' ")
-		sb.append("AND CATEGORY IN (")
+		sb.append("WHERE CATEGORY IN (")
 		sb.append(buildFormattedList(categoryList))
 		sb.append(") ")
+		if (startDate) {
+			sb.append("AND TRANSACTION_DT > '")
+			sb.append(startDate.format(h2DTF))
+			sb.append("' ")
+		}
 		sb.append("GROUP BY CATEGORY ")
-		sb.append("ORDER BY 2 DESC")
+		sb.append("ORDER BY 2 ${sqlOrdering.getSqlText()}")
 		
 		sql.eachRow(sb.toString()) {row ->
 			String category = row.CAT
