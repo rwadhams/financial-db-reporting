@@ -197,16 +197,22 @@ class DatabaseQueryService {
 		return sql.firstRow(query)
 	}
 	
-	//TODO Test required. Will not work with a list of 0 or 1
+	//TODO Test required.
 	String buildFormattedList(List<String> list) {
-		StringBuilder sb = new StringBuilder()
-		
-		sb.append("'${list[0]}'")
-		list[1..-1].each {s ->
-			sb.append(", '$s'")
+		if (list == null || list.size() == 0) {
+			return "''"
 		}
-		
-		return sb.toString()
+		else if (list.size() == 1){
+			return "'${list[0]}'"
+		}
+		else {
+			StringBuilder sb = new StringBuilder()
+			sb.append("'${list[0]}'")
+			list[1..-1].each {s ->
+				sb.append(", '$s'")
+			}
+			return sb.toString()
+		}
 	}
 
 }
