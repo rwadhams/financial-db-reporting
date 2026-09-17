@@ -13,6 +13,7 @@ class BigPictureReportingController {
 	CategoryListService categoryListService = new CategoryListService()
 	CommonReportingService commonReportingService = new CommonReportingService()
 	DatabaseQueryService databaseQueryService = new DatabaseQueryService()
+	DateService dateService = new DateService()
 	
 	def execute(PrintWriter pw) {
 		BigPictureSummaryReportService bigPictureSummaryReportService = new BigPictureSummaryReportService()
@@ -20,6 +21,7 @@ class BigPictureReportingController {
 		bigPictureSummaryReportService.databaseQueryService = databaseQueryService
 		bigPictureSummaryReportService.categoryListService = categoryListService
 		bigPictureSummaryReportService.commonReportingService = commonReportingService
+		bigPictureSummaryReportService.dateService = dateService
 		//execute
 		bigPictureSummaryReportService.execute(pw)
 	}
