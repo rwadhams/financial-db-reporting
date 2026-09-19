@@ -67,51 +67,44 @@ class BigPictureSummaryReportService {
 		List<String> allCategoryList = databaseQueryService.buildAllCategoryList()
 		int maxCategorySize = commonReportingService.maxTextSize(allCategoryList)
 
-		List<String> categoryExclusionList
-		List<CategoryGroupingDTO> categoryGroupingDTOList
-		
 		//One Time Purchases Reporting
-		categoryGroupingDTOList = buildOneTimePurchases()
+		List<CategoryGroupingDTO> oneTimePurchasesCategoryGroupingDTOList = buildOneTimePurchases()
 //		println "categoryGroupingDTOList: $categoryGroupingDTOList"
 //		println ''
-		reportCategoryGroupingTotal('One Time Purchases', categoryGroupingDTOList, pw)
-		categoryExclusionList = extractCategoryList(categoryGroupingDTOList)
-//		println "categoryExclusionList: $categoryExclusionList"
-//		println ''
+		reportCategoryGroupingTotal('One Time Purchases', oneTimePurchasesCategoryGroupingDTOList, pw)
 
 		//remove One Time Purchase categories
-		List<String> remainingCategoryList = allCategoryList - categoryExclusionList
+		List<String> remainingCategoryList = allCategoryList - extractCategoryList(oneTimePurchasesCategoryGroupingDTOList)
+		
+		pw.println ''
+		pw.println commonReportingService.horizonalRule
+		pw.println ''
+		
+		//Camp Hill Preparation
+		List<CategoryGroupingDTO> campHillCategoryGroupingDTOList = buildCampHill()
+		//remove Camp Hill categories
+		remainingCategoryList = remainingCategoryList - extractCategoryList(campHillCategoryGroupingDTOList)
+		
+		//Low Dollar Preparation
+		List<CategoryGroupingDTO> lowUsageLowDollarCategoryGroupingDTOList = buildLowUsageLowDollar()
+		//remove LowUsageLowDollar categories
+		remainingCategoryList = remainingCategoryList - extractCategoryList(lowUsageLowDollarCategoryGroupingDTOList)
+		
+		reportCategoryYearlySummary(remainingCategoryList, yearSet, maxCategorySize, averagingDivisor, pw)
 		
 		pw.println ''
 		pw.println commonReportingService.horizonalRule
 		pw.println ''
 		
 		//Camp Hill Reporting
-		categoryGroupingDTOList = buildCampHill()
-		reportCategoryGroupingTotal('Camp Hill', categoryGroupingDTOList, pw)
-		categoryExclusionList = extractCategoryList(categoryGroupingDTOList)
-
-		//remove Camp Hill categories
-		remainingCategoryList = remainingCategoryList - categoryExclusionList
+		reportCategoryGroupingTotal('Camp Hill', campHillCategoryGroupingDTOList, pw)
 		
 		pw.println ''
 		pw.println commonReportingService.horizonalRule
 		pw.println ''
 		
 		//Low Dollar Reporting
-		categoryGroupingDTOList = buildLowUsageLowDollar()
-		reportCategoryGroupingTotal('Low Usage / Low Dollar Categories', categoryGroupingDTOList, pw)
-		categoryExclusionList = extractCategoryList(categoryGroupingDTOList)
-
-		//remove LowUsageLowDollar categories
-		remainingCategoryList = remainingCategoryList - categoryExclusionList
-		
-		pw.println ''
-		pw.println commonReportingService.horizonalRule
-		pw.println ''
-		
-		reportCategoryYearlySummary(remainingCategoryList, yearSet, maxCategorySize, averagingDivisor, pw)
-		
+		reportCategoryGroupingTotal('Low Usage / Low Dollar Categories', lowUsageLowDollarCategoryGroupingDTOList, pw)
 	}
 	
 	def reportGrandTotal(BigDecimal grandTotal, PrintWriter pw) {
@@ -149,8 +142,8 @@ class BigPictureSummaryReportService {
 	}
 	
 	def reportCategoryYearlySummary(List<String> remainingCategoryList, Set<Integer> yearSet, int maxCategorySize, BigDecimal averagingDivisor, PrintWriter pw) {
-		pw.println 'Remaining Categories by Year with Totals'
-		pw.println '----------------------------------------'
+		pw.println 'Summary Categories by Year with Totals'
+		pw.println '--------------------------------------'
 		
 		//reorder the remainingCategoryList based on descending dollar totals
 		List<String> reorderCategoryList = databaseQueryService.orderCategoryList(remainingCategoryList, SQLOrdering.Decsending, null)
