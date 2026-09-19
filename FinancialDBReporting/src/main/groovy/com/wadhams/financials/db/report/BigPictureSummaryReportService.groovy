@@ -1,8 +1,12 @@
 package com.wadhams.financials.db.report
 
+import static java.math.RoundingMode.UP
+
 import java.text.NumberFormat
+import java.time.LocalDate
 import java.time.Year
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 import com.wadhams.financials.db.dto.FinancialDTO
 import com.wadhams.financials.db.service.CategoryListService
@@ -11,6 +15,8 @@ import com.wadhams.financials.db.service.DatabaseQueryService
 import com.wadhams.financials.db.service.DateService
 import com.wadhams.financials.db.service.TimelineService
 import com.wadhams.financials.db.type.Residence
+import com.wadhams.financials.db.type.SQLOrdering
+
 import groovy.sql.GroovyRowResult
 import groovy.transform.ToString
 
@@ -22,6 +28,9 @@ class BigPictureSummaryReportService {
 	
 	NumberFormat cf = NumberFormat.getCurrencyInstance()
 	
+	BigDecimal monthsPerYear = new BigDecimal('12')
+	BigDecimal daysPerYear = new BigDecimal('365')
+
 	def execute(PrintWriter pw) {
 		//report headings
 		pw.println 'Big Picture Report'
@@ -33,14 +42,21 @@ class BigPictureSummaryReportService {
 		
 		//1. determine which years are in the complete dataset
 		//2. calculate grandTotal
+		//3. calculate totalsDays based on start and end transaction dates
 		Set<Integer> yearSet = []
 		BigDecimal grandTotal = new BigDecimal(0.0)
 		financialList.each {dto ->
 			yearSet << dto.transactionDt.getYear()
 			grandTotal = grandTotal.add(dto.amount)
 		}
-//		println "Years.........: $yearSet"
-//		println "GrandTotal....: ${cf.format(grandTotal)}"
+		BigDecimal totalDays = (ChronoUnit.DAYS.between(dateService.minTransactionDate, dateService.maxTransactionDate) + 1L) as BigDecimal
+		BigDecimal averagingDivisor = monthsPerYear.multiply(totalDays).divide(daysPerYear, 1, UP)
+		
+//		println "Years..............: $yearSet"
+//		println "GrandTotal.........: ${cf.format(grandTotal)}"
+//		println "TotalDays..........: $totalDays"
+//		println "AveragingDivisor...: $averagingDivisor"
+//		println ''
 		
 		reportGrandTotal(grandTotal, pw)
 		
@@ -64,7 +80,7 @@ class BigPictureSummaryReportService {
 //		println ''
 
 		//remove One Time Purchase categories
-		allCategoryList = allCategoryList - categoryExclusionList
+		List<String> remainingCategoryList = allCategoryList - categoryExclusionList
 		
 		pw.println ''
 		pw.println commonReportingService.horizonalRule
@@ -76,25 +92,26 @@ class BigPictureSummaryReportService {
 		categoryExclusionList = extractCategoryList(categoryGroupingDTOList)
 
 		//remove Camp Hill categories
-		allCategoryList = allCategoryList - categoryExclusionList
+		remainingCategoryList = remainingCategoryList - categoryExclusionList
 		
 		pw.println ''
 		pw.println commonReportingService.horizonalRule
 		pw.println ''
 		
 		//Low Dollar Reporting
-		categoryGroupingDTOList = buildLowDollar()
-		reportCategoryGroupingTotal('Low Dollar Categories', categoryGroupingDTOList, pw)
+		categoryGroupingDTOList = buildLowUsageLowDollar()
+		reportCategoryGroupingTotal('Low Usage / Low Dollar Categories', categoryGroupingDTOList, pw)
 		categoryExclusionList = extractCategoryList(categoryGroupingDTOList)
 
-		//remove Low Dollar categories
-		allCategoryList = allCategoryList - categoryExclusionList
+		//remove LowUsageLowDollar categories
+		remainingCategoryList = remainingCategoryList - categoryExclusionList
 		
 		pw.println ''
 		pw.println commonReportingService.horizonalRule
 		pw.println ''
 		
-		reportCategoryYearlySummary(allCategoryList, yearSet, maxCategorySize, pw)
+		reportCategoryYearlySummary(remainingCategoryList, yearSet, maxCategorySize, averagingDivisor, pw)
+		
 	}
 	
 	def reportGrandTotal(BigDecimal grandTotal, PrintWriter pw) {
@@ -127,25 +144,38 @@ class BigPictureSummaryReportService {
 			reportTotal = reportTotal.add(total)
 		}
 		formattedTotal = cf.format(reportTotal)
+		pw.println ''
 		pw.println "${'Total:'.padLeft(maxNameSize, ' ')}  ${formattedTotal.padLeft(12)}"
 	}
 	
-	def reportCategoryYearlySummary(List<String> allCategoryList, Set<Integer> yearSet, int maxCategorySize, PrintWriter pw) {
-		pw.println 'Categories by Year with Totals'
-		pw.println '------------------------------'
+	def reportCategoryYearlySummary(List<String> remainingCategoryList, Set<Integer> yearSet, int maxCategorySize, BigDecimal averagingDivisor, PrintWriter pw) {
+		pw.println 'Remaining Categories by Year with Totals'
+		pw.println '----------------------------------------'
+		
+		//reorder the remainingCategoryList based on descending dollar totals
+		List<String> reorderCategoryList = databaseQueryService.orderCategoryList(remainingCategoryList, SQLOrdering.Decsending, null)
 		
 		//year headings
-		pw.print "${'Year: '.padLeft(maxCategorySize, ' ')}  "
+		pw.print "${'Year:'.padLeft(maxCategorySize, ' ')}  "
 		yearSet.each {year ->
 			String y = year as String
 			pw.print "${y.padLeft(12, ' ')}"
 		}
-		pw.print ' Category Total'
+		pw.print '     Category'
+		pw.print '     Monthly'
+		pw.println ''
+		//year heading underline
+		pw.print "${'-----'.padLeft(maxCategorySize, ' ')}  "
+		yearSet.size().times {
+			pw.print "${'----'.padLeft(12, ' ')}"
+		}
+		pw.print '        Total'
+		pw.print '     Average'
 		pw.println ''
 
 		String formattedTotal
 		//category loop
-		allCategoryList.each {cat ->
+		reorderCategoryList.each {cat ->
 			BigDecimal rowTotal = new BigDecimal(0.0)
 			print "${cat.padRight(maxCategorySize, ' ')}  "
 			//year loop
@@ -160,20 +190,26 @@ class BigPictureSummaryReportService {
 					rowTotal = rowTotal.add(total)
 				}
 				else {
-					formattedTotal = cf.format(BigDecimal.ZERO)
+//					formattedTotal = cf.format(BigDecimal.ZERO)
+					formattedTotal = '-----'
 				}
 				pw.print "${formattedTotal.padLeft(12)}"
 			}
 			formattedTotal = cf.format(rowTotal)
-			pw.print "${formattedTotal.padLeft(15)}"
+			pw.print "${formattedTotal.padLeft(13)}"
+			if (categoryListService.dayToDayCategoryList.contains(cat)) {
+				formattedTotal = cf.format(rowTotal.divide(averagingDivisor, 2, UP))
+				pw.print "${formattedTotal.padLeft(12)}"
+			}
 			pw.println ''
 		}
 		
+		pw.println ''
 		//year totals
 		BigDecimal grandTotal = new BigDecimal(0.0)
 		pw.print "${'Total: '.padLeft(maxCategorySize, ' ')}  "
 		yearSet.each {year ->
-			String querySumYear = buildQuerySumYear(year, allCategoryList)
+			String querySumYear = buildQuerySumYear(year, reorderCategoryList)
 			//println querySumYear
 			GroovyRowResult grr = databaseQueryService.firstRow(querySumYear)
 			def total = grr.getProperty('TOTAL')
@@ -183,7 +219,7 @@ class BigPictureSummaryReportService {
 			grandTotal = grandTotal.add(total)
 		}
 		formattedTotal = cf.format(grandTotal)
-		pw.print "${formattedTotal.padLeft(15)}"
+		pw.print "${formattedTotal.padLeft(13)}"
 		pw.println ''
 	}
 	
@@ -197,6 +233,8 @@ class BigPictureSummaryReportService {
 		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['CAR_PURCHASE'], name : 'Toyota Landcruiser', description : '')
 		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['FINGAL_STUDIO'], name : 'Fingal Studio', description : '')
 		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['KK_PURCHASE'], name : 'Kimberley Kamper', description : '')
+		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['FINGAL_IMPROVEMENTS'], name : 'Fingal Improvements', description : 'Fencing, Drinking water, Some excavation work')
+		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['NZ_CAMPERVAN'], name : 'NZ Campervan', description : 'Purchase, Sale, Insurance, RUC, Rego, Maintenance, Setup, Ferry, NZMCA')
 		
 		return categoryGroupingDTOList
 	}
@@ -209,29 +247,30 @@ class BigPictureSummaryReportService {
 		return categoryGroupingDTOList
 	}
 	
-	List<CategoryGroupingDTO> buildLowDollar() {
+	List<CategoryGroupingDTO> buildLowUsageLowDollar() {
 		List<CategoryGroupingDTO> categoryGroupingDTOList = []
 		
 //		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : [''], name : '', description : '')
-		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['ACCOUNTING_FEES'], name : 'Accounting', description : '')
+		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['ACCOUNTING_FEES'], name : 'Accounting', description : 'Camp Hill Sale')
 		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['BANKING_FEES'], name : 'Banking', description : '')
-		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['CAR_REPAIR'], name : 'Car Repairs', description : '')
-		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['CARAVAN_MAINTENANCE'], name : 'Caravan Maintenance', description : '')
-		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['CLEANING'], name : 'Cleaning', description : '')
+		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['CAR_REPAIR'], name : 'Car Repairs', description : 'Taillight, Tyre repair, Windscreen chip')
+		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['CARAVAN_MAINTENANCE'], name : 'Caravan Maintenance', description : 'New Tyres')
+		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['CLEANING'], name : 'Cleaning', description : 'Vehicle cleaning products, car wash')
 		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['DRIVERS_LICENSE_MOLLY', 'DRIVERS_LICENSE_ROB'], name : 'Driver Licenses', description : '')
-		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['FINGAL_SUPPLIES'], name : 'Fingal Supplies', description : 'Diesel for generator, etc')
+		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['FINGAL_SUPPLIES'], name : 'Fingal Supplies', description : 'Diesel for generator, Fuel, etc')
 		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['FISHING'], name : 'Fishing', description : '')
 		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['HOME_BREW'], name : 'Home Brew Beer', description : '')
 		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['KK_REGISTRATION'], name : 'Kimberley Kamper Registration', description : '')
 		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['KK_SERVICING'], name : 'Kimberley Kamper Servicing', description : '')
-		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['MEDIA'], name : 'Media', description : 'DVDs, etc')
+		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['MEDIA'], name : 'Media', description : 'DVDs, Books, etc')
 		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['OFFICE'], name : 'Office', description : 'Office Supplies, Printing')
+		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['ONROAD_FEES'], name : 'Onroad Fees', description : 'Ferries, Weighbridge, RACQ Claim excess')
 		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['PARKS_PASS'], name : 'Park Passes', description : '')
-		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['PERSONAL_GROOMING'], name : 'Personal Care', description : '')
-		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['PHONE_AND_DATA_PLAN', 'PHONE_PLAN_INTL'], name : 'Telco', description : '')
-		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['PREPPING_EQUIPMENT'], name : 'Prepping', description : '')
-		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['TOLLS'], name : 'Tolls', description : 'Toll Roads, Ferries')
-		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['TRANSIT'], name : 'Public Transportation', description : '')
+		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['PERSONAL_GROOMING'], name : 'Personal Care', description : 'Haircuts, Health & Beauty products')
+		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['PHONE_AND_DATA_PLAN', 'PHONE_PLAN_INTL'], name : 'Telco', description : 'Old Plans, Intl Phone plans')
+		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['PREPPING_EQUIPMENT'], name : 'Prepping', description : 'First Aid Kit, Jerrycans, Propane')
+		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['TOLLS'], name : 'Tolls', description : 'Toll Roads')
+		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['TRANSIT'], name : 'Transportation', description : 'Bus, Train, Taxi, Uber')
 		categoryGroupingDTOList << new CategoryGroupingDTO(categoryList : ['TRAVEL_PUBLICATION'], name : 'Travel Material', description : 'Maps, Road Atlas, Travel Guides')
 		
 		return categoryGroupingDTOList
