@@ -170,7 +170,7 @@ class BigPictureSummaryReportService {
 		//category loop
 		reorderCategoryList.each {cat ->
 			BigDecimal rowTotal = new BigDecimal(0.0)
-			print "${cat.padRight(maxCategorySize, ' ')}  "
+			pw.print "${cat.padRight(maxCategorySize, ' ')}  "
 			//year loop
 			yearSet.each {year ->
 				String querySumCategoryYear = buildQuerySumCategoryYear(cat, year)
