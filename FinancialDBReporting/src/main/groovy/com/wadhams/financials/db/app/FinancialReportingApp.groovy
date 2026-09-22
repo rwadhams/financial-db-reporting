@@ -3,7 +3,7 @@ package com.wadhams.financials.db.app
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-
+import com.wadhams.financials.db.controller.BigPictureReportingController
 import com.wadhams.financials.db.controller.BudgetReportingController
 import com.wadhams.financials.db.controller.CategoryTrendingReportingController
 import com.wadhams.financials.db.controller.ExtraReportingController
@@ -53,6 +53,11 @@ class FinancialReportingApp {
 				Last365DaysReportingController controller5 = new Last365DaysReportingController()
 				controller5.execute(pw5)
 				pw5.close()
+				
+				PrintWriter pw6 = (new File("out/big-picture-report${filenameSuffix}.txt")).newPrintWriter()
+				BigPictureReportingController controller6 = new BigPictureReportingController()
+				controller6.execute(pw6)
+				pw6.close()
 				
 				ExtraReportingController controller9 = new ExtraReportingController()
 				controller9.execute()
